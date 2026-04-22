@@ -1,0 +1,456 @@
+\documentclass[11pt,a4paper,spanish]{book}
+\usepackage{estilo_unir-1}
+\usepackage{apacite}
+\usepackage{hyperref}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{array}
+\numberwithin{equation}{chapter}
+\numberwithin{figure}{chapter}
+
+%---------------------------
+% METADATOS
+%---------------------------
+\title{ProcureWatch Analytics: Plataforma Multiagente para la Detecci{\'o}n de Patrones de Riesgo en Contrataci{\'o}n P{\'u}blica mediante Open Data, An{\'a}lisis de Redes, NLP y Modelos Locales}
+\titulacion{M{\'a}ster Universitario en An{\'a}lisis y Visualizaci{\'o}n de Datos Masivos}
+\author{Sebasti{\'a}n Alfonso Correa y Satur{\'i}a Mar{\'i}a Hurtado {\'A}lvarez}
+\date{22 de abril de 2026}
+\director{Marlon C{\'a}rdenas Bonett}
+\nombreciudad{Madrid}
+
+\begin{document}
+\renewcommand{\listfigurename}{\'Indice de Ilustraciones}
+\renewcommand{\listtablename}{\'Indice de Tablas}
+\renewcommand{\contentsname}{\'Indice de Contenidos}
+\renewcommand{\figurename}{Figura}
+\renewcommand{\tablename}{Tabla}
+
+\maketitle
+\frontmatter
+\tableofcontents
+\listoffigures
+\listoftables
+
+%=========================================================
+\chapter{Resumen}
+%=========================================================
+
+ProcureWatch Analytics es una plataforma anal{\'i}tica multiagente que detecta patrones de riesgo en contrataci{\'o}n p{\'u}blica espa{\~n}ola mediante an{\'a}lisis integrado de datos abiertos (OCDS), indicadores de red flags, an{\'a}lisis de redes societarias (algoritmo Leiden), procesamiento de lenguaje natural sobre documentos p{\'u}blicos y modelos de scoring de anomal{\'i}as. El sistema aplica su prototipo inicial al dominio CPV~71 (Servicios de arquitectura, ingenier{\'i}a e inspecci{\'o}n), procesando datos del BOE 2014-2024 y PLACE. Valida sus componentes mediante m{\'e}tricas est{\'a}ndar de precisi{\'o}n, modularidad de grafos (Q\,>\,0.30), calidad RAG (Faithfulness\,>\,0.80) y usabilidad (SUS\,>\,68), generando fichas de riesgo explicables para auditor{\'i}as p{\'u}blicas.
+
+\medskip
+{\bf Palabras clave:} contrataci{\'o}n p{\'u}blica, red flags, machine learning, an{\'a}lisis de redes, NLP, datos abiertos, CPV 71, OCDS, scoring de riesgo, plataforma multiagente.
+
+%=========================================================
+\chapter{Abstract}
+%=========================================================
+
+ProcureWatch Analytics is a multi-agent analytical platform that detects risk patterns in Spanish public procurement through integrated analysis of open data (OCDS), red flag indicators, network analysis (Leiden algorithm), natural language processing over public documents, and anomaly scoring models. The prototype focuses on CPV division 71 (Architecture, Engineering and Inspection Services), processing BOE 2014-2024 and PLACE data. Components are validated using standard metrics: red flag precision, graph modularity (Q\,>\,0.30), RAG quality (Faithfulness\,>\,0.80) and usability (SUS\,>\,68), generating explainable risk reports to support public audit.
+
+\medskip
+{\bf Keywords:} public procurement, red flags, machine learning, network analysis, NLP, open data, CPV 71, OCDS, risk scoring, multi-agent platform.
+
+%=========================================================
+\mainmatter
+\chapter{Introducci{\'o}n}
+%=========================================================
+
+\section{Motivaci{\'o}n y justificaci{\'o}n del tema}
+
+La contrataci{\'o}n p{\'u}blica es uno de los mecanismos de gasto p{\'u}blico de mayor volumen econ{\'o}mico y mayor exposici{\'o}n al riesgo de irregularidad. En Espa{\~n}a representa entre el 12 y el 15\,\% del PIB nacional \cite{OECD2016Corruption}, y desde 2007 la legislaci{\'o}n obliga a publicar contratos en formatos abiertos y reutilizables \cite{LCSP2017}. Pese a esta disponibilidad, los an{\'a}lisis sistem{\'a}ticos, automatizados y reproducibles sobre datos de contrataci{\'o}n p{\'u}blica en Espa{\~n}a siguen siendo escasos.
+
+El reciente \textit{dataset} longitudinal del BOE 2014--2024 \cite{MunozPla2026}, publicado con aproximadamente 97.000 contratos estructurados seg{\'u}n el est{\'a}ndar OCDS, abre una oportunidad concreta para construir an{\'a}lisis de calidad sobre este dominio. La literatura internacional ha demostrado de forma consistente que los m{\'e}todos de machine learning y an{\'a}lisis de redes mejoran significativamente la detecci{\'o}n de irregularidades frente a enfoques puramente basados en reglas expl{\'i}citas \cite{Wachs2025ML,Fazekas2020DIGIWHIST,Coviello2023Italian}.
+
+\section{Planteamiento del trabajo}
+
+Este TFM propone dise{\~n}ar, desarrollar y evaluar \textbf{ProcureWatch Analytics}, una plataforma multiagente que integra: (a)~un \textit{pipeline} de adquisici{\'o}n e integraci{\'o}n de datos Open Data en un est{\'a}ndar OCDS com{\'u}n; (b)~un motor anal{\'i}tico de detecci{\'o}n de red flags y patrones de riesgo basado en indicadores de la literatura y modelos de machine learning; (c)~un m{\'o}dulo de an{\'a}lisis de redes societarias y de adjudicaci{\'o}n para detectar concentraciones, relaciones sospechosas y patrones de comportamiento grupal; (d)~un sistema OCR y NLP para procesamiento de pliegos, resoluciones y documentos p{\'u}blicos; y (e)~un \textit{front-end} anal{\'i}tico con red de relaciones interactiva, panel de riesgo, evoluci{\'o}n temporal y ficha explicativa de caso.
+
+El prototipo se valida sobre el dominio CPV~71 (Servicios de arquitectura, ingenier{\'i}a e inspecci{\'o}n), seleccionado por razones metodol{\'o}gicas detalladas en la Secci{\'o}n~\ref{sec:dominio_cpv71}.
+
+\section{Estructura del trabajo}
+
+\begin{itemize}
+  \item \textbf{Cap{\'i}tulo~2 ---} An{\'a}lisis del contexto: descripci{\'o}n del problema, datos justificativos, preguntas de investigaci{\'o}n y dominio de an{\'a}lisis.
+  \item \textbf{Cap{\'i}tulo~3 ---} Contexto y estado del arte: revisi{\'o}n de los cinco bloques tem{\'a}ticos con referencias acad{\'e}micas y conclusiones sobre la brecha que justifica el proyecto.
+  \item \textbf{Cap{\'i}tulo~4 ---} Objetivos: objetivo general SMART y ocho objetivos espec{\'i}ficos medibles y operativos.
+  \item \textbf{Cap{\'i}tulos~5--8 ---} Desarrollo t{\'e}cnico, resultados, evaluaci{\'o}n y conclusiones (a desarrollar).
+\end{itemize}
+
+\medskip
+\textit{Nota:} el planteamiento metodol{\'o}gico detallado (fases, cronograma, entregables) se presenta en el documento independiente \texttt{metodologia\_tfm.pdf}.
+
+%=========================================================
+\chapter{An{\'a}lisis del Contexto}
+%=========================================================
+
+\section{Dimensi{\'o}n econ{\'o}mica de la contrataci{\'o}n p{\'u}blica en Espa{\~n}a}
+
+La contrataci{\'o}n p{\'u}blica en Espa{\~n}a constituye uno de los mecanismos de gasto p{\'u}blico de mayor impacto econ{\'o}mico y social. Representa entre el \textbf{12 y el 15\,\% del PIB nacional} \cite{OECD2016Corruption}, movilizando anualmente decenas de miles de millones de euros en obras, servicios y suministros adjudicados por miles de organismos p{\'u}blicos.
+
+Esta magnitud, sumada a la complejidad de los procedimientos contractuales y a la asimetr{\'i}a de informaci{\'o}n entre licitadores y organismos, convierte la contrataci{\'o}n p{\'u}blica en un {\'a}mbito especialmente expuesto al riesgo de irregularidad. Al mismo tiempo, la obligaci{\'o}n legal de publicar los contratos en formatos abiertos desde 2007 \cite{LCSP2017,Ley192013} genera una base de datos extraordinariamente rica para el an{\'a}lisis de patrones mediante t{\'e}cnicas de datos masivos.
+
+\begin{table}[ht]
+\centering
+\caption{Volumen y cobertura de datos disponibles para contrataci{\'o}n p{\'u}blica en Espa{\~n}a y Europa}
+\label{tab:volumen_datos}
+\begin{tabular}{lrl}
+\toprule
+\textbf{Fuente} & \textbf{Volumen} & \textbf{Referencia} \\
+\midrule
+Licitaciones anuales PLACE (2024, sin menores) & 206.242 & \citeA{OIReScon2025} \\
+Contratos BOE 2014--2024 (formato OCDS) & $\sim$97.000 & \citeA{MunozPla2026} \\
+Contratos CPV 71 en dataset BOE & 3.443 & \citeA{MunozPla2026} \\
+{\'O}rganos de contrataci{\'o}n activos en PLACE & $>$10.000 & \citeA{MinHacienda2024PLACE} \\
+Contratos europeos en OpenTender & $>$19 millones & \citeA{OpenTenderEU} \\
+Red flags documentados (OCP + DIGIWHIST) & $>$150 indicadores & \citeA{OCP2024RedFlags} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Pregunta 1: Volumen de contratos en PLACE y organismos participantes}
+
+La Plataforma de Contrataci{\'o}n del Sector P{\'u}blico (PLACSP) es el principal sistema de publicaci{\'o}n de la contrataci{\'o}n p{\'u}blica en Espa{\~n}a, integrando datos de la Administraci{\'o}n General del Estado, comunidades aut{\'o}nomas, entidades locales y el sector p{\'u}blico institucional \cite{MinHacienda2024PLACE}.
+
+Seg{\'u}n los informes de la Oficina Independiente de Regulaci{\'o}n y Supervisi{\'o}n de la Contrataci{\'o}n (OIReScon), en el ejercicio 2024 se registraron \textbf{206.242 licitaciones} en la plataforma, sin incluir contratos menores, lo que representa una parte sustancial del total de la contrataci{\'o}n p{\'u}blica gestionada en Espa{\~n}a \cite{OIReScon2025}. Si se consideran contratos menores, adjudicaciones y desgloses por lotes, el volumen total de registros anuales asciende a varios millones, aunque esta cifra var{\'i}a seg{\'u}n el criterio de contabilizaci{\'o}n (contrato, expediente o lote).
+
+En cuanto a los organismos participantes, la plataforma da servicio a \textbf{m{\'a}s de 10.000 {\'o}rganos de contrataci{\'o}n activos} pertenecientes a todos los niveles administrativos: Administraci{\'o}n General del Estado, comunidades aut{\'o}nomas, diputaciones, ayuntamientos, universidades y entidades del sector p{\'u}blico institucional \cite{MinHacienda2024PLACE}. Esta fragmentaci{\'o}n administrativa supone uno de los principales retos para el an{\'a}lisis sistem{\'a}tico, ya que los datos est{\'a}n distribuidos en m{\'u}ltiples fuentes con formatos y calidades heterog{\'e}neas \cite{OCP2023EUOpenData}.
+
+\section{Pregunta 2: Tipos de irregularidades documentadas en Espa{\~n}a (2014--2024)}
+
+La literatura y los informes de supervisi{\'o}n han identificado m{\'u}ltiples tipos de irregularidades en la contrataci{\'o}n p{\'u}blica espa{\~n}ola durante la {\'u}ltima d{\'e}cada. Las m{\'a}s frecuentes son:
+
+\begin{description}
+  \item[Fraccionamiento indebido de contratos.] Divisi{\'o}n artificial de contratos para eludir los umbrales de publicidad y concurrencia. Es uno de los indicadores con mayor soporte emp{\'i}rico en la literatura \cite{OCP2024RedFlags,OCP2016RedFlags}.
+
+  \item[Uso inadecuado del contrato menor.] Recurso sistem{\'a}tico al procedimiento negociado sin publicidad ---que no exige concurrencia--- con el mismo proveedor o en importes pr{\'o}ximos al umbral legal \cite{OIReScon2025}. Los informes OIReScon han documentado un incremento de este tipo de irregularidades.
+
+  \item[Falta de transparencia y publicidad.] Procedimientos negociados sin publicidad en contratos que superan umbrales razonables, contratos publicados fuera del horario administrativo habitual o en periodos de menor visibilidad (festivos, cierres de ejercicio).
+
+  \item[Conflictos de inter{\'e}s y adjudicaciones dirigidas.] Caso emblem{\'a}tico: la operaci{\'o}n de la Agencia Tributaria en Cantabria (2023), donde se detectaron adjudicaciones sistem{\'a}ticamente dirigidas a empresas vinculadas a un funcionario responsable de los informes t{\'e}cnicos de valoraci{\'o}n \cite{AEATCantabria2023}. La AEAT ha se{\~n}alado expl{\'i}citamente el cruce entre datos tributarios y contractuales como l{\'i}nea prioritaria de detecci{\'o}n.
+
+  \item[Modificaciones contractuales injustificadas.] Alteraciones del objeto, plazo o importe de contratos ya adjudicados, sin fundamento legal suficiente.
+
+  \item[Pr{\'a}cticas colusorias.] Empresas adjudicatarias que comparten administradores, domicilios sociales o estructura accionarial, lo que puede indicar coordinaci{\'o}n en las ofertas (colusi{\'o}n) o la existencia de grupos empresariales que se presentan formalmente como competidores \cite{OCP2024RedFlags}.
+
+  \item[Sobrecoste y desviaciones de importe.] Diferencias sistem{\'a}ticamente elevadas entre el importe estimado de licitaci{\'o}n y el importe real adjudicado, lo que puede indicar estimaciones deliberadamente infladas o reducidas para condicionar la concurrencia \cite{Coviello2023Italian}.
+\end{description}
+
+Los informes recientes de OIReScon \cite{OIReScon2025} se{\~n}alan adem{\'a}s un aumento significativo de denuncias relacionadas con irregularidades en la adjudicaci{\'o}n. En el {\'a}mbito acad{\'e}mico, \citeA{FalconCortes2021} demuestran que la concentraci{\'o}n de adjudicaciones y la baja concurrencia son los indicadores m{\'a}s predictivos de comportamiento irregular.
+
+\section{Pregunta 3: Limitaciones de los sistemas actuales de auditor{\'i}a y control}
+
+Los sistemas de control de la contrataci{\'o}n p{\'u}blica presentan diversas limitaciones estructurales que justifican el desarrollo de herramientas anal{\'i}ticas avanzadas:
+
+\begin{enumerate}
+  \item \textbf{Fragmentaci{\'o}n de informaci{\'o}n.} Los datos est{\'a}n distribuidos entre m{\'u}ltiples plataformas y niveles administrativos, dificultando un an{\'a}lisis global y consistente \cite{OIReScon2025}.
+
+  \item \textbf{Insuficiencia de recursos de supervisi{\'o}n.} El volumen de contratos gestionados anualmente (\,>200.000 licitaciones) excede ampliamente la capacidad de revisi{\'o}n exhaustiva con los medios actuales \cite{OIReScon2025}.
+
+  \item \textbf{Falta de estandarizaci{\'o}n y calidad homog{\'e}nea.} La ausencia de un est{\'a}ndar universal en los formatos de publicaci{\'o}n introduce heterogeneidad que dificulta el an{\'a}lisis automatizado \cite{OCP2023EUOpenData}.
+
+  \item \textbf{Car{\'a}cter reactivo.} Los sistemas de control act{\'u}an principalmente una vez detectada la irregularidad, en lugar de prevenirla mediante an{\'a}lisis predictivo \cite{OECD2016Corruption}. Este enfoque reactivo limita la eficacia del sistema.
+
+  \item \textbf{Ausencia de perspectiva relacional.} Los controles tradicionales no detectan comunidades de proveedores con comportamientos coordinados, ni patrones de concentraci{\'o}n at{\'i}pica que s{\'o}lo son visibles en el grafo de relaciones empresa-organismo \cite{Wachs2025ML,Martins2022Network}.
+
+  \item \textbf{Invisibilidad del contexto documental.} Los pliegos de prescripciones t{\'e}cnicas, memorias justificativas y resoluciones contienen se{\~n}ales textuales ---direccionamientos t{\'e}cnicos, criterios de adjudicaci{\'o}n subjetivos--- que permanecen invisibles en an{\'a}lisis puramente estructurados \cite{NLPLegalSurvey2024}.
+\end{enumerate}
+
+\section{Pregunta 4: Evidencia de eficacia del an{\'a}lisis de datos para detectar riesgo}
+
+La literatura cient{\'i}fica reciente ofrece evidencias s{\'o}lidas sobre la eficacia de los m{\'e}todos de an{\'a}lisis de datos para la detecci{\'o}n de patrones de riesgo en contrataci{\'o}n p{\'u}blica:
+
+\begin{itemize}
+  \item \citeA{Coviello2023Italian} demuestran, en un estudio emp{\'i}rico con datos de licitaciones italianas, que los indicadores de red flags alcanzan precisiones superiores al 70\,\% en detecci{\'o}n de contratos con corrupci{\'o}n confirmada, especialmente cuando se combinan indicadores de concurrencia, importe y procedimiento.
+
+  \item \citeA{Wachs2025ML} aplican un enfoque combinado de machine learning y an{\'a}lisis de redes a datos de contrataci{\'o}n en M{\'e}xico, demostrando que las m{\'e}tricas de red (centralidad, comunidades) a{\~n}aden poder predictivo significativo respecto a los modelos tabulares puros.
+
+  \item El proyecto europeo DIGIWHIST \cite{Fazekas2020DIGIWHIST,DIGIWHISTProject} desarroll{\'o} el \textit{Corruption Risk Index} (CRI) combinando cuatro indicadores observables ---riesgo de licitaci{\'o}n, conexiones pol{\'i}ticas, riesgo del proveedor y riesgo del {\'o}rgano contratante--- con validaci{\'o}n sobre datos de 35 jurisdicciones europeas.
+
+  \item \citeA{LiuPatternMining2023} proponen el framework PANG (\textit{Pattern-based Anomaly detection in Graphs}) aplicado espec{\'i}ficamente a contrataci{\'o}n p{\'u}blica, obteniendo mejoras significativas sobre m{\'e}todos basados en reglas.
+
+  \item \citeA{MunozPla2026} se{\~n}alan que el \textit{dataset} longitudinal del BOE 2014--2024 permite an{\'a}lisis de patrones estructurales y temporales del riesgo que refuerzan la utilidad del an{\'a}lisis de datos como herramienta de supervisi{\'o}n preventiva.
+\end{itemize}
+
+En conjunto, la evidencia sugiere que la combinaci{\'o}n de indicadores de red flags, an{\'a}lisis de grafos y NLP mejora sustancialmente la capacidad de detecci{\'o}n temprana respecto a los enfoques de auditor{\'i}a tradicional.
+
+\section{Dominio de an{\'a}lisis seleccionado: CPV 71 --- Servicios de arquitectura, ingenier{\'i}a e inspecci{\'o}n}
+\label{sec:dominio_cpv71}
+
+Tras el an{\'a}lisis exploratorio del \textit{dataset} BOE 2014--2024, se ha seleccionado la \textbf{divisi{\'o}n CPV 71} (Servicios de arquitectura, construcci{\'o}n, ingenier{\'i}a e inspecci{\'o}n) como dominio de validaci{\'o}n del prototipo ProcureWatch Analytics \cite{CPVCodes71}. Esta divisi{\'o}n comprende \textbf{3.443 contratos adjudicados} con un importe total adjudicado superior a \textbf{2.179 millones de euros}, distribuidos entre 394 organismos contratantes y 2.031 empresas adjudicatarias distintas.
+
+La elecci{\'o}n se fundamenta en tres criterios metodol{\'o}gicos:
+
+\begin{description}
+  \item[Validez de indicadores de riesgo tabulares.] A diferencia del CPV 45 (Obras, n\,=\,11.808), los servicios de ingenier{\'i}a presentan menor incidencia de modificaciones contractuales legalmente justificadas. En obras, las desviaciones de importe son frecuentes y a menudo leg{\'i}timas, lo que introduce ruido en los modelos de detecci{\'o}n. Los servicios de ingenier{\'i}a ---mayoritariamente estructurados en tarifas horarias y entregables definidos--- ofrecen una base m{\'a}s estable para indicadores como RF-03 (desviaci{\'o}n de importe) o RF-04 (plazo de resoluci{\'o}n inusualmente corto) \cite{OCP2024RedFlags}.
+
+  \item[Riqueza para el an{\'a}lisis de redes.] El mercado de la ingenier{\'i}a p{\'u}blica presenta una estructura fragmentada pero interconectada: con 2.031 empresas para 3.443 contratos (ratio 1,7), la concentraci{\'o}n del Top~1 es inferior al 1\,\%, lo que sugiere la existencia de nichos de concentraci{\'o}n por organismo o subcategor{\'i}a CPV s{\'o}lo detectables mediante an{\'a}lisis de grafos. Adem{\'a}s, el sector presenta alta propensidad a la formaci{\'o}n de Uniones Temporales de Empresas (UTEs), que enriquecen el grafo bipartito con relaciones de colaboraci{\'o}n recurrente entre competidores \cite{Wachs2025ML,Traag2019Leiden}.
+
+  \item[Adecuaci{\'o}n al m{\'o}dulo NLP.] Los pliegos de prescripciones t{\'e}cnicas en el {\'a}mbito de la ingenier{\'i}a contienen con frecuencia criterios de adjudicaci{\'o}n sujetos a juicio de valor ---experiencia en proyectos similares, metodolog{\'i}a propuesta, cualificaci{\'o}n del equipo--- que pueden representar hasta el 49\,\% de la puntuaci{\'o}n total. Estos criterios son extra{\'i}bles mediante NLP sobre los anuncios del BOE y los PDFs en PLACE, constituyendo el corpus id{\'o}neo para detectar posibles direccionamientos t{\'e}cnicos (\textit{tailored tenders}). La especificidad del vocabulario (c{\'o}digos CPV de 8 d{\'i}gitos como 71311000 --Consultor{\'i}a en ingenier{\'i}a civil-- o 71356000 --Servicios t{\'e}cnicos--) permite segmentaci{\'o}n precisa que reduce la varianza esp{\'u}ria en la comparaci{\'o}n de importes \cite{CPVCodes71}.
+\end{description}
+
+Esta aproximaci{\'o}n sectorial est{\'a} alineada con la metodolog{\'i}a del proyecto europeo DIGIWHIST \cite{DIGIWHISTProject}, que segmenta el an{\'a}lisis por mercados espec{\'i}ficos para garantizar la comparabilidad de los indicadores de riesgo.
+
+\section{Brecha identificada: posicionamiento del proyecto}
+
+\begin{table}[ht]
+\centering
+\caption{Gap identificado en la literatura que justifica ProcureWatch Analytics}
+\label{tab:gap_literatura}
+\begin{tabular}{lll}
+\toprule
+\textbf{Dimensi{\'o}n} & \textbf{Estado actual} & \textbf{ProcureWatch} \\
+\midrule
+Red flags en literatura & Bien documentados \cite{OCP2024RedFlags} & Implementados y evaluados \\
+ML para detecci{\'o}n fraude & Demostrado en Italia, M{\'e}xico, Kenya & Adaptado a datos espa{\~n}oles \\
+An{\'a}lisis de redes & Probado en Portugal, Europa & Aplicado al dominio CPV 71 \\
+NLP en contrataci{\'o}n & Survey reciente, sin prototipo & Implementado sobre pliegos ES \\
+Plataforma integrada & No existe en datos espa{\~n}oles & Propuesta de este TFM \\
+Reproducibilidad & Baja en estudios existentes & 100\,\% open-source + Docker \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+%=========================================================
+\chapter{Contexto y Estado del Arte}
+%=========================================================
+
+\section{Introducci{\'o}n: criterios de inclusi{\'o}n y organizaci{\'o}n}
+
+La revisi{\'o}n del estado del arte cubre cinco bloques tem{\'a}ticos alineados con los componentes t{\'e}cnicos de ProcureWatch Analytics: (A)~datos abiertos y est{\'a}ndar OCDS; (B)~red flags, indicadores de riesgo y machine learning; (C)~an{\'a}lisis de redes en contrataci{\'o}n p{\'u}blica; (D)~NLP y procesamiento de documentos contractuales; y (E)~visualizaci{\'o}n anal{\'i}tica y explicabilidad. En cada bloque se identifican las referencias m{\'a}s relevantes de revistas indexadas (Springer Nature, Nature, IEEE, ACM) con especial atenci{\'o}n al periodo 2019--2026.
+
+%---------------------------------------------------
+\section{Bloque A: Open Data de contrataci{\'o}n p{\'u}blica y est{\'a}ndar OCDS}
+%---------------------------------------------------
+
+\subsection{El est{\'a}ndar OCDS como eje de integraci{\'o}n}
+
+El Open Contracting Data Standard (OCDS) \cite{OCDS2024} es el marco de referencia internacional para la estructuraci{\'o}n de datos de contrataci{\'o}n p{\'u}blica. Define m{\'a}s de 40 campos por contrato ---desde el anuncio de licitaci{\'o}n hasta el pago--- y ha sido adoptado por m{\'a}s de 60 pa{\'i}ses. El \textit{World Bank} \cite{WorldBankOCDS2021} ha publicado gu{\'i}as de implementaci{\'o}n que detallan c{\'o}mo armonizar datos nacionales con el est{\'a}ndar. En Espa{\~n}a, el \textit{dataset} BOE 2014--2024 \cite{MunozPla2026} constituye la primera base de datos longitudinal adaptada a OCDS, con ~97.000 contratos estructurados que cubren diez a{\~n}os de adjudicaciones.
+
+El informe de la Open Contracting Partnership (OCP) sobre la apertura de datos en la UE \cite{OCP2023EUOpenData} se{\~n}ala que, si bien Espa{\~n}a ha avanzado en la publicaci{\'o}n de datos, subsisten problemas de completitud en campos cr{\'i}ticos (NIF del adjudicatario, importe adjudicado, fecha de adjudicaci{\'o}n) y de inconsistencias entre lotes y expedientes. Estos hallazgos definen el punto de partida del Agente~1 (pipeline de datos) de ProcureWatch.
+
+\subsection{Fuentes de datos europeas y plataformas de referencia}
+
+A nivel europeo, la plataforma OpenTender.eu \cite{OpenTenderEU,FazekasOpentender2025} centraliza datos de 35 jurisdicciones, con m{\'a}s de 19 millones de contratos e indicadores de riesgo precalculados. Para Espa{\~n}a incluye datos desde 2007 en formato JSON con campos OCDS. El portal TED (\textit{Tenders Electronic Daily}) recoge contratos p{\'u}blicos de la UE por encima de umbrales comunitarios, con cobertura desde 1994.
+
+Estas fuentes complementan el \textit{dataset} BOE y los datos de PLACE, permitiendo comparativas de riesgo en contexto europeo alineado con la metodolog{\'i}a DIGIWHIST \cite{Fazekas2020DIGIWHIST}.
+
+%---------------------------------------------------
+\section{Bloque B: Red flags, indicadores de riesgo y machine learning}
+%---------------------------------------------------
+
+\subsection{Taxonom{\'i}a de red flags en contrataci{\'o}n p{\'u}blica}
+
+La Open Contracting Partnership \cite{OCP2024RedFlags} ha publicado la gu{\'i}a de referencia m{\'a}s actualizada sobre red flags, definiendo m{\'a}s de 150 indicadores organizados por fase del ciclo contractual (planificaci{\'o}n, licitaci{\'o}n, adjudicaci{\'o}n, ejecuci{\'o}n). Los principales tipos de red flags implementables sobre datos OCDS son:
+
+\begin{itemize}
+  \item \textbf{Licitaci{\'o}n {\'u}nica o restringida:} contrato con una sola oferta en procedimiento abierto, o uso sistem{\'a}tico del procedimiento negociado sin publicidad por encima de umbrales razonables \cite{OCP2016RedFlags}.
+  \item \textbf{Concentraci{\'o}n de adjudicatarios:} un proveedor acumula de forma recurrente un porcentaje elevado de contratos de un organismo \cite{Fazekas2020DIGIWHIST}.
+  \item \textbf{Desviaci{\'o}n de importe:} diferencia sistem{\'a}ticamente alta entre importe estimado y adjudicado \cite{Coviello2023Italian}.
+  \item \textbf{Red flags temporales:} publicaci{\'o}n y adjudicaci{\'o}n en plazos muy cortos, o en periodos de menor visibilidad \cite{OCP2024RedFlags}.
+  \item \textbf{Procedimiento menor recurrente:} uso del contrato menor con el mismo proveedor o en importes pr{\'o}ximos al umbral \cite{OIReScon2025}.
+  \item \textbf{Red flags combinados:} los modelos que combinan m{\'u}ltiples indicadores mejoran significativamente respecto al indicador {\'u}nico \cite{Wachs2025ML}.
+\end{itemize}
+
+\subsection{Machine learning aplicado a la detecci{\'o}n de fraude}
+
+\citeA{Coviello2023Italian} presentan el estudio emp{\'i}rico m{\'a}s s{\'o}lido en contexto europeo: utilizando datos de licitaciones italianas y modelos de \textit{random forest} con indicadores de red flags como \textit{features}, obtienen precisiones del 70--75\,\% en la clasificaci{\'o}n de contratos corruptos. Su an{\'a}lisis identifica la licitaci{\'o}n {\'u}nica y la concentraci{\'o}n como los indicadores con mayor poder predictivo.
+
+\citeA{NgangaHybrid2025} proponen un framework h{\'i}brido (\textit{Logistic Regression} + \textit{Random Forest} + \textit{clustering}) para datos de contrataci{\'o}n en Kenia, demostrando que la combinaci{\'o}n de modelos supera a los enfoques individuales. \citeA{DataDrivenTransparency2025} combinan machine learning y an{\'a}lisis de redes sociales, obteniendo mejoras adicionales cuando se incorporan m{\'e}tricas de grafo como \textit{features}.
+
+El framework PANG de \citeA{LiuPatternMining2023} es espec{\'i}ficamente relevante: aplica \textit{pattern mining} sobre grafos de contrataci{\'o}n para detectar subgrafos anómalos, logrando detectar tramas de adjudicaciones coordinadas no detectables con indicadores tabulares.
+
+\subsection{Positive-Unlabeled Learning}
+
+Un desaf{\'i}o metodol{\'o}gico central en detecci{\'o}n de fraude contractual es la ausencia de etiquetas negativas claras: disponemos de algunos casos confirmados de irregularidad (etiquetas positivas), pero la mayor{\'i}a de contratos no tienen etiqueta. El enfoque \textit{Positive-Unlabeled Learning} (PUL) \cite{PULearningIJCAI2021} aborda este problema entrenando clasificadores que aprendan a distinguir positivos de instancias no etiquetadas, sin asumir que todos los no etiquetados son negativos. \citeA{FraudPULearningIEEE2023} demuestran su eficacia con un enfoque contrastivo aplicado a detecci{\'o}n de fraude.
+
+\subsection{Detecci{\'o}n de anomal{\'i}as no supervisada}
+
+Para el escenario en que no existen etiquetas positivas conocidas, m{\'e}todos no supervisados como \textit{Isolation Forest} \cite{IsolationForestSklearn} permiten identificar contratos at{\'i}picos basados en la distancia de sus caracter{\'i}sticas al resto del conjunto. \citeA{OcampoGutierrez2019} aplican este enfoque directamente sobre datos OCDS de contrataci{\'o}n paraguaya con resultados prometedores. El informe sistem{\'a}tico de \citeA{FraudDetectionSystematic2025} (EPJ Data Science, 2025) recoge y compara los principales enfoques de detecci{\'o}n de fraude en la literatura reciente.
+
+%---------------------------------------------------
+\section{Bloque C: An{\'a}lisis de redes en contrataci{\'o}n p{\'u}blica}
+%---------------------------------------------------
+
+\subsection{Grafos bipartitos empresa-organismo}
+
+El grafo bipartito empresa-organismo-contrato es la estructura natural para representar las relaciones de adjudicaci{\'o}n: los nodos son empresas y organismos; las aristas son contratos adjudicados, con atributos de importe, tipo y fecha. Las m{\'e}tricas de centralidad (\textit{degree}, \textit{betweenness}, \textit{eigenvector}) sobre esta estructura permiten identificar adjudicatarios con concentraci{\'o}n at{\'i}pica, organismos con comportamiento inusual, y empresas ``puente'' con alta intermediaci{\'o}n en la red \cite{Wachs2025ML}.
+
+\citeA{GraphSIF2020} demuestran en redes B2B que el an{\'a}lisis de flujos de pago en grafos bipartitos permite detectar suplantaci{\'o}n de proveedores. \citeA{Martins2022Network} aplican este enfoque a contrataci{\'o}n portuguesa, identificando comunidades de riesgo en el grafo de adjudicaciones. \citeA{GroupFraudKDD2023} proponen m{\'e}todos de detecci{\'o}n de fraude colectivo en grafos bipartitos sobre plataformas de comercio electr{\'o}nico, directamente transferibles al contexto de contrataci{\'o}n.
+
+\subsection{Detecci{\'o}n de comunidades: algoritmos Louvain y Leiden}
+
+La detecci{\'o}n de comunidades en el grafo empresa-organismo permite identificar grupos de empresas que licitan sistem{\'a}ticamente en los mismos organismos ---posible indicador de colusi{\'o}n--- o grupos de organismos que adjudican sistem{\'a}ticamente a las mismas empresas.
+
+\citeA{Traag2019Leiden} presentan el algoritmo Leiden como mejora demostrada del Louvain: garantiza comunidades bien conectadas y reduce el tiempo de convergencia. Con una modularidad Q\,>\,0.30 se considera que la partici{\'o}n de red captura estructura comunitaria real, no artefactual \cite{Traag2019Leiden}. La implementaci{\'o}n eficiente en memoria compartida para grafos grandes \cite{FastLeiden2024} la hace viable sobre el \textit{dataset} completo de contrataci{\'o}n espa{\~n}ola.
+
+%---------------------------------------------------
+\section{Bloque D: NLP y procesamiento de documentos de contrataci{\'o}n}
+%---------------------------------------------------
+
+\subsection{Named Entity Recognition en documentos legales}
+
+El procesamiento de lenguaje natural sobre documentos de contrataci{\'o}n ---pliegos de prescripciones t{\'e}cnicas, resoluciones de adjudicaci{\'o}n, memorias justificativas--- constituye la frontera m{\'a}s activa de la investigaci{\'o}n en NLP legal. El survey de \citeA{NLPLegalSurvey2024} cubre las principales tareas (NER, clasificaci{\'o}n, extracci{\'o}n de relaciones) y datasets disponibles para el dominio legal hasta 2024.
+
+La extracci{\'o}n de entidades nombradas (NER) es la tarea central: identifica y clasifica organismos, empresas, importes, plazos y criterios de adjudicaci{\'o}n en texto no estructurado. \citeA{NERLegalDocuments2020} proponen enfoques de granularidad fina para documentos legales en alem{\'a}n, con resultados aplicables al contexto espa{\~n}ol. El reto espec{\'i}fico en contrataci{\'o}n p{\'u}blica es la \textit{fragmentaci{\'o}n de entidades}: un nombre de organismo como ``Consejer{\'i}a de Educaci{\'o}n de la Junta de Andaluc{\'i}a'' debe reconocerse como una sola entidad, no como cuatro entidades separadas \cite{SpaCyOfficial}.
+
+\subsection{Herramientas NLP para espa{\~n}ol: spaCy y transformers}
+
+spaCy \cite{SpaCyOfficial} es el framework NLP de referencia en producci{\'o}n, con soporte nativo para espa{\~n}ol a trav{\'e}s del modelo \texttt{es\_core\_news\_lg}. Sus capacidades incluyen tokenizaci{\'o}n, POS tagging, an{\'a}lisis de dependencias y NER. Para documentos de contrataci{\'o}n en espa{\~n}ol, la combinaci{\'o}n de spaCy con \textit{fine-tuning} sobre corpus espec{\'i}fico del dominio permite alcanzar precisiones superiores al 80\,\% en identificaci{\'o}n de entidades relevantes.
+
+Los modelos de transformers (BERT, Legal-BETO) aportan comprensi{\'o}n contextual que mejora la NER en casos ambig{\"u}os. Para documentos largos (pliegos de 10--50 p{\'a}ginas), se aplican estrat{\'e}gias jer{\'a}rquicas: fragmentar el documento, clasificar cada fragmento y combinar los resultados \cite{NLPLegalSurvey2024}.
+
+\subsection{OCR: extracci{\'o}n estructurada de documentos administrativos}
+
+Una parte sustancial de los documentos de contrataci{\'o}n en PLACE est{\'a} disponible como PDF escaneado, lo que requiere OCR previo a cualquier an{\'a}lisis NLP. Docling \cite{DoclingIBM2024} (IBM Research, 2024) es la herramienta open-source de referencia para parsing avanzado de documentos complejos con OCR integrado, tablas y layouts estructurados. Exporta en formato JSON y Markdown, compatible con pipelines de NLP y con la indexaci{\'o}n en vector stores.
+
+\subsection{LLMs locales para an{\'a}lisis jur{\'i}dico-administrativo}
+
+Los modelos de lenguaje locales (\textit{Large Language Models} en local) permiten analizar documentos sin dependencia de APIs externas, preservando la confidencialidad de los datos p{\'u}blicos y el cumplimiento con el RGPD. Qwen3-7B \cite{AlibabaQwen3} ofrece excelente soporte para espa{\~n}ol con 64~GB de RAM, mientras que Mistral Small~3 \cite{MistralSmall3} es la referencia comparativa para tareas de s{\'i}ntesis y clasificaci{\'o}n de documentos.
+
+En ProcureWatch, el LLM local tiene un rol estrictamente auxiliar: estructurar documentos, extraer entidades y generar explicaciones de casos. La decisi{\'o}n sobre si un contrato es sospechoso es siempre humana \cite{AIAct2024}.
+
+\subsection{Recuperaci{\'o}n aumentada con generaci{\'o}n (RAG)}
+
+El enfoque RAG (\textit{Retrieval-Augmented Generation}) combina un recuperador de documentos semánticamente relevantes con un generador LLM para producir respuestas contextualizadas \cite{LangChain2024LangGraph}. En ProcureWatch, el motor RAG permite, dado un caso de riesgo (contrato o adjudicatario), recuperar los fragmentos m{\'a}s relevantes de pliegos y resoluciones que expliquen o maticen los indicadores activados.
+
+La evaluaci{\'o}n del sistema RAG se realiza con el framework RAGAS, que mide Faithfulness (\,>\,0.80), Answer Relevancy (\,>\,0.75) y Context Recall (\,>\,0.70) como objetivos de calidad \cite{NLPLegalSurvey2024}. Los embeddings multilingues BGE-M3 \cite{BGEAM3Embeddings} se utilizan para la recuperaci{\'o}n densa, complementados con BM25 para recuperaci{\'o}n l{\'e}xica en t{\'e}rminos t{\'e}cnicos espec{\'i}ficos de contrataci{\'o}n.
+
+%---------------------------------------------------
+\section{Bloque E: Visualizaci{\'o}n anal{\'i}tica y explicabilidad}
+%---------------------------------------------------
+
+\subsection{Explicabilidad en modelos de scoring de riesgo}
+
+El \textit{AI Act} europeo \cite{AIAct2024} clasifica como sistemas de \textbf{alto riesgo} aquellos que generan puntuaciones de riesgo que puedan influir en decisiones sobre empresas o contratos. ProcureWatch, al generar scores de riesgo contractual, debe dise{\~n}arse con trazabilidad completa y supervisi{\'o}n humana obligatoria. Los m{\'e}todos SHAP y LIME \cite{SHAPLIMEWiley2025} proporcionan la base t{\'e}cnica para la explicabilidad del scoring: SHAP calcula contribuciones marginales exactas de cada \textit{feature} al score final, mientras que LIME ofrece aproximaciones locales interpretables.
+
+\subsection{Visualizaci{\'o}n de grafos interactivos}
+
+Para la visualizaci{\'o}n del grafo empresa-organismo en front-end web, el benchmarking de 2026 \cite{GraphVizPkgPulse2026} posiciona Sigma.js como la mejor opci{\'o}n para grafos grandes ($>$10.000 nodos) gracias a su motor WebGL, y Cytoscape.js para grafos m{\'e}dios con necesidades de an{\'a}lisis interactivo. PyVis (\textit{vis-network} en Python) se emplea para prototipado r{\'a}pido integrado en Streamlit.
+
+\subsection{Dashboards de riesgo}
+
+El dise{\~n}o del panel de riesgo de ProcureWatch sigue los principios de jerarqu{\'i}a de informaci{\'o}n y flujo de revisi{\'o}n descritos por \citeA{IvaluaDashboard}: priorizar el ranking de casos por nivel de riesgo, facilitar la navegaci{\'o}n desde el caso general al detalle del contrato, e incorporar la explicaci{\'o}n de los indicadores activados. El objetivo de usabilidad SUS\,>\,68 corresponde al nivel ``aceptable'' de la escala de Brooke (1996).
+
+%---------------------------------------------------
+\section{Conclusiones del estado del arte y justificaci{\'o}n del proyecto}
+%---------------------------------------------------
+
+El an{\'a}lisis de la literatura permite extraer cuatro conclusiones que justifican directamente la propuesta:
+
+\begin{enumerate}
+  \item \textbf{Datos de alta calidad disponibles, sin explotaci{\'o}n sistem{\'a}tica.} Existen datos abiertos de alta calidad sobre contrataci{\'o}n p{\'u}blica espa{\~n}ola (BOE, PLACE), pero no hay herramientas open-source que los integren y analicen de forma sistem{\'a}tica con un enfoque de red flags y an{\'a}lisis de redes \cite{MunozPla2026,OCP2023EUOpenData}.
+
+  \item \textbf{Eficacia demostrada de m{\'e}todos combinados.} La literatura demuestra consistentemente que los modelos que combinan indicadores de red flags con an{\'a}lisis de redes mejoran la detecci{\'o}n respecto a indicadores aislados, pero esos modelos rara vez se implementan sobre datos espa{\~n}oles con herramientas reproducibles \cite{Wachs2025ML,Coviello2023Italian,Fazekas2020DIGIWHIST}.
+
+  \item \textbf{NLP como dimensi{\'o}n infraexplotada.} El procesamiento de documentos contractuales (pliegos, resoluciones) mediante NLP es una dimensi{\'o}n apenas explorada en la literatura sobre detecci{\'o}n de fraude, a pesar de que contiene informaci{\'o}n cualitativa clave \cite{NLPLegalSurvey2024}.
+
+  \item \textbf{Ausencia de prototipo integrado local.} No existe un prototipo open-source, local y evaluable que combine pipeline OCDS, an{\'a}lisis de redes, NLP documental y visualizaci{\'o}n explicable sobre contrataci{\'o}n p{\'u}blica espa{\~n}ola. ProcureWatch Analytics propone cerrar exactamente esta brecha.
+\end{enumerate}
+
+%=========================================================
+\chapter{Objetivos}
+%=========================================================
+
+\section{Objetivo General}
+
+Dise{\~n}ar, desarrollar y evaluar \textbf{ProcureWatch Analytics}, una plataforma anal{\'i}tica multiagente que, a partir de datos abiertos de contrataci{\'o}n p{\'u}blica espa{\~n}ola (BOE 2014--2026 y PLACE) y europea, detecte, cuantifique y visualice patrones de riesgo e indicadores de red flags en licitaciones, adjudicaciones y empresas adjudicatarias del dominio CPV~71, mediante an{\'a}lisis de datos masivos, an{\'a}lisis de redes societarias, NLP documental y modelos de scoring de anomal{\'i}as, generando fichas de riesgo explicables que apoyen la priorizaci{\'o}n de casos para revisi{\'o}n por organismos de control.
+
+\section{Objetivos Espec{\'i}ficos}
+
+\subsection*{OE1 --- An{\'a}lisis del dominio y las fuentes de datos}
+Estudiar exhaustivamente el ciclo de contrataci{\'o}n p{\'u}blica espa{\~n}ola y la estructura y calidad de los datos disponibles en PLACE y el \textit{dataset} BOE 2014--2024 seg{\'u}n est{\'a}ndar OCDS, enfocando el an{\'a}lisis en contratos de servicios y en el dominio CPV~71, e identificando las variables m{\'a}s relevantes para la detecci{\'o}n de red flags.
+
+\textbf{M{\'e}trica:} Documento de an{\'a}lisis exploratorio con completitud, coherencia temporal y distribuci{\'o}n de variables; matriz de relevancia: campos OCDS $\rightarrow$ indicadores de red flags; m{\'i}nimo 3 fuentes complementarias identificadas.
+
+\subsection*{OE2 --- Dise{\~n}o del modelo de datos anal{\'i}tico}
+Definir e implementar un esquema de datos integrado y armonizado con el est{\'a}ndar OCDS que unifique informaci{\'o}n de contratos, licitaciones, adjudicatarios, {\'o}rganos contratantes y relaciones societarias para el dominio CPV~71.
+
+\textbf{M{\'e}trica:} Modelo E/R documentado en PostgreSQL con m{\'i}nimo 6 entidades; grafo empresa-organismo-contrato en Neo4j; completitud OCDS cr{\'i}ticos $\geq$\,85\,\%.
+
+\subsection*{OE3 --- Construcci{\'o}n del \textit{pipeline} de datos}
+Implementar un \textit{pipeline} reproducible de descarga, limpieza, normalizaci{\'o}n, enriquecimiento y carga de datos OCDS, con validaci{\'o}n autom{\'a}tica de calidad y trazabilidad de fuentes.
+
+\textbf{M{\'e}trica:} Pipeline ejecutable en Python\,+\,Pandas\,+\,DuckDB; completitud OCDS $>$\,90\,\%; coherencia temporal $>$\,98\,\%; tiempo de ejecuci{\'o}n $<$\,2\,h.
+
+\subsection*{OE4 --- Desarrollo del motor de red flags}
+Dise{\~n}ar e implementar m{\'i}nimo 15 indicadores de red flags basados en literatura \cite{OCP2024RedFlags,Fazekas2020DIGIWHIST}, complementados con Isolation Forest y Positive-Unlabeled Learning para scoring de riesgo por contrato y por adjudicatario.
+
+\textbf{M{\'e}trica:} M{\'i}nimo 15 indicadores (RF-01 a RF-15) documentados con umbral y l{\'o}gica; precisi{\'o}n $>$\,70\,\% en casos con ground truth parcial; comparativa de tres enfoques documentada.
+
+\subsection*{OE5 --- M{\'o}dulo de an{\'a}lisis de redes}
+Construir y analizar el grafo bipartito empresa-organismo-contrato para detectar comunidades (Leiden), patrones de centralidad at{\'i}picos y posibles conexiones societarias relevantes en el dominio CPV~71.
+
+\textbf{M{\'e}trica:} Grafo con m{\'i}nimo 2.031 nodos empresa y 394 organismos CPV~71; modularidad $Q\,>\,0.30$; m{\'i}nimo 5 patrones de concentraci{\'o}n at{\'i}pica; correlaci{\'o}n red-flags vs centralidad $\geq$\,0.45.
+
+\subsection*{OE6 --- M{\'o}dulo NLP y recuperaci{\'o}n documental}
+Implementar un sistema de extracci{\'o}n de informaci{\'o}n estructurada sobre pliegos de prescripciones t{\'e}cnicas CPV~71 mediante OCR (Docling), NER en espa{\~n}ol (spaCy) y motor RAG h{\'i}brido (Qdrant + BM25 + BGE-M3).
+
+\textbf{M{\'e}trica:} Corpus procesado de m{\'i}nimo 5.000 documentos; NER en espa{\~n}ol con precisi{\'o}n $>$\,75\,\%; Faithfulness RAG $>$\,0.80; recuperaci{\'o}n por caso $<$\,5\,s.
+
+\subsection*{OE7 --- Desarrollo del \textit{front-end} anal{\'i}tico}
+Construir una interfaz web interactiva (Streamlit\,+\,Sigma.js\,+\,Plotly) con grafo de relaciones, panel de indicadores de riesgo, \textit{timeline} de evoluci{\'o}n temporal y ficha explicativa de caso generada con LLM local (Qwen3-7B).
+
+\textbf{M{\'e}trica:} SUS $>$\,68; tiempo medio para documentar un caso de riesgo $<$\,5\,min; ficha explicativa con claridad $\geq$\,3.5/5 (Likert).
+
+\subsection*{OE8 --- Evaluaci{\'o}n integral del sistema}
+Validar el prototipo con m{\'e}tricas cuantitativas de calidad del \textit{pipeline}, precisi{\'o}n del motor de red flags, modularidad del grafo, m{\'e}tricas RAG y usabilidad, analizando cualitativamente m{\'i}nimo 10 casos de riesgo en el dominio CPV~71.
+
+\textbf{M{\'e}trica:} Informe de evaluaci{\'o}n completo; fichas de 10 casos analizados; documento de limitaciones y \textit{roadmap} de mejora.
+
+%=========================================================
+\chapter{Marco Normativo}
+%=========================================================
+
+El dise{\~n}o de ProcureWatch Analytics debe tener en cuenta el marco normativo relevante en Espa{\~n}a y la Uni{\'o}n Europea:
+
+\begin{description}
+  \item[Ley 9/2017 de Contratos del Sector P{\'u}blico (LCSP)] \cite{LCSP2017} --- Marco regulatorio fundamental de la contrataci{\'o}n p{\'u}blica en Espa{\~n}a. Define tipos de contratos, procedimientos, umbrales de publicidad y obligaciones de transparencia.
+  \item[Directiva UE 2014/24/EU] \cite{Directive2014} --- Directiva europea sobre contrataci{\'o}n p{\'u}blica que armoniza los procedimientos en la UE y establece los principios de concurrencia y transparencia.
+  \item[Ley 19/2013 de transparencia] \cite{Ley192013} --- Marco de reutilizaci{\'o}n de informaci{\'o}n p{\'u}blica espa{\~n}ola. Define qu{\'e} informaci{\'o}n es de acceso libre y sus condiciones de reutilizaci{\'o}n.
+  \item[RGPD y LOPDGDD] --- Los datos de contrataci{\'o}n incluyen informaci{\'o}n sobre personas f{\'i}sicas (administradores, representantes). El sistema garantiza que el an{\'a}lisis se realiza sobre datos publicados en el marco de obligaciones de transparencia.
+  \item[Reglamento de IA de la UE (AI Act, 2024)] \cite{AIAct2024} --- Los sistemas que generan puntuaciones de riesgo que influyan en decisiones sobre empresas o contratos se clasifican como \textbf{sistemas de alto riesgo}. ProcureWatch se dise{\~n}a con trazabilidad completa, supervisi{\'o}n humana obligatoria y sin capacidad de emitir decisiones autom{\'a}ticas.
+\end{description}
+
+%=========================================================
+\chapter{Conclusiones y Trabajo Futuro}
+%=========================================================
+
+[A desarrollar en la fase final del TFM]
+
+%=========================================================
+% BIBLIOGRAF\'IA
+%=========================================================
+\bibliographystyle{apacite}
+\bibliography{bibliografia}
+
+\appendix
+
+\chapter{Ap{\'e}ndice: Tipos de contrato incluidos en el an{\'a}lisis}
+
+El an{\'a}lisis se centra en las siguientes tipolog{\'i}as contractuales del BOE 2014--2026 y PLACE, filtradas por la divisi{\'o}n CPV~71:
+
+\begin{table}[ht]
+\centering
+\caption{Subtipos CPV 71 relevantes para ProcureWatch Analytics}
+\label{tab:cpv71}
+\begin{tabular}{ll}
+\toprule
+\textbf{C{\'o}digo CPV} & \textbf{Descripci{\'o}n} \\
+\midrule
+71000000 & Servicios de arquitectura, construcci{\'o}n, ingenier{\'i}a e inspecci{\'o}n \\
+71311000 & Consultor{\'i}a en ingenier{\'i}a civil \\
+71312000 & Consultor{\'i}a en ingenier{\'i}a de estructuras \\
+71313000 & Consultor{\'i}a en ingenier{\'i}a medioambiental \\
+71314000 & Servicios de energ{\'i}a e ingenier{\'i}a afines \\
+71320000 & Servicios de dise{\~n}o t{\'e}cnico \\
+71330000 & Servicios varios de ingenier{\'i}a \\
+71340000 & Servicios integrados de ingenier{\'i}a \\
+71350000 & Servicios cient{\'i}ficos y t{\'e}cnicos en ingenier{\'i}a \\
+71356000 & Servicios t{\'e}cnicos \\
+71500000 & Servicios relacionados con la construcci{\'o}n \\
+71600000 & Servicios de pruebas, inspecci{\'o}n y control \\
+71700000 & Servicios de supervisi{\'o}n e inspecci{\'o}n \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\end{document}

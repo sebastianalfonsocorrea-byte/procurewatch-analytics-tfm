@@ -1,0 +1,468 @@
+\documentclass[11pt,a4paper,spanish]{book}
+\usepackage{estilo_unir-1}
+\usepackage{apacite}
+
+\usepackage{hyperref}
+\numberwithin{equation}{chapter}
+\numberwithin{figure}{chapter}
+
+%---------------------------
+%título del trabajo y autor
+%---------------------------
+\title{ProcureWatch Analytics: Planteamiento Metodológico}
+\titulacion{Máster Universitario en Análisis y Visualización de Datos Masivos}
+\author{Sebastián Alfonso Correa y Saturía María Hurtado Álvarez}
+\date{22 de abril de 2026}
+\director{Marlon Cárdenas Bonett}
+\nombreciudad{Madrid}
+
+%---------------------------
+%---------------------------
+
+\begin{document}
+\renewcommand{\listfigurename}{Índice de Ilustraciones}
+\renewcommand{\listtablename}{Índice de Tablas}
+\renewcommand{\contentsname}{Índice de Contenidos}
+\renewcommand{\figurename}{Figura}
+\renewcommand{\tablename}{Tabla}
+
+\maketitle
+
+\frontmatter
+\tableofcontents
+\listoffigures
+\listoftables
+
+\chapter{Prefacio}
+
+Este documento contiene el planteamiento metodológico detallado del proyecto ProcureWatch Analytics. Describe las fases de trabajo, organización del equipo, cronograma, entregables y criterios de calidad para la ejecución del Trabajo Fin de Máster.
+
+\mainmatter
+
+%------------------------------------------
+%------------------------------------------
+\chapter{Planteamiento Metodológico}
+
+\section{Enfoque General}
+
+El proyecto sigue una \textbf{metodología iterativa adaptada de CRISP-DM} para la componente analítica, combinada con \textbf{desarrollo incremental por módulos} para el prototipo. Esta aproximación permite validación temprana de hipótesis, integración progresiva de módulos y feedback continuo.
+
+\section{Fases de Trabajo}
+
+\subsection{Fase 0: Configuración del Entorno (Semanas 1-2)}
+
+\textbf{Objetivo:} Preparar infraestructura técnica y recursos formativos.
+
+\textbf{Actividades:}
+\begin{itemize}
+\item Instalación local: Python, Docker, Ollama, PostgreSQL, Neo4j Community
+\item Setup de repositorio GitHub con estructura de carpetas
+\item Cursos introductorios: Python para DA, Fundamentos de IA
+\end{itemize}
+
+\textbf{Entregables:} Entorno funcional, repositorio inicializado, documentación de setup.
+
+\textbf{Responsables:} Ambos
+\textbf{Duración:} 2 semanas
+
+---
+
+\subsection{Fase 1: Comprensión del Dominio (Semanas 3-4)}
+
+\textbf{Objetivo:} Entender estructura del ciclo contractual español y caracterizar calidad de datos.
+
+\textbf{Actividades:}
+\begin{itemize}
+\item Exploración estadística del dataset BOE 2014-2024
+\item Análisis comparativo PLACE vs BOE
+\item Documentación del ciclo contractual español
+\item Revisión de red flags en literatura (OCP 2024, DIGIWHIST)
+\item Elaboración de matriz: Variables OCDS $\times$ Indicadores de red flags
+\end{itemize}
+
+\textbf{Entregables:}
+\begin{enumerate}
+\item Informe de análisis exploratorio (EDA report) con gráficos y estadísticas descriptivas
+\item Documento técnico de mapeo: campos OCDS $\rightarrow$ indicadores de red flags
+\item Lista priorizada de red flags a implementar (mínimo 15)
+\item Presentación interna con hallazgos y recomendaciones
+\end{enumerate}
+
+\textbf{Responsables:} Ambos (complementarios)
+\textbf{Duración:} 2 semanas
+
+---
+
+\subsection{Fase 2: Preparación de Datos (Semanas 5-6)}
+
+\textbf{Objetivo:} Construir pipeline de datos limpio, normalizado y disponible para análisis.
+
+\textbf{Actividades:}
+\begin{itemize}
+\item Implementación del pipeline ETL: descarga, validación, limpieza, normalización OCDS
+\item Resolución de inconsistencias: duplicados, fechas incoherentes, importes negativos, NIFs malformados
+\item Enriquecimiento: integración con datos de registro mercantil (cuando disponible)
+\item Carga en PostgreSQL con validaciones post-insert
+\item Construcción del grafo empresa-organismo en Neo4j usando Python driver
+\end{itemize}
+
+\textbf{Entregables:}
+\begin{enumerate}
+\item Script pipeline reproducible y documentado (pipeline.py)
+\item Base de datos PostgreSQL con esquema OCDS completo: mínimo 97.000 contratos, 2.000+ organismos, 15.000+ empresas
+\item Grafo Neo4j operacional con estructura verificable
+\item Reporte de calidad post-carga (completitud, coherencia temporal, duplicados)
+\end{enumerate}
+
+\textbf{Responsable:} Sebastián (lead pipeline), Saturía (apoyo)
+\textbf{Duración:} 2 semanas
+
+---
+
+\subsection{Fase 3: Motor de Red Flags (Semanas 7-9)}
+
+\textbf{Objetivo:} Implementar y validar indicadores de red flags y modelos de scoring.
+
+\textbf{Actividades:}
+\begin{itemize}
+\item Codificación de 15+ indicadores (RF-01 a RF-06 y variantes) en SQL/Python
+\item Implementación de scoring compuesto: base score + bonus/penalty por métricas de red
+\item Comparativa de tres enfoques: reglas OCDS explícitas vs. Isolation Forest vs. Positive-Unlabeled Learning
+\item Validación parcial: análisis de precisión sobre casos documentados (contratos menores con licitación única verificables)
+\item Ajuste de umbrales y pesos según resultados
+\end{itemize}
+
+\textbf{Entregables:}
+\begin{enumerate}
+\item Módulo de red flags implementado (red\_flags.py) con documentación de cada indicador
+\item Scoring por contrato y por adjudicatario disponible en BD
+\item Comparativa técnica: tablas y gráficos de rendimiento de tres enfoques
+\item Ranking de red flags por frecuencia de activación y correlación con casos documentados
+\end{enumerate}
+
+\textbf{Responsable:} Sebastián (lead)
+\textbf{Duración:} 3 semanas
+
+---
+
+\subsection{Fase 4: Análisis de Redes y NLP (Semanas 10-12)}
+
+\textbf{Objetivo:} Análisis relacional (comunidades, centralidades) y extracción documental.
+
+\textbf{Subactividad 4a — Análisis de Redes (Saturía):}
+
+\begin{itemize}
+\item Ejecución de algoritmo Leiden en grafo empresa-organismo: detección de comunidades
+\item Cálculo de métricas de centralidad: degree, betweenness, eigenvector
+\item Detección de patrones anómalos: adjudicatarios con centralidad extrema, comunidades mal conectadas
+\item Correlación entre métricas de red y scores de red flags
+\end{itemize}
+
+\textbf{Subactividad 4b — NLP y OCR (Saturía):}
+
+\begin{itemize}
+\item OCR de pliegos y resoluciones con Docling
+\item Extracción de entidades con spaCy (organismos, importes, plazos, proveedores)
+\item Construcción de corpus indexado en Qdrant (vector database)
+\item Implementación de motor RAG híbrido (dense retrieval + sparse retrieval)
+\end{itemize}
+
+\textbf{Entregables:}
+\begin{enumerate}
+\item Informe de análisis de comunidades: número, tamaño, modularidad, patrones atípicos
+\item Corpus documental procesado y indexado (~5.000 documentos)
+\item Motor RAG funcionando con métricas RAGAS documentadas
+\item Visualización: grafo interactivo con comunidades coloreadas, centralidades etiquetadas
+\end{enumerate}
+
+\textbf{Responsable:} Saturía (lead ambas subactividades)
+\textbf{Duración:} 3 semanas
+
+---
+
+\subsection{Fase 5: Sistema Multiagente y Front-end (Semanas 13-14)}
+
+\textbf{Objetivo:} Integrar todos los módulos en plataforma cohesiva.
+
+\textbf{Actividades:}
+\begin{itemize}
+\item Integración de agentes con LangGraph: orquestación de pipeline $\rightarrow$ red flags $\rightarrow$ redes $\rightarrow$ NLP
+\item Implementación de front-end con Streamlit + Plotly + Sigma.js
+\item Componentes: grafo interactivo, panel de indicadores, timeline, ficha explicativa
+\item Conexión backend (APIs FastAPI) $\leftrightarrow$ front-end
+\item Tests end-to-end: flujos completos de usuario
+\end{itemize}
+
+\textbf{Entregables:}
+\begin{enumerate}
+\item Plataforma integrada y funcional (demo ejecutable)
+\item Interfaz web con componentes interactivos
+\item API REST documentado (OpenAPI/Swagger)
+\item Guía de usuario técnico
+\end{enumerate}
+
+\textbf{Responsables:} Ambos (Sebastián back-end, Saturía front-end)
+\textbf{Duración:} 2 semanas
+
+---
+
+\subsection{Fase 6: Evaluación y Refinamiento (Semanas 15-16)}
+
+\textbf{Objetivo:} Validación rigurosa del prototipo con métricas cuantitativas y cualitativas.
+
+\textbf{Actividades:}
+\begin{itemize}
+\item Ejecución de suite de pruebas: pipeline quality, red flags precision/recall, RAG metrics, usability SUS
+\item Análisis detallado de 10-15 casos de riesgo: comparación scoring sistema vs. realidad documentada
+\item Refinamiento de pesos, umbrales, modelos basado en resultados
+\item Documentación de limitaciones, gaps, roadmap futuro
+\end{itemize}
+
+\textbf{Entregables:}
+\begin{enumerate}
+\item Informe de evaluación completo con todas las métricas
+\item Análisis de casos: fichas técnicas de 10-15 contratos analizados
+\item Documento de lecciones aprendidas y mejoras futuras
+\end{enumerate}
+
+\textbf{Responsables:} Ambos
+\textbf{Duración:} 2 semanas
+
+---
+
+\subsection{Fase 7: Documentación y Cierre (Semanas 17-18)}
+
+\textbf{Objetivo:} Redacción de memoria TFM, documentación técnica y preparación de defensa.
+
+\textbf{Actividades:}
+\begin{itemize}
+\item Redacción de memoria TFM siguiendo estructura UNIR: introducción, estado del arte, objetivos, metodología, resultados, conclusiones
+\item Documentación técnica exhaustiva (architecture, APIs, ejemplos)
+\item Preparación de repositorio GitHub público con código, datos (subset) y documentación
+\item Ensayos de presentación y defensa
+\end{itemize}
+
+\textbf{Entregables:}
+\begin{enumerate}
+\item Memoria TFM completa y editada (~100-150 páginas)
+\item Repositorio GitHub con código fuente, documentación, ejemplos reproducibles
+\item Presentación para defensa (~20-25 minutos)
+\end{enumerate}
+
+\textbf{Responsables:} Ambos
+\textbf{Duración:} 2 semanas
+
+---
+
+\section{Organización del Equipo}
+
+El equipo consta de \textbf{dos investigadores} con roles complementarios:
+
+\subsection{Sebastián Alfonso Correa}
+
+\textbf{Especialidad:} Pipeline de datos, modelado analítico, machine learning, scoring
+
+\textbf{Responsabilidades principales:}
+\begin{itemize}
+\item Fase 2: Diseño e implementación del pipeline ETL (lead)
+\item Fase 3: Desarrollo del motor de red flags (lead)
+\item Fase 5: Back-end, APIs, orquestación de agentes
+\item Apoyo transversal en validación de datos
+\end{itemize}
+
+\textbf{Entregables específicos:}
+\begin{itemize}
+\item Pipeline reproducible (clean\_data.py, load\_database.py)
+\item Módulo de red flags (red\_flags.py, scoring.py)
+\item API backend (FastAPI, main.py)
+\item Documentación técnica de arquitectura
+\end{itemize}
+
+---
+
+\subsection{Saturía María Hurtado Álvarez}
+
+\textbf{Especialidad:} Análisis de redes, NLP, procesamiento de documentos, visualización
+
+\textbf{Responsabilidades principales:}
+\begin{itemize}
+\item Fase 1: Análisis exploratorio y matriz de mapeo (co-lead)
+\item Fase 4: Análisis de grafos y redes (lead)
+\item Fase 4: NLP, OCR y motor RAG (lead)
+\item Fase 5: Front-end y componentes de visualización
+\item Apoyo en evaluación cualitativa de casos
+\end{itemize}
+
+\textbf{Entregables específicos:}
+\begin{itemize}
+\item Análisis exploratorio (eda\_report.py)
+\item Módulo de análisis de redes (network\_analysis.py)
+\item Pipeline NLP (nlp\_pipeline.py, rag\_engine.py)
+\item Front-end interactivo (streamlit\_app.py)
+\item Visualizaciones (grafo interactivo, dashboards)
+\end{itemize}
+
+---
+
+\subsection{Sincronización y Coordinación}
+
+\begin{itemize}
+\item \textbf{Reuniones semanales de equipo:} revisión de progreso, blockers, decisiones de diseño
+\item \textbf{Hito de revisión de Fase 2/3:} validación de datos y scoring antes de avanzar a redes
+\item \textbf{Integración progresiva:} módulos se desarrollan en paralelo pero con interfases claras (BD, APIs)
+\item \textbf{Testing compartido:} cada módulo debe pasar tests del otro antes de mergear a rama principal
+\end{itemize}
+
+---
+
+\section{Entregables por Fase}
+
+\begin{table}[h]
+\centering
+\caption{Resumen de fases, entregables y responsables}
+\label{tab:fases_entregables}
+\begin{tabular}{|p{0.8cm}|p{1.5cm}|p{3cm}|p{1.5cm}|p{1cm}|}
+\hline
+\textbf{Fase} & \textbf{Nombre} & \textbf{Entregables clave} & \textbf{Responsable} & \textbf{Sem} \\
+\hline
+0 & Configuración & Entorno, repo, cursos & Ambos & 2 \\
+\hline
+1 & Análisis explorat. & EDA report, matriz vars-flags & Ambos & 2 \\
+\hline
+2 & Preparación datos & Pipeline, BD, grafo & Sebastián & 2 \\
+\hline
+3 & Motor red flags & Módulo RF, scoring, comparativa & Sebastián & 3 \\
+\hline
+4a & Análisis redes & Comunidades, patrones & Saturía & 3 \\
+\hline
+4b & NLP/OCR & Corpus, motor RAG & Saturía & 3 \\
+\hline
+5 & Front-end integrado & Plataforma, APIs, interfaz & Ambos & 2 \\
+\hline
+6 & Evaluación & Informe eval., casos, roadmap & Ambos & 2 \\
+\hline
+7 & Cierre & Memoria, repo, presentación & Ambos & 2 \\
+\hline
+\end{tabular}
+\end{table}
+
+\textbf{Duración total:} 18 semanas (~4.5 meses)
+
+---
+
+\section{Criterios de Calidad y Validación}
+
+\subsection{Criterios técnicos por módulo}
+
+\begin{itemize}
+\item \textbf{Pipeline:} completitud OCDS $>$ 90\%, coherencia temporal $>$ 98\%
+\item \textbf{Red Flags:} precisión $>$ 70\%, estabilidad $\pm$ 10\%
+\item \textbf{Redes:} modularidad $Q > 0.30$, correlación con flags $\geq 0.45$
+\item \textbf{NLP/RAG:} Faithfulness $>$ 0.80, Answer Relevancy $>$ 0.75, Context Recall $>$ 0.70
+\item \textbf{Front-end:} SUS $>$ 68, tiempo medio caso $<$ 5 minutos
+\end{itemize}
+
+\subsection{Criterios de reproducibilidad}
+
+\begin{itemize}
+\item Código completamente documentado y versionado en GitHub
+\item Scripts ejecutables con ejemplos reproducibles
+\item Dataset base (subset de BOE) incluido en repo o con instrucciones de descarga
+\item Docker compose para despliegue local
+\end{itemize}
+
+\subsection{Criterios de pertinencia académica}
+
+\begin{itemize}
+\item \textbf{Estado del arte:} mínimo 10 referencias académicas en formato APA por bloque temático
+\item \textbf{Contribución clara:} gap identificado y cerrado vs. literatura existente
+\item \textbf{Rigor metodológico:} métricas estándar de la literatura adaptadas a contexto español
+\end{itemize}
+
+---
+
+\chapter{Gestión de Riesgos y Contingencias}
+
+\section{Riesgos Identificados}
+
+\subsection{Riesgo 1: Calidad de datos inferior a expectativas}
+
+\textbf{Probabilidad:} Media \textbf{|} \textbf{Impacto:} Alto
+
+\textbf{Mitigación:}
+\begin{itemize}
+\item Fase 1: análisis exhaustivo de completitud antes de comprometer Phase 2
+\item Identificar fuentes complementarias (registros mercantiles, ROLECE)
+\item Documentar limitaciones de calidad en reporte final
+\end{itemize}
+
+\subsection{Riesgo 2: Alcance técnico demasiado ambicioso}
+
+\textbf{Probabilidad:} Media \textbf{|} \textbf{Impacto:} Alto
+
+\textbf{Mitigación:}
+\begin{itemize}
+\item Priorizar MVP (red flags básicos + grafo) sobre funcionalidades avanzadas
+\item Hito de revisión en Fase 3: evaluar scope vs. tiempo disponible
+\item Documentar funcionalidades descartadas como trabajo futuro
+\end{itemize}
+
+\subsection{Riesgo 3: Dificultades en integración multiagente}
+
+\textbf{Probabilidad:} Media \textbf{|} \textbf{Impacto:} Medio
+
+\textbf{Mitigación:}
+\begin{itemize}
+\item Interfaces claras entre módulos (BD + APIs documentadas)
+\item Testing early and often
+\item Slack de 1 semana en Fase 5 para integración
+\end{itemize}
+
+---
+
+\appendix
+\chapter{Estructura de Carpetas del Proyecto}
+
+\begin{verbatim}
+procurewatch-analytics/
+├── data/
+│   ├── raw/          # Datos descargados sin procesar
+│   ├── processed/    # Datos limpios y normalizados
+│   └── external/     # Datos complementarios
+├── src/
+│   ├── pipeline/     # Pipeline ETL
+│   ├── red_flags/    # Motor de red flags
+│   ├── networks/     # Análisis de redes
+│   ├── nlp/          # NLP y RAG
+│   └── frontend/     # Interfaz web
+├── notebooks/       # Análisis exploratorio
+├── tests/          # Suite de pruebas
+├── docs/           # Documentación
+├── docker-compose.yml
+├── requirements.txt
+└── README.md
+\end{verbatim}
+
+\chapter{Reuniones y Hitos Clave}
+
+\section{Calendario de Reuniones}
+
+\begin{itemize}
+\item \textbf{Semanal (lunes 10:00):} Reunión de sincronización equipo (30 min)
+\item \textbf{Bi-semanal (viernes 16:00):} Review con director de tesis (1 hora)
+\item \textbf{Fin de fase:} Presentación de hitos y entregables (1.5 horas)
+\end{itemize}
+
+\section{Hitos Críticos}
+
+\begin{enumerate}
+\item \textbf{Semana 2:} Entorno completamente funcional
+\item \textbf{Semana 4:} BD poblada con datos limpios y validados
+\item \textbf{Semana 9:} Motor de red flags funcional (MVP)
+\item \textbf{Semana 12:} Análisis de redes y NLP completados
+\item \textbf{Semana 14:} Plataforma integrada y funcional
+\item \textbf{Semana 16:} Evaluación completa y documentación
+\item \textbf{Semana 18:} Memoria TFM y presentación listos para defensa
+\end{enumerate}
+
+\end{document}

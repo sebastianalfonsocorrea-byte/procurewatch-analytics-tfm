@@ -1,0 +1,29 @@
+# LaTeX compilation artifacts
+*.aux
+*.bbl
+*.blg
+*.lof
+*.log
+*.lot
+*.out
+*.toc
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+
+# Keep PDFs for the main documents
+!plantilla_tfm_final.pdf
+!metodologia_tfm.pdf
+
+# Intermediate/draft versions
+plantilla.aux
+plantilla_maqueta.*
+plantilla_sin_metodologia.*
+plantilla.pdf
+plantilla.bbl
+plantilla.blg
+plantilla.lof
+plantilla.log
+plantilla.lot
+plantilla.out
+plantilla.toc
