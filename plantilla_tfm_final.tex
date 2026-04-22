@@ -236,20 +236,20 @@ y la cobertura de las principales fuentes de datos disponibles.
 \small
 \caption{Fuentes y volumen de datos disponibles para contrataci{\'o}n p{\'u}blica en Espa{\~n}a y Europa}
 \label{tab:volumen_datos}
-\begin{tabular}{lrl}
+\begin{tabularx}{\textwidth}{Xrr}
 \toprule
 \textbf{Fuente / indicador} & \textbf{Volumen} & \textbf{Referencia} \\
 \midrule
 Licitaciones anuales PLACE (2024, sin contratos menores) & 206.242 & \citeA{OIReScon2025} \\
 {\'O}rganos de contrataci{\'o}n activos en PLACE & $>$10.000 & \citeA{MinHacienda2024PLACE} \\
 Contratos BOE 2014--2024 en formato OCDS & $\sim$97.000 & \citeA{MunozPla2026} \\
-Contratos CPV~71 en dataset BOE & 3.443 & \citeA{MunozPla2026} \\
-Importe total adjudicado CPV~71 & $>$2.179 M\texteuro & \citeA{MunozPla2026} \\
+Contratos CPV~71 en \textit{dataset} BOE & 3.443 & \citeA{MunozPla2026} \\
+Importe total adjudicado CPV~71 & $>$2.179\,M\texteuro & \citeA{MunozPla2026} \\
 Empresas adjudicatarias distintas CPV~71 & 2.031 & \citeA{MunozPla2026} \\
 Contratos europeos en OpenTender & $>$19 millones & \citeA{OpenTenderEU} \\
-Indicadores de red flags documentados (OCP + DIGIWHIST) & $>$150 & \citeA{OCP2024RedFlags} \\
+Indicadores de red flags (OCP + DIGIWHIST) & $>$150 & \citeA{OCP2024RedFlags} \\
 \bottomrule
-\end{tabular}
+\end{tabularx}
 \end{table}
 
 \section{Escala del sistema de contrataci{\'o}n y sus implicaciones analíticas (PI-1)}
@@ -1076,14 +1076,15 @@ la arquitectura del sistema de scoring:
     el uso de datos publicados en PLACE y el BOE para an{\'a}lisis cient{\'i}ficos y de
     supervisi{\'o}n.
 
-  \item[Reglamento General de Protecci{\'o}n de Datos (RGPD) y Ley Org{\'a}nica de
-    Protecci{\'o}n de Datos (LOPDGDD)]
-    Los datos de contrataci{\'o}n incluyen informaci{\'o}n de car{\'a}cter personal (NIF de
-    personas f{\'i}sicas que act{\'u}an como administradores o representantes). ProcureWatch
-    opera exclusivamente sobre datos publicados en el marco de obligaciones legales de
-    transparencia, lo que encuadra su tratamiento en la base jur{\'i}dica del art.~6.1.c
-    RGPD (cumplimiento de una obligaci{\'o}n legal). El sistema no trata datos personales
-    sensibles ni elabora perfiles individuales sin base legal espec{\'i}fica.
+  \item[RGPD y LOPDGDD]
+    El Reglamento General de Protecci{\'o}n de Datos (RGPD) y la Ley Org{\'a}nica de
+    Protecci{\'o}n de Datos y Garant{\'i}a de los Derechos Digitales (LOPDGDD) son
+    aplicables porque los datos de contrataci{\'o}n incluyen informaci{\'o}n de car{\'a}cter
+    personal (NIF de personas f{\'i}sicas que act{\'u}an como administradores o representantes).
+    ProcureWatch opera exclusivamente sobre datos publicados en el marco de obligaciones
+    legales de transparencia, lo que encuadra su tratamiento en la base jur{\'i}dica del
+    art.~6.1.c RGPD (cumplimiento de una obligaci{\'o}n legal). El sistema no trata datos
+    personales sensibles ni elabora perfiles individuales sin base legal espec{\'i}fica.
 
   \item[Reglamento (UE) 2024/1689 de Inteligencia Artificial (AI Act)] \cite{AIAct2024}
     Clasifica como \textbf{sistemas de alto riesgo} (Anexo III, secci{\'o}n~8) los sistemas
