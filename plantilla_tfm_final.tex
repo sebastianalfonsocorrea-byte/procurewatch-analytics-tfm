@@ -62,7 +62,7 @@ El reciente \textit{dataset} longitudinal del BOE 2014--2024 \cite{MunozPla2026}
 
 \section{Planteamiento del trabajo}
 
-Este TFM propone dise{\~n}ar, desarrollar y evaluar \textbf{ProcureWatch Analytics}, una plataforma multiagente que integra: (a)~un \textit{pipeline} de adquisici{\'o}n e integraci{\'o}n de datos Open Data en un est{\'a}ndar OCDS com{\'u}n; (b)~un motor anal{\'i}tico de detecci{\'o}n de red flags y patrones de riesgo basado en indicadores de la literatura y modelos de machine learning; (c)~un m{\'o}dulo NLP que extrae mediante web scraping criterios de adjudicaci{\'o}n, certificaciones y condiciones contractuales de los anuncios del BOE y PLACE; (d)~un sistema OCR y NLP para procesamiento de pliegos, resoluciones y documentos p{\'u}blicos; y (e)~un \textit{front-end} anal{\'i}tico con red de relaciones interactiva, panel de riesgo, evoluci{\'o}n temporal y ficha explicativa de caso.
+Este TFM propone dise{\~n}ar, desarrollar y evaluar \textbf{ProcureWatch Analytics}, una plataforma multiagente que integra: (a)~un \textit{pipeline} de adquisici{\'o}n e integraci{\'o}n de datos Open Data en un est{\'a}ndar OCDS com{\'u}n; (b)~un motor anal{\'i}tico de detecci{\'o}n de red flags y patrones de riesgo basado en indicadores de la literatura y modelos de machine learning; (c)~un m{\'o}dulo documental que extrae mediante \textit{web scraping} criterios de adjudicaci{\'o}n, certificaciones y condiciones contractuales desde anuncios y p{\'a}ginas p{\'u}blicas del BOE y PLACE, combinando NLP y RAG para contextualizar los hallazgos; y (d)~un \textit{front-end} anal{\'i}tico con red de relaciones interactiva, panel de riesgo, evoluci{\'o}n temporal y ficha explicativa de caso.
 
 El prototipo se valida sobre el dominio CPV~71 (Servicios de arquitectura, ingenier{\'i}a e inspecci{\'o}n), seleccionado por razones metodol{\'o}gicas detalladas en la Secci{\'o}n~\ref{sec:dominio_cpv71}.
 
@@ -302,7 +302,7 @@ Los modelos de transformers (BERT, Legal-BETO) aportan comprensi{\'o}n contextua
 
 \subsection{Web scraping: extracci{\'o}n estructurada de documentos administrativos}
 
-Una parte sustancial de la informaci{\'o}n relevante para la detecci{\'o}n de riesgos en contrataci{\'o}n p{\'u}blica espa{\~n}ola se encuentra disponible en los anuncios de licitaci{\'o}n publicados en el Bolet{\'i}n Oficial del Estado (BOE), accesibles mediante el campo ``Enlace HTML'' del \textit{dataset} longitudinal 2014--2024. A diferencia de los pliegos alojados en PLACE ---frecuentemente disponibles como PDF escaneado que requiere OCR---, estos anuncios se publican en formato HTML estructurado, lo que permite una extracci{\'o}n directa y eficiente del texto mediante t{\'e}cnicas de \textit{web scraping}. BeautifulSoup \cite{Richardson} es la librer{\'i}a \textit{open-source} de referencia para el parseo y extracci{\'o}n de informaci{\'o}n de p{\'a}ginas HTML y XML en Python. Proporciona una API intuitiva para navegar por el {\'a}rbol DOM, localizar elementos mediante selectores CSS y extraer contenido textual de forma selectiva. Su integraci{\'o}n con \textit{pipelines} de NLP es directa, permitiendo la limpieza y normalizaci{\'o}n del texto extra{\'i}do para su posterior procesamiento con herramientas como spaCy o su indexaci{\'o}n en bases de datos documentales.
+Una parte sustancial de la informaci{\'o}n relevante para la detecci{\'o}n de riesgos en contrataci{\'o}n p{\'u}blica espa{\~n}ola se encuentra disponible en los anuncios de licitaci{\'o}n publicados en el Bolet{\'i}n Oficial del Estado (BOE), accesibles mediante el campo ``Enlace HTML'' del \textit{dataset} longitudinal 2014--2024, as{\'i} como en p{\'a}ginas p{\'u}blicas de PLACE con contenido estructurado o semiestructurado. La decisi{\'o}n metodol{\'o}gica del prototipo es sustituir el tratamiento de documentos escaneados por una estrategia de \textit{web scraping}: se priorizan fuentes HTML trazables, reproducibles y con menor coste de limpieza, dejando los PDF no estructurados como limitaci{\'o}n documentada o l{\'i}nea de trabajo futura. BeautifulSoup \cite{Richardson} es la librer{\'i}a \textit{open-source} de referencia para el parseo y extracci{\'o}n de informaci{\'o}n de p{\'a}ginas HTML y XML en Python. Proporciona una API intuitiva para navegar por el {\'a}rbol DOM, localizar elementos mediante selectores CSS y extraer contenido textual de forma selectiva. Su integraci{\'o}n con \textit{pipelines} de NLP es directa, permitiendo la limpieza y normalizaci{\'o}n del texto extra{\'i}do para su posterior procesamiento con herramientas como spaCy o su indexaci{\'o}n en bases de datos documentales.
 
 \subsection{LLMs locales para an{\'a}lisis jur{\'i}dico-administrativo}
 
@@ -439,7 +439,7 @@ Estas medidas permiten defender el prototipo como herramienta acad{\'e}mica de a
 
 Para la entrega del 20 de mayo de 2026, ProcureWatch Analytics se presenta como un \textbf{prototipo funcional avanzado}: no se formula como un producto cerrado ni como una herramienta de decisi{\'o}n administrativa, sino como una arquitectura implementable y parcialmente materializable que fija los componentes, flujos, agentes, datos, criterios de trazabilidad y decisiones tecnol{\'o}gicas necesarias para la fase de desarrollo. Esta formulaci{\'o}n permite defender el valor t{\'e}cnico del sistema sin afirmar una madurez productiva que todav{\'i}a no corresponde al calendario del TFM.
 
-El prototipo transforma datos abiertos de contrataci{\'o}n p{\'u}blica en indicadores explicables de riesgo. La arquitectura separa cuatro responsabilidades anal{\'i}ticas, alineadas con la \textit{Propuesta T{\'e}cnica SASM}: (1)~\textit{pipeline} de datos y normalizaci{\'o}n OCDS; (2)~red flags y \textit{scoring}; (3)~an{\'a}lisis de redes y comunidades; y (4)~NLP, OCR y recuperaci{\'o}n documental. Estas responsabilidades se implementan como agentes coordinados mediante LangGraph y apoyados por LangChain para la integraci{\'o}n RAG con Qdrant, Ollama y el modelo local Qwen3-8B.
+El prototipo transforma datos abiertos de contrataci{\'o}n p{\'u}blica en indicadores explicables de riesgo. La arquitectura separa cuatro responsabilidades anal{\'i}ticas, alineadas con la \textit{Propuesta T{\'e}cnica SASM}: (1)~\textit{pipeline} de datos y normalizaci{\'o}n OCDS; (2)~red flags y \textit{scoring}; (3)~an{\'a}lisis de redes y comunidades; y (4)~\textit{web scraping}, NLP y recuperaci{\'o}n documental. Estas responsabilidades se implementan como agentes coordinados mediante LangGraph y apoyados por LangChain para la integraci{\'o}n RAG con Qdrant, Ollama y el modelo local Qwen3-8B.
 
 El dise{\~n}o evita que el sistema emita conclusiones jur{\'i}dicas autom{\'a}ticas. El resultado principal es un \textit{score} de riesgo trazable, acompa{\~n}ado de red flags activadas, evidencias documentales y relaciones de red. Por tanto, la plataforma se concibe como una herramienta de priorizaci{\'o}n anal{\'i}tica para revisi{\'o}n humana, no como un mecanismo de declaraci{\'o}n de fraude.
 
@@ -459,7 +459,7 @@ FastAPI \quad + \quad LangGraph/LangChain \quad + \quad Ollama con Qwen3-8B\\[0.
 \textbf{Agente 1}\\Pipeline + OCDS &
 \textbf{Agente 2}\\Red flags + scoring &
 \textbf{Agente 3}\\Redes + comunidades &
-\textbf{Agente 4}\\NLP/OCR/RAG \tabularnewline
+\textbf{Agente 4}\\Scraping/NLP/RAG \tabularnewline
 \end{tabular}\\[0.2cm]
 \(\downarrow\)\\[-0.05cm]
 \textbf{Capa de datos}\\
@@ -495,7 +495,7 @@ Procesamiento tabular & pandas, DuckDB y Polars \cite{DuckDBOfficial,PolarsOffic
 Persistencia relacional & PostgreSQL \cite{PostgreSQLOfficial} & Base relacional robusta para contratos, adjudicatarios, organismos, indicadores, scores y trazabilidad de ejecuciones. \\
 Grafo anal{\'i}tico & Neo4j Community y NetworkX \cite{Neo4jOfficial,NetworkXPython} & Neo4j facilita consulta y exploraci{\'o}n del grafo; NetworkX permite reproducir m{\'e}tricas y experimentos en scripts Python. \\
 Motor de red flags & Python, scikit-learn, Isolation Forest y reglas OCDS \cite{IsolationForestSklearn,OCP2024RedFlags} & Permite combinar reglas expl{\'i}citas, variables de red y detecci{\'o}n no supervisada de anomal{\'i}as. \\
-OCR y parsing documental & Docling y Surya \cite{DoclingIBM2024,SuryaOCR} & Docling convierte PDFs administrativos en texto estructurado; Surya queda como alternativa para documentos escaneados o con disposiciones complejas. \\
+Web scraping y parsing documental & BeautifulSoup y spaCy \cite{Richardson,SpaCyOfficial} & Extraen informaci{\'o}n desde anuncios HTML, p{\'a}ginas p{\'u}blicas y contenido textual estructurado, con menor complejidad operativa que el tratamiento de documentos escaneados. \\
 NLP cl{\'a}sico & spaCy \cite{SpaCyOfficial} & Adecuado para tokenizaci{\'o}n, NER, normalizaci{\'o}n ling{\"u}{\'i}stica y reglas de extracci{\'o}n en espa{\~n}ol. \\
 Embeddings & BGE-M3 \cite{BGEAM3Embeddings} & Modelo multiling{\"u}e adecuado para recuperaci{\'o}n sem{\'a}ntica sobre documentos en espa{\~n}ol y terminolog{\'i}a t{\'e}cnica. \\
 Vector store & Qdrant \cite{QdrantOfficial} & Base vectorial local para indexar fragmentos documentales y recuperar contexto por contrato o adjudicatario. \\
@@ -557,7 +557,7 @@ Contrato & \texttt{contract\_id} & objeto, CPV, procedimiento, importe estimado,
 Organismo & \texttt{buyer\_id} & nombre normalizado, tipo de administraci{\'o}n, territorio, n{\'u}mero de contratos, importe agregado. \\
 Adjudicatario & \texttt{suppliers\_id} & nombre normalizado, NIF cuando exista, forma jur{\'i}dica, contratos ganados, importe acumulado. \\
 Adjudicaci{\'o}n & \texttt{award\_id} & contrato, adjudicatario, importe, fecha, n{\'u}mero de ofertas, lotes y relaci{\'o}n con licitaci{\'o}n. \\
-Documento & \texttt{document\_id} & URL, tipo documental, texto extra{\'i}do, hash, contrato asociado y estado de OCR/parsing. \\
+Documento & \texttt{document\_id} & URL, tipo documental, texto extra{\'i}do, hash, contrato asociado y estado de scraping/parsing. \\
 Red flag & \texttt{flag\_id} & contrato, indicador, valor observado, umbral, severidad, justificaci{\'o}n y versi{\'o}n de regla. \\
 Score & \texttt{score\_id} & score total, nivel de riesgo, pesos, fecha de c{\'a}lculo, modelo/reglas y explicaci{\'o}n. \\
 \bottomrule
@@ -610,7 +610,7 @@ Estas variables no se interpretan como evidencia de irregularidad por s{\'i} sol
 \section{M{\'o}dulo documental, embeddings y RAG}
 \label{sec:rag_cap6}
 
-El m{\'o}dulo documental incorpora contexto cualitativo procedente de anuncios BOE, pliegos, resoluciones y memorias justificativas. Para anuncios HTML se emplea BeautifulSoup; para PDFs se utiliza Docling como herramienta de conversi{\'o}n estructurada. Posteriormente, spaCy extrae entidades y patrones b{\'a}sicos: organismos, empresas, importes, fechas, criterios t{\'e}cnicos, certificaciones, solvencia requerida y ponderaciones de adjudicaci{\'o}n.
+El m{\'o}dulo documental incorpora contexto cualitativo procedente de anuncios BOE, p{\'a}ginas p{\'u}blicas de PLACE, resoluciones y memorias justificativas accesibles como contenido HTML o texto reutilizable. Para esta versi{\'o}n del prototipo se prioriza \textit{web scraping} con BeautifulSoup frente al tratamiento de documentos escaneados: el objetivo es capturar campos, criterios t{\'e}cnicos, certificaciones, solvencia requerida y ponderaciones de adjudicaci{\'o}n desde fuentes trazables y repetibles. Posteriormente, spaCy extrae entidades y patrones b{\'a}sicos: organismos, empresas, importes, fechas, criterios t{\'e}cnicos, certificaciones, solvencia requerida y ponderaciones de adjudicaci{\'o}n.
 
 El flujo RAG se limita a explicar casos, no a decidir el nivel de riesgo:
 
@@ -645,7 +645,7 @@ La arquitectura multiagente se implementa con LangGraph porque permite definir u
 \textbf{Agente 1: Pipeline de Datos y Normalizaci{\'o}n OCDS} & Descarga, limpia, valida y normaliza fuentes BOE/OCDS, PLACE y OpenTender; detecta inconsistencias de importes, fechas, duplicados y NIF; prepara tablas anal{\'i}ticas y artefactos de carga. & Dataset normalizado, perfil de calidad, hashes de fuentes, tablas PostgreSQL y ficheros Parquet/DuckDB. \\
 \textbf{Agente 2: Red Flags y Scoring} & Calcula indicadores de riesgo por contrato y adjudicatario; combina reglas OCDS, concentraci{\'o}n, recurrencia, desviaciones, variables de red y modelos no supervisados; genera rankings para revisi{\'o}n humana. & Red flags activadas, score 0--100, nivel de riesgo, justificaci{\'o}n por indicador y ranking priorizado. \\
 \textbf{Agente 3: An{\'a}lisis de Redes y Comunidades} & Construye y analiza el grafo empresa-organismo-contrato; calcula centralidad, clustering, comunidades Leiden/Louvain, patrones de concentraci{\'o}n y posibles relaciones societarias cuando existan fuentes abiertas. & M{\'e}tricas de red, comunidades, subgrafos de caso, entidades puente y alertas de concentraci{\'o}n relacional. \\
-\textbf{Agente 4: NLP, OCR y Recuperaci{\'o}n Documental} & Procesa anuncios, pliegos, resoluciones y memorias; aplica Docling/Surya, spaCy, embeddings BGE-M3 y Qdrant; recupera contexto y genera fichas explicativas con Qwen3-8B mediante Ollama. & Entidades extra{\'i}das, corpus indexado, fragmentos recuperados, respuesta RAG citada y ficha explicativa de caso. \\
+\textbf{Agente 4: Web Scraping, NLP y Recuperaci{\'o}n Documental} & Procesa anuncios, p{\'a}ginas p{\'u}blicas y documentos textuales reutilizables; aplica BeautifulSoup, spaCy, embeddings BGE-M3 y Qdrant; recupera contexto y genera fichas explicativas con Qwen3-8B mediante Ollama. & Entidades extra{\'i}das, corpus indexado, fragmentos recuperados, respuesta RAG citada y ficha explicativa de caso. \\
 \bottomrule
 \end{longtable}
 }
