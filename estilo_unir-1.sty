@@ -4,7 +4,7 @@
 %
 %
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{unir}
+\ProvidesPackage{estilo_unir-1}
 %
 %---paquetes---------------------
 %
@@ -38,7 +38,7 @@
 \pagestyle{fancy}
 \fancyhfoffset{20pt}
 \renewcommand{\headrulewidth}{0.0pt}
-\setlength{\headheight}{14pt}% 
+\setlength{\headheight}{29pt}%
 
 \renewcommand{\maketitle}{\creaportada}
 
@@ -52,7 +52,7 @@
 
 
 %hiper-referencias
-\usepackage{hyperref}
+\usepackage[hypertexnames=false]{hyperref}
 
 
 %
@@ -139,7 +139,6 @@
 }
 \vspace{3cm}
 
-{\color{azulunir}{Ciudad:}}\@nombreciudad\\
 {\color{azulunir}{Fecha:}} \thedate
 \newpage
 \thispagestyle{empty}
@@ -158,9 +157,6 @@
 \rfoot{\thepage}
 \cfoot[]{}
 \chead[]{}
-
-
-
 
 
 

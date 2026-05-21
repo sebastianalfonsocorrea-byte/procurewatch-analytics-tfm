@@ -38,13 +38,14 @@
 }
 
 @article{MunozPla2026,
-  author       = {Mu{\~n}oz Pl{\`a}, Manel},
-  title        = {A decade of public procurement in Spain: A longitudinal open dataset from the BOE (2014-2024)},
-  journal      = {arXiv preprint},
+  author       = {Muñoz Plà, Manuel},
+  title        = {A decade of public procurement in Spain: Extraction, structuring, and analysis of BOE data (2014–2024)},
   year         = {2026},
-  eprint       = {2602.16731},
-  archivePrefix= {arXiv},
-  url          = {https://arxiv.org/abs/2602.16731}
+  journal      = {arXiv},
+  volume       = {2602.16731v1},
+  doi          = {10.5281/zenodo.15120882},
+  url          = {https://doi.org/10.5281/zenodo.15120882},
+  note         = {CC BY 4.0}
 }
 
 @misc{OpenTenderEU,
@@ -334,20 +335,10 @@
 }
 
 @misc{AlibabaQwen3,
-  author       = {{Qwen Team}},
-  title        = {{Qwen3-8B} Model Card},
-  year         = {2025},
-  url          = {https://huggingface.co/Qwen/Qwen3-8B}
-}
-
-@article{Qwen3TechnicalReport,
-  author       = {{Qwen Team}},
-  title        = {{Qwen3} Technical Report},
-  journal      = {arXiv preprint},
-  year         = {2025},
-  eprint       = {2505.09388},
-  archivePrefix= {arXiv},
-  url          = {https://arxiv.org/abs/2505.09388}
+  author       = {{Alibaba Cloud}},
+  title        = {Qwen3: Technical Report},
+  year         = {2024},
+  url          = {https://huggingface.co/Qwen}
 }
 
 @misc{MistralSmall3,
@@ -373,11 +364,12 @@
   url          = {https://huggingface.co/BAAI/bge-m3}
 }
 
-@misc{Richardson,
+@misc{Richardson2024BeautifulSoup,
   author       = {Richardson, Leonard},
-  title        = {Beautiful Soup Documentation},
+  title        = {Beautiful Soup 4: A Python library for pulling data out of HTML and XML files},
   year         = {2024},
-  url          = {https://www.crummy.com/software/BeautifulSoup/bs4/doc/}
+  url          = {https://www.crummy.com/software/BeautifulSoup/},
+  note         = {Versión 4.x}
 }
 
 % ---- BLOQUE E: Visualización y Explicabilidad ----
@@ -438,6 +430,35 @@
   url          = {https://www.boe.es/eli/es/l/2013/12/09/19}
 }
 
+@misc{RGPD2016,
+  author       = {{European Parliament and Council}},
+  title        = {Regulation (EU) 2016/679 of the European Parliament and of the Council of 27 April 2016 on the protection of natural persons with regard to the processing of personal data and on the free movement of such data (General Data Protection Regulation)},
+  year         = {2016},
+  url          = {https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32016R0679}
+}
+
+@misc{LOPDGDD2018,
+  author       = {{Jefatura del Estado}},
+  title        = {Ley Orgánica 3/2018, de 5 de diciembre, de Protección de Datos Personales y garantía de los derechos digitales},
+  year         = {2018},
+  note         = {BOE núm. 294, de 6 de diciembre de 2018},
+  url          = {https://www.boe.es/eli/es/lo/2018/12/05/3}
+}
+
+@misc{OpenDataDirective2019,
+  author       = {{European Parliament and Council}},
+  title        = {Directive (EU) 2019/1024 of the European Parliament and of the Council of 20 June 2019 on open data and the re-use of public sector information},
+  year         = {2019},
+  url          = {https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32019L1024}
+}
+
+@misc{CERDirective2022,
+  author       = {{European Parliament and Council}},
+  title        = {Directive (EU) 2022/2557 of the European Parliament and of the Council of 14 December 2022 on the resilience of critical entities (CER Directive)},
+  year         = {2022},
+  url          = {https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32022L2557}
+}
+
 % ---- MISCELÁNEA / HERRAMIENTAS ----
 
 @misc{LangChain2024LangGraph,
@@ -446,6 +467,36 @@
   year         = {2024},
   url          = {https://github.com/langchain-ai/langgraph}
 }
+
+@misc{NetworkXPython,
+  author       = {Hagberg, Aric A. and Schult, Daniel A. and Swart, Pieter J.},
+  title        = {{NetworkX}: Network Analysis in Python},
+  year         = {2008},
+  url          = {https://networkx.org/}
+}
+
+@misc{IsolationForestSklearn,
+  author       = {Pedregosa, Fabian and others},
+  title        = {Scikit-learn: Machine Learning in Python --- {IsolationForest}},
+  year         = {2011},
+  url          = {https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.IsolationForest.html}
+}
+
+@misc{GoogleStitch2026,
+  author       = {{Google Labs}},
+  title        = {Stitch: {AI}-powered {UI} design tool},
+  year         = {2026},
+  url          = {https://stitch.withgoogle.com}
+}
+
+@misc{CPVCodes71,
+  author       = {{Portal de Contrataci{\'o}n P{\'u}blica}},
+  title        = {Lista de c{\'o}digos {CPV} 71x: Servicios de arquitectura, construcci{\'o}n, ingenier{\'i}a e inspecci{\'o}n},
+  year         = {2026},
+  url          = {https://www.publictendering.com/cpv-codes/lista-de-los-codigos-cpv/71x/}
+}
+
+
 
 @misc{LangChainOfficial,
   author       = {{LangChain AI}},
@@ -461,11 +512,11 @@
   url          = {https://ollama.com/}
 }
 
-@misc{PostgreSQLOfficial,
-  author       = {{PostgreSQL Global Development Group}},
-  title        = {{PostgreSQL} Documentation},
+@misc{QdrantOfficial,
+  author       = {{Qdrant}},
+  title        = {{Qdrant} Documentation},
   year         = {2025},
-  url          = {https://www.postgresql.org/docs/}
+  url          = {https://qdrant.tech/documentation/}
 }
 
 @misc{Neo4jOfficial,
@@ -475,11 +526,11 @@
   url          = {https://neo4j.com/docs/}
 }
 
-@misc{QdrantOfficial,
-  author       = {{Qdrant}},
-  title        = {{Qdrant} Documentation},
+@misc{PostgreSQLOfficial,
+  author       = {{PostgreSQL Global Development Group}},
+  title        = {{PostgreSQL} Documentation},
   year         = {2025},
-  url          = {https://qdrant.tech/documentation/}
+  url          = {https://www.postgresql.org/docs/}
 }
 
 @misc{PolarsOfficial,
@@ -496,25 +547,14 @@
   url          = {https://duckdb.org/docs/}
 }
 
-@misc{NetworkXPython,
-  author       = {Hagberg, Aric A. and Schult, Daniel A. and Swart, Pieter J.},
-  title        = {{NetworkX}: Network Analysis in Python},
-  year         = {2008},
-  url          = {https://networkx.org/}
-}
-
-@misc{PyVisOfficial,
-  author       = {{PyVis contributors}},
-  title        = {{PyVis}: Interactive Network Visualizations in Python},
+@article{Qwen3TechnicalReport,
+  author       = {{Qwen Team}},
+  title        = {{Qwen3} Technical Report},
+  journal      = {arXiv preprint},
   year         = {2025},
-  url          = {https://pyvis.readthedocs.io/}
-}
-
-@misc{IsolationForestSklearn,
-  author       = {Pedregosa, Fabian and others},
-  title        = {Scikit-learn: Machine Learning in Python --- {IsolationForest}},
-  year         = {2011},
-  url          = {https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.IsolationForest.html}
+  eprint       = {2505.09388},
+  archivePrefix= {arXiv},
+  url          = {https://arxiv.org/abs/2505.09388}
 }
 
 @misc{FastAPIOfficial,
@@ -529,27 +569,6 @@
   title        = {{Ragas}: Evaluation Framework for Retrieval Augmented Generation},
   year         = {2025},
   url          = {https://docs.ragas.io/}
-}
-
-@misc{SuryaOCR,
-  author       = {{Vik Paruchuri}},
-  title        = {{Surya}: OCR, Layout Analysis and Table Recognition Toolkit},
-  year         = {2025},
-  url          = {https://github.com/VikParuchuri/surya}
-}
-
-@misc{DockerComposeOfficial,
-  author       = {{Docker Inc.}},
-  title        = {{Docker Compose} Documentation},
-  year         = {2025},
-  url          = {https://docs.docker.com/compose/}
-}
-
-@misc{GoogleStitch2026,
-  author       = {{Google Labs}},
-  title        = {Stitch: {AI}-powered {UI} design tool},
-  year         = {2026},
-  url          = {https://stitch.withgoogle.com}
 }
 
 @misc{StreamlitOfficial,
@@ -573,9 +592,16 @@
   url          = {https://www.sigmajs.org/}
 }
 
-@misc{CPVCodes71,
-  author       = {{Portal de Contrataci{\'o}n P{\'u}blica}},
-  title        = {Lista de c{\'o}digos {CPV} 71x: Servicios de arquitectura, construcci{\'o}n, ingenier{\'i}a e inspecci{\'o}n},
-  year         = {2026},
-  url          = {https://www.publictendering.com/cpv-codes/lista-de-los-codigos-cpv/71x/}
+@misc{PyVisOfficial,
+  author       = {{PyVis contributors}},
+  title        = {{PyVis}: Interactive Network Visualizations in Python},
+  year         = {2025},
+  url          = {https://pyvis.readthedocs.io/}
+}
+
+@misc{DockerComposeOfficial,
+  author       = {{Docker Inc.}},
+  title        = {{Docker Compose} Documentation},
+  year         = {2025},
+  url          = {https://docs.docker.com/compose/}
 }

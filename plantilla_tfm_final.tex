@@ -1,5 +1,6 @@
 \documentclass[11pt,a4paper,spanish]{book}
 \usepackage{estilo_unir-1}
+\usepackage{tabularx}   % para tablas flexibles
 \usepackage{apacite}
 \usepackage{hyperref}
 \usepackage{longtable}
@@ -14,11 +15,15 @@
 \title{ProcureWatch Analytics: Plataforma Multiagente para la Detecci{\'o}n de Patrones de Riesgo en Contrataci{\'o}n P{\'u}blica mediante Open Data, An{\'a}lisis de Redes, NLP y Modelos Locales}
 \titulacion{M{\'a}ster Universitario en An{\'a}lisis y Visualizaci{\'o}n de Datos Masivos}
 \author{Sebasti{\'a}n Alfonso Correa y Satur{\'i}a Mar{\'i}a Hurtado {\'A}lvarez}
-\date{22 de abril de 2026}
+\date{20 de mayo de 2026}
 \director{Enrique de Miguel Ambite}
-\nombreciudad{Madrid}
+\nombreciudad{}
 
 \begin{document}
+\makeatletter
+\@twosidefalse
+\@mparswitchfalse
+\makeatother
 \renewcommand{\listfigurename}{\'Indice de Ilustraciones}
 \renewcommand{\listtablename}{\'Indice de Tablas}
 \renewcommand{\contentsname}{\'Indice de Contenidos}
@@ -35,7 +40,7 @@
 \chapter{Resumen}
 %=========================================================
 
-ProcureWatch Analytics es una plataforma anal{\'i}tica multiagente que detecta patrones de riesgo en contrataci{\'o}n p{\'u}blica espa{\~n}ola mediante an{\'a}lisis integrado de datos abiertos (OCDS), indicadores de red flags, an{\'a}lisis de redes societarias (algoritmo Leiden), procesamiento de lenguaje natural sobre documentos p{\'u}blicos y modelos de scoring de anomal{\'i}as. El sistema aplica su prototipo inicial al dominio CPV~71 (Servicios de arquitectura, ingenier{\'i}a e inspecci{\'o}n), procesando datos del BOE 2014-2024 y PLACE. Valida sus componentes mediante m{\'e}tricas est{\'a}ndar de precisi{\'o}n, modularidad de grafos (Q\,>\,0.30), calidad RAG (Faithfulness\,>\,0.80) y usabilidad (SUS\,>\,68), generando fichas de riesgo explicables para auditor{\'i}as p{\'u}blicas.
+ProcureWatch Analytics es una plataforma anal{\'i}tica multiagente que detecta patrones de riesgo en contrataci{\'o}n p{\'u}blica espa{\~n}ola mediante an{\'a}lisis integrado de datos abiertos (OCDS), indicadores de red flags, an{\'a}lisis de redes societarias (algoritmo Leiden), procesamiento de lenguaje natural sobre documentos p{\'u}blicos y modelos de scoring de anomal{\'i}as. El sistema aplica su prototipo inicial al dominio CPV~71 (Servicios de arquitectura, ingenier{\'i}a e inspecci{\'o}n), procesando datos del BOE 2014-2024 y PLACE. Valida sus componentes mediante m{\'e}tricas est{\'a}ndar de precisi{\'o}n, modularidad de grafos (Q\textgreater0.30), calidad RAG (Faithfulness\textgreater0.80) y usabilidad (SUS\textgreater68), generando fichas de riesgo explicables para auditor{\'i}as p{\'u}blicas.
 
 \medskip
 {\bf Palabras clave:} contrataci{\'o}n p{\'u}blica, red flags, machine learning, an{\'a}lisis de redes, NLP, datos abiertos, CPV 71, OCDS, scoring de riesgo, plataforma multiagente.
@@ -44,7 +49,7 @@ ProcureWatch Analytics es una plataforma anal{\'i}tica multiagente que detecta p
 \chapter{Abstract}
 %=========================================================
 
-ProcureWatch Analytics is a multi-agent analytical platform that detects risk patterns in Spanish public procurement through integrated analysis of open data (OCDS), red flag indicators, network analysis (Leiden algorithm), natural language processing over public documents, and anomaly scoring models. The prototype focuses on CPV division 71 (Architecture, Engineering and Inspection Services), processing BOE 2014-2024 and PLACE data. Components are validated using standard metrics: red flag precision, graph modularity (Q\,>\,0.30), RAG quality (Faithfulness\,>\,0.80) and usability (SUS\,>\,68), generating explainable risk reports to support public audit.
+ProcureWatch Analytics is a multi-agent analytical platform that detects risk patterns in Spanish public procurement through integrated analysis of open data (OCDS), red flag indicators, network analysis (Leiden algorithm), natural language processing over public documents, and anomaly scoring models. The prototype focuses on CPV division 71 (Architecture, Engineering and Inspection Services), processing BOE 2014-2024 and PLACE data. Components are validated using standard metrics: red flag precision, graph modularity (Q\textgreater0.30), RAG quality (Faithfulness\\textgreater0.80) and usability (SUS\textgreater68), generating explainable risk reports to support public audit.
 
 \medskip
 {\bf Keywords:} public procurement, red flags, machine learning, network analysis, NLP, open data, CPV 71, OCDS, risk scoring, multi-agent platform.
@@ -62,7 +67,7 @@ El reciente \textit{dataset} longitudinal del BOE 2014--2024 \cite{MunozPla2026}
 
 \section{Planteamiento del trabajo}
 
-Este TFM propone dise{\~n}ar, desarrollar y evaluar \textbf{ProcureWatch Analytics}, una plataforma multiagente que integra: (a)~un \textit{pipeline} de adquisici{\'o}n e integraci{\'o}n de datos Open Data en un est{\'a}ndar OCDS com{\'u}n; (b)~un motor anal{\'i}tico de detecci{\'o}n de red flags y patrones de riesgo basado en indicadores de la literatura y modelos de machine learning; (c)~un m{\'o}dulo documental que extrae mediante \textit{web scraping} criterios de adjudicaci{\'o}n, certificaciones y condiciones contractuales desde anuncios y p{\'a}ginas p{\'u}blicas del BOE y PLACE, combinando NLP y RAG para contextualizar los hallazgos; y (d)~un \textit{front-end} anal{\'i}tico con red de relaciones interactiva, panel de riesgo, evoluci{\'o}n temporal y ficha explicativa de caso.
+Este TFM propone dise{\~n}ar, desarrollar y evaluar \textbf{ProcureWatch Analytics}, una plataforma multiagente que integra: (a)~un \textit{pipeline} de adquisici{\'o}n e integraci{\'o}n de datos Open Data en un est{\'a}ndar OCDS com{\'u}n; (b)~un motor anal{\'i}tico de detecci{\'o}n de red flags y patrones de riesgo basado en indicadores de la literatura y modelos de machine learning; (c)~un m{\'o}dulo NLP que extrae mediante web scraping criterios de adjudicaci{\'o}n, certificaciones y condiciones contractuales de los anuncios del BOE y PLACE; (d)~un sistema OCR y NLP para procesamiento de pliegos, resoluciones y documentos p{\'u}blicos; y (e)~un \textit{front-end} anal{\'i}tico con red de relaciones interactiva, panel de riesgo, evoluci{\'o}n temporal y ficha explicativa de caso.
 
 El prototipo se valida sobre el dominio CPV~71 (Servicios de arquitectura, ingenier{\'i}a e inspecci{\'o}n), seleccionado por razones metodol{\'o}gicas detalladas en la Secci{\'o}n~\ref{sec:dominio_cpv71}.
 
@@ -72,9 +77,7 @@ El prototipo se valida sobre el dominio CPV~71 (Servicios de arquitectura, ingen
   \item \textbf{Cap{\'i}tulo~2 ---} An{\'a}lisis del contexto: descripci{\'o}n del problema, datos justificativos, preguntas de investigaci{\'o}n y dominio de an{\'a}lisis.
   \item \textbf{Cap{\'i}tulo~3 ---} Contexto y estado del arte: revisi{\'o}n de los cinco bloques tem{\'a}ticos con referencias acad{\'e}micas y conclusiones sobre la brecha que justifica el proyecto.
   \item \textbf{Cap{\'i}tulo~4 ---} Objetivos: objetivo general SMART y ocho objetivos espec{\'i}ficos medibles y operativos.
-  \item \textbf{Cap{\'i}tulo~5 ---} Marco normativo: legislaci{\'o}n de contrataci{\'o}n p{\'u}blica, transparencia, protecci{\'o}n de datos y an{\'a}lisis de implicaciones del AI Act sobre el scoring de riesgo.
-  \item \textbf{Cap{\'i}tulo~6 ---} Arquitectura t{\'e}cnica e implementaci{\'o}n del prototipo: \textit{stack} tecnol{\'o}gico, \textit{pipeline} de datos, motor de red flags, sistema multiagente, RAG documental y visualizaci{\'o}n.
-  \item \textbf{Cap{\'i}tulos posteriores ---} Resultados, evaluaci{\'o}n, conclusiones y trabajo futuro.
+  \item \textbf{Cap{\'i}tulos~5--8 ---} Desarrollo t{\'e}cnico, resultados, evaluaci{\'o}n y conclusiones (a desarrollar).
 \end{itemize}
 
 \medskip
@@ -90,23 +93,47 @@ La contrataci{\'o}n p{\'u}blica en Espa{\~n}a constituye uno de los mecanismos d
 
 Esta magnitud, sumada a la complejidad de los procedimientos contractuales y a la asimetr{\'i}a de informaci{\'o}n entre licitadores y organismos, convierte la contrataci{\'o}n p{\'u}blica en un {\'a}mbito especialmente expuesto al riesgo de irregularidad. Al mismo tiempo, la obligaci{\'o}n legal de publicar los contratos en formatos abiertos desde 2007 \cite{LCSP2017,Ley192013} genera una base de datos extraordinariamente rica para el an{\'a}lisis de patrones mediante t{\'e}cnicas de datos masivos.
 
-\begin{table}[ht]
+\begin{table}[htbp]
 \centering
-\caption{Volumen y cobertura de datos disponibles para contrataci{\'o}n p{\'u}blica en Espa{\~n}a y Europa}
+\small
+\caption{Volumen y cobertura de datos disponibles para contratación pública en España y Europa}
 \label{tab:volumen_datos}
-\begin{tabular}{lrl}
+\begin{tabularx}{\textwidth}{@{} l r X @{}}
 \toprule
 \textbf{Fuente} & \textbf{Volumen} & \textbf{Referencia} \\
 \midrule
-Licitaciones anuales PLACE (2024, sin menores) & 206.242 & \citeA{OIReScon2025} \\
-Contratos BOE 2014--2024 (formato OCDS) & $\sim$97.000 & \citeA{MunozPla2026} \\
-Contratos CPV 71 en dataset BOE & 3.443 & \citeA{MunozPla2026} \\
-{\'O}rganos de contrataci{\'o}n activos en PLACE & $>$10.000 & \citeA{MinHacienda2024PLACE} \\
-Contratos europeos en OpenTender & $>$19 millones & \citeA{OpenTenderEU} \\
-Red flags documentados (OCP + DIGIWHIST) & $>$150 indicadores & \citeA{OCP2024RedFlags} \\
+Licitaciones anuales PLACE (2024, sin menores) & 206.242 & \cite{OIReScon2025} \\
+Contratos BOE 2014--2024 (formato OCDS) & $\sim$97.000 & \cite{MunozPla2026} \\
+Contratos CPV 71 en dataset BOE & 3.443 & \cite{MunozPla2026} \\
+Órganos de contratación activos en PLACE & $>$10.000 & \cite{MinHacienda2024PLACE} \\
+Contratos europeos en OpenTender & $>$19 millones & \cite{OpenTenderEU} \\
+Red flags documentados (OCP + DIGIWHIST) & $>$150 indicadores & \cite{OCP2024RedFlags} \\
 \bottomrule
-\end{tabular}
+\end{tabularx}
+\normalsize
 \end{table}
+
+%\newgeometry{left=2cm, right=2cm, top=2.5cm, bottom=2.5cm}
+
+%\begin{table}[ht]
+%\centering
+%\caption{Volumen y cobertura de datos disponibles para contrataci{\'o}n p{\'u}blica en Espa{\~n}a y Europa}
+%\label{tab:volumen_datos}
+%\begin{tabular}{lrl}
+%\toprule
+%\textbf{Fuente} & \textbf{Volumen} & \textbf{Referencia} \\
+%\midrule
+%Licitaciones anuales PLACE (2024, sin menores) & 206.242 & \citeA{OIReScon2025} \\
+%Contratos BOE 2014--2024 (formato OCDS) & $\sim$97.000 & \citeA{MunozPla2026} \\
+%Contratos CPV 71 en dataset BOE & 3.443 & \citeA{MunozPla2026} \\
+%{\'O}rganos de contrataci{\'o}n activos en PLACE & $>$10.000 & \citeA{MinHacienda2024PLACE} \\
+%Contratos europeos en OpenTender & $>$19 millones & \citeA{OpenTenderEU} \\
+%Red flags documentados (OCP + DIGIWHIST) & $>$150 indicadores & \citeA{OCP2024RedFlags} \\
+%\bottomrule
+%\end{tabular}
+%\end{table}
+
+%\restoregeometry
 
 \section{Pregunta 1: Volumen de contratos en PLACE y organismos participantes}
 
@@ -145,7 +172,7 @@ Los sistemas de control de la contrataci{\'o}n p{\'u}blica presentan diversas li
 \begin{enumerate}
   \item \textbf{Fragmentaci{\'o}n de informaci{\'o}n.} Los datos est{\'a}n distribuidos entre m{\'u}ltiples plataformas y niveles administrativos, dificultando un an{\'a}lisis global y consistente \cite{OIReScon2025}.
 
-  \item \textbf{Insuficiencia de recursos de supervisi{\'o}n.} El volumen de contratos gestionados anualmente (\,>200.000 licitaciones) excede ampliamente la capacidad de revisi{\'o}n exhaustiva con los medios actuales \cite{OIReScon2025}.
+  \item \textbf{Insuficiencia de recursos de supervisi{\'o}n.} El volumen de contratos gestionados anualmente (\textgreater200.000 licitaciones) excede ampliamente la capacidad de revisi{\'o}n exhaustiva con los medios actuales \cite{OIReScon2025}.
 
   \item \textbf{Falta de estandarizaci{\'o}n y calidad homog{\'e}nea.} La ausencia de un est{\'a}ndar universal en los formatos de publicaci{\'o}n introduce heterogeneidad que dificulta el an{\'a}lisis automatizado \cite{OCP2023EUOpenData}.
 
@@ -193,23 +220,44 @@ Esta aproximaci{\'o}n sectorial est{\'a} alineada con la metodolog{\'i}a del pro
 
 \section{Brecha identificada: posicionamiento del proyecto}
 
-\begin{table}[ht]
+
+\begin{table}[htbp]
 \centering
+\small
 \caption{Gap identificado en la literatura que justifica ProcureWatch Analytics}
 \label{tab:gap_literatura}
-\begin{tabular}{lll}
+\begin{tabularx}{\textwidth}{@{} l >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}X @{}}
 \toprule
-\textbf{Dimensi{\'o}n} & \textbf{Estado actual} & \textbf{ProcureWatch} \\
+\textbf{Dimensión} & \textbf{Estado actual} & \textbf{ProcureWatch} \\
 \midrule
 Red flags en literatura & Bien documentados \cite{OCP2024RedFlags} & Implementados y evaluados \\
-ML para detecci{\'o}n fraude & Demostrado en Italia, M{\'e}xico, Kenya & Adaptado a datos espa{\~n}oles \\
-An{\'a}lisis de redes & Probado en Portugal, Europa & Aplicado al dominio CPV 71 \\
-NLP en contrataci{\'o}n & Survey reciente, sin prototipo & Implementado sobre pliegos ES \\
-Plataforma integrada & No existe en datos espa{\~n}oles & Propuesta de este TFM \\
+ML para detección fraude & Demostrado en Italia, México, Kenya & Adaptado a datos españoles \\
+Análisis de redes & Probado en Portugal, Europa & Aplicado al dominio CPV 71 \\
+NLP en contratación & Survey reciente, sin prototipo & Implementado sobre pliegos ES \\
+Plataforma integrada & No existe en datos españoles & Propuesta de este TFM \\
 Reproducibilidad & Baja en estudios existentes & 100\,\% open-source + Docker \\
 \bottomrule
-\end{tabular}
+\end{tabularx}
+\normalsize
 \end{table}
+
+%\begin{table}[ht]
+%\centering
+%\caption{Gap identificado en la literatura que justifica ProcureWatch Analytics}
+%\label{tab:gap_literatura}
+%\begin{tabular}{lll}
+%\toprule
+%\textbf{Dimensi{\'o}n} & \textbf{Estado actual} & \textbf{ProcureWatch} \\
+%\midrule
+%Red flags en literatura & Bien documentados \cite{OCP2024RedFlags} & Implementados y evaluados \\
+%ML para detecci{\'o}n fraude & Demostrado en Italia, M{\'e}xico, Kenya & Adaptado a datos espa{\~n}oles \\
+%An{\'a}lisis de redes & Probado en Portugal, Europa & Aplicado al dominio CPV 71 \\
+%NLP en contrataci{\'o}n & Survey reciente, sin prototipo & Implementado sobre pliegos ES \\
+%Plataforma integrada & No existe en datos espa{\~n}oles & Propuesta de este TFM \\
+%Reproducibilidad & Baja en estudios existentes & 100\,\% open-source + Docker \\
+%\bottomrule
+%\end{tabular}
+%\end{table}
 
 %=========================================================
 \chapter{Contexto y Estado del Arte}
@@ -258,7 +306,7 @@ La Open Contracting Partnership \cite{OCP2024RedFlags} ha publicado la gu{\'i}a 
 
 \citeA{NgangaHybrid2025} proponen un framework h{\'i}brido (\textit{Logistic Regression} + \textit{Random Forest} + \textit{clustering}) para datos de contrataci{\'o}n en Kenia, demostrando que la combinaci{\'o}n de modelos supera a los enfoques individuales. \citeA{DataDrivenTransparency2025} combinan machine learning y an{\'a}lisis de redes sociales, obteniendo mejoras adicionales cuando se incorporan m{\'e}tricas de grafo como \textit{features}.
 
-El framework PANG de \citeA{LiuPatternMining2023} es espec{\'i}ficamente relevante: aplica \textit{pattern mining} sobre grafos de contrataci{\'o}n para detectar subgrafos an{\'o}malos, logrando detectar tramas de adjudicaciones coordinadas no detectables con indicadores tabulares.
+El framework PANG de \citeA{LiuPatternMining2023} es espec{\'i}ficamente relevante: aplica \textit{pattern mining} sobre grafos de contrataci{\'o}n para detectar subgrafos anómalos, logrando detectar tramas de adjudicaciones coordinadas no detectables con indicadores tabulares.
 
 \subsection{Positive-Unlabeled Learning}
 
@@ -302,17 +350,17 @@ Los modelos de transformers (BERT, Legal-BETO) aportan comprensi{\'o}n contextua
 
 \subsection{Web scraping: extracci{\'o}n estructurada de documentos administrativos}
 
-Una parte sustancial de la informaci{\'o}n relevante para la detecci{\'o}n de riesgos en contrataci{\'o}n p{\'u}blica espa{\~n}ola se encuentra disponible en los anuncios de licitaci{\'o}n publicados en el Bolet{\'i}n Oficial del Estado (BOE), accesibles mediante el campo ``Enlace HTML'' del \textit{dataset} longitudinal 2014--2024, as{\'i} como en p{\'a}ginas p{\'u}blicas de PLACE con contenido estructurado o semiestructurado. La decisi{\'o}n metodol{\'o}gica del prototipo es sustituir el tratamiento de documentos escaneados por una estrategia de \textit{web scraping}: se priorizan fuentes HTML trazables, reproducibles y con menor coste de limpieza, dejando los PDF no estructurados como limitaci{\'o}n documentada o l{\'i}nea de trabajo futura. BeautifulSoup \cite{Richardson} es la librer{\'i}a \textit{open-source} de referencia para el parseo y extracci{\'o}n de informaci{\'o}n de p{\'a}ginas HTML y XML en Python. Proporciona una API intuitiva para navegar por el {\'a}rbol DOM, localizar elementos mediante selectores CSS y extraer contenido textual de forma selectiva. Su integraci{\'o}n con \textit{pipelines} de NLP es directa, permitiendo la limpieza y normalizaci{\'o}n del texto extra{\'i}do para su posterior procesamiento con herramientas como spaCy o su indexaci{\'o}n en bases de datos documentales.
+Una parte sustancial de la informaci{\'o}n relevante para la detecci{\'o}n de riesgos en contratación p{\'u}blica española se encuentra disponible en los anuncios de licitaci{\'o}n publicados en el Bolet{\'i}n Oficial del Estado (BOE), accesibles mediante el campo "Enlace HTML" del dataset longitudinal 2014-2024. A diferencia de los pliegos alojados en PLACE —frecuentemente disponibles como PDF escaneado que requiere OCR—, estos anuncios se publican en formato HTML estructurado, lo que permite una extracci{\'o}n directa y eficiente del texto mediante t{\'e}cnicas de web scraping. BeautifulSoup \cite{Richardson2024BeautifulSoup} es la librer{\'i}a open-source de referencia para el parseo y extracci{\'o}n de informaci{\'o}n de p{\'a}ginas HTML y XML en Python. Proporciona una API intuitiva para navegar por el {\'a}rbol DOM, localizar elementos mediante selectores CSS y extraer contenido textual de forma selectiva. Su integraci{\'o}n con pipelines de NLP es directa, permitiendo la limpieza y normalizaci{\'o}n del texto extraído para su posterior procesamiento con herramientas como spaCy o su indexaci{\'o}n en bases de datos documentales.
 
 \subsection{LLMs locales para an{\'a}lisis jur{\'i}dico-administrativo}
 
-Los modelos de lenguaje locales (\textit{Large Language Models} en local) permiten analizar documentos sin dependencia de APIs externas, preservando la confidencialidad de los datos p{\'u}blicos y el cumplimiento con el RGPD. Para ProcureWatch se adopta \textbf{Qwen3-8B} como modelo local principal, al combinar tama{\~n}o operativo viable, licencia permisiva, soporte multiling{\"u}e, capacidades de razonamiento e integraci{\'o}n con herramientas \cite{AlibabaQwen3,Qwen3TechnicalReport}. Mistral Small~3 \cite{MistralSmall3} se mantiene como referencia comparativa para tareas de s{\'i}ntesis y clasificaci{\'o}n documental.
+Los modelos de lenguaje locales (\textit{Large Language Models} en local) permiten analizar documentos sin dependencia de APIs externas, preservando la confidencialidad de los datos p{\'u}blicos y el cumplimiento con el RGPD. Qwen3-7B \cite{AlibabaQwen3} ofrece excelente soporte para espa{\~n}ol con 64~GB de RAM, mientras que Mistral Small~3 \cite{MistralSmall3} es la referencia comparativa para tareas de s{\'i}ntesis y clasificaci{\'o}n de documentos.
 
 En ProcureWatch, el LLM local tiene un rol estrictamente auxiliar: estructurar documentos, extraer entidades y generar explicaciones de casos. La decisi{\'o}n sobre si un contrato es sospechoso es siempre humana \cite{AIAct2024}.
 
 %\subsection{Recuperaci{\'o}n aumentada con generaci{\'o}n (RAG)}
 
-%El enfoque RAG (\textit{Retrieval-Augmented Generation}) combina un recuperador de documentos semanticamente relevantes con un generador LLM para producir respuestas contextualizadas \cite{LangChain2024LangGraph}. En ProcureWatch, el motor RAG permite, dado un caso de riesgo (contrato o adjudicatario), recuperar los fragmentos m{\'a}s relevantes de pliegos y resoluciones que expliquen o maticen los indicadores activados.
+%El enfoque RAG (\textit{Retrieval-Augmented Generation}) combina un recuperador de documentos semánticamente relevantes con un generador LLM para producir respuestas contextualizadas \cite{LangChain2024LangGraph}. En ProcureWatch, el motor RAG permite, dado un caso de riesgo (contrato o adjudicatario), recuperar los fragmentos m{\'a}s relevantes de pliegos y resoluciones que expliquen o maticen los indicadores activados.
 
 %La evaluaci{\'o}n del sistema RAG se realiza con el framework RAGAS, que mide Faithfulness (\,>\,0.80), Answer Relevancy (\,>\,0.75) y Context Recall (\,>\,0.70) como objetivos de calidad \cite{NLPLegalSurvey2024}. Los embeddings multilingues BGE-M3 \cite{BGEAM3Embeddings} se utilizan para la recuperaci{\'o}n densa, complementados con BM25 para recuperaci{\'o}n l{\'e}xica en t{\'e}rminos t{\'e}cnicos espec{\'i}ficos de contrataci{\'o}n.
 
@@ -322,7 +370,7 @@ En ProcureWatch, el LLM local tiene un rol estrictamente auxiliar: estructurar d
 
 \subsection{Explicabilidad en modelos de scoring de riesgo}
 
-El \textit{AI Act} europeo \cite{AIAct2024} exige especial cautela en sistemas que generan puntuaciones de riesgo con posible impacto en personas, empresas o procedimientos administrativos. Aunque ProcureWatch se plantea como prototipo acad{\'e}mico de apoyo a la revisi{\'o}n humana, su dise{\~n}o debe incorporar principios de trazabilidad, transparencia, control humano, gesti{\'o}n de riesgos, robustez y documentaci{\'o}n t{\'e}cnica. Los m{\'e}todos SHAP y LIME \cite{SHAPLIMEWiley2025} proporcionan la base t{\'e}cnica para la explicabilidad del \textit{scoring}: SHAP calcula contribuciones marginales de cada \textit{feature} al score final, mientras que LIME ofrece aproximaciones locales interpretables.
+El \textit{AI Act} europeo \cite{AIAct2024} clasifica como sistemas de \textbf{alto riesgo} aquellos que generan puntuaciones de riesgo que puedan influir en decisiones sobre empresas o contratos. ProcureWatch, al generar scores de riesgo contractual, debe dise{\~n}arse con trazabilidad completa y supervisi{\'o}n humana obligatoria. Los m{\'e}todos SHAP y LIME \cite{SHAPLIMEWiley2025} proporcionan la base t{\'e}cnica para la explicabilidad del scoring: SHAP calcula contribuciones marginales exactas de cada \textit{feature} al score final, mientras que LIME ofrece aproximaciones locales interpretables.
 
 \subsection{Visualizaci{\'o}n de grafos interactivos}
 
@@ -330,7 +378,7 @@ Para la visualizaci{\'o}n del grafo empresa-organismo en front-end web, el bench
 
 \subsection{Dashboards de riesgo}
 
-El dise{\~n}o del panel de riesgo de ProcureWatch sigue los principios de jerarqu{\'i}a de informaci{\'o}n y flujo de revisi{\'o}n descritos por \citeA{IvaluaDashboard}: priorizar el ranking de casos por nivel de riesgo, facilitar la navegaci{\'o}n desde el caso general al detalle del contrato, e incorporar la explicaci{\'o}n de los indicadores activados. El objetivo de usabilidad SUS\,>\,68 corresponde al nivel ``aceptable'' de la escala de Brooke (1996).
+El dise{\~n}o del panel de riesgo de ProcureWatch sigue los principios de jerarqu{\'i}a de informaci{\'o}n y flujo de revisi{\'o}n descritos por \citeA{IvaluaDashboard}: priorizar el ranking de casos por nivel de riesgo, facilitar la navegaci{\'o}n desde el caso general al detalle del contrato, e incorporar la explicaci{\'o}n de los indicadores activados. El objetivo de usabilidad SUS\textgreater68 corresponde al nivel ``aceptable'' de la escala de Brooke (1996).
 
 %---------------------------------------------------
 \section{Conclusiones del estado del arte y justificaci{\'o}n del proyecto}
@@ -354,7 +402,7 @@ El an{\'a}lisis de la literatura permite extraer cuatro conclusiones que justifi
 
 \section{Objetivo General}
 
-Dise{\~n}ar, desarrollar y evaluar \textbf{ProcureWatch Analytics}, una plataforma anal{\'i}tica multiagente que, a partir de datos abiertos de contrataci{\'o}n p{\'u}blica espa{\~n}ola (BOE 2014--2024 y PLACE) y europea, detecte, cuantifique y visualice patrones de riesgo e indicadores de red flags en licitaciones, adjudicaciones y empresas adjudicatarias del dominio CPV~71, mediante an{\'a}lisis de datos masivos, an{\'a}lisis de redes societarias, NLP documental y modelos de scoring de anomal{\'i}as, generando fichas de riesgo explicables que apoyen la priorizaci{\'o}n de casos para revisi{\'o}n por organismos de control.
+Dise{\~n}ar, desarrollar y evaluar \textbf{ProcureWatch Analytics}, una plataforma anal{\'i}tica multiagente que, a partir de datos abiertos de contrataci{\'o}n p{\'u}blica espa{\~n}ola (BOE 2014--2026 y PLACE) y europea, detecte, cuantifique y visualice patrones de riesgo e indicadores de red flags en licitaciones, adjudicaciones y empresas adjudicatarias del dominio CPV~71, mediante an{\'a}lisis de datos masivos, an{\'a}lisis de redes societarias, NLP documental y modelos de scoring de anomal{\'i}as, generando fichas de riesgo explicables que apoyen la priorizaci{\'o}n de casos para revisi{\'o}n por organismos de control.
 
 \section{Objetivos Espec{\'i}ficos}
 
@@ -383,13 +431,13 @@ Construir y analizar el grafo bipartito empresa-organismo-contrato para detectar
 
 \textbf{M{\'e}trica:} Grafo con m{\'i}nimo 2.031 nodos empresa y 394 organismos CPV~71; modularidad $Q\,>\,0.30$; m{\'i}nimo 5 patrones de concentraci{\'o}n at{\'i}pica; correlaci{\'o}n red-flags vs centralidad $\geq$\,0.45.
 
-\subsection*{OE6 --- M{\'o}dulo NLP y enriquecimiento documental}
-Implementar un sistema de extracci{\'o}n de informaci{\'o}n estructurada sobre anuncios de licitaci{\'o}n del BOE y pliegos alojados en PLACE para el dominio CPV~71, mediante \textit{web scraping} (BeautifulSoup), NER en espa{\~n}ol (spaCy) y generaci{\'o}n de fichas explicativas con LLM local (Qwen3-8B).
-\textbf{M{\'e}trica:} Corpus procesado de m{\'i}nimo 500 anuncios del BOE correspondientes a contratos adjudicados del CPV~71; extracci{\'o}n exitosa de criterios de adjudicaci{\'o}n y certificaciones en $>$\,70\% de los casos; ficha explicativa generada con claridad $\geq$\,3.5/5 (Likert).
+\subsection*{OE6 --- M{\'o}dulo NLP y enriquecimiento Documental}
+Implementar un sistema de extracci{\'o}n de informaci{\'o}n estructurada sobre anuncios de licitaci{\'o}n del BOE y pliegos alojados en PLACE para el dominio CPV 71, mediante web scraping (BeautifulSoup), NER en español (spaCy) y generaci{\'o}n de fichas explicativas con LLM local (Qwen3-7B).
+\textbf{M{\'e}trica:} Corpus procesado de m{\'i}nimo 500 anuncios del BOE correspondientes a contratos adjudicados del CPV 71; extracci{\'o}n exitosa de criterios de adjudicaci{\'o}n y certificaciones en > 70\% de los casos; ficha explicativa generada con claridad $\geq$\,3.5/5 (Likert).
 
 
 \subsection*{OE7 --- Desarrollo del \textit{front-end} anal{\'i}tico}
-Construir una interfaz web interactiva (Streamlit\,+\,Sigma.js\,+\,Plotly) con grafo de relaciones, panel de indicadores de riesgo, \textit{timeline} de evoluci{\'o}n temporal y ficha explicativa de caso generada con LLM local (Qwen3-8B).
+Construir una interfaz web interactiva (Streamlit\,+\,Sigma.js\,+\,Plotly) con grafo de relaciones, panel de indicadores de riesgo, \textit{timeline} de evoluci{\'o}n temporal y ficha explicativa de caso generada con LLM local (Qwen3-7B).
 
 \textbf{M{\'e}trica:} SUS $>$\,68; tiempo medio para documentar un caso de riesgo $<$\,5\,min; ficha explicativa con claridad $\geq$\,3.5/5 (Likert).
 
@@ -402,32 +450,134 @@ Validar el prototipo con m{\'e}tricas cuantitativas de calidad del \textit{pipel
 \chapter{Marco Normativo}
 %=========================================================
 
-El dise{\~n}o de ProcureWatch Analytics debe tener en cuenta el marco normativo relevante en Espa{\~n}a y la Uni{\'o}n Europea:
+El diseño, desarrollo y eventual despliegue de ProcureWatch Analytics deben realizarse en el marco de la normativa española y europea aplicable a la contratación pública, la protección de datos, la transparencia y, de forma especialmente relevante, la inteligencia artificial. A continuación se analizan las principales disposiciones normativas y sus implicaciones concretas para el sistema.
 
-\begin{description}
-  \item[Ley 9/2017 de Contratos del Sector P{\'u}blico (LCSP)] \cite{LCSP2017} --- Marco regulatorio fundamental de la contrataci{\'o}n p{\'u}blica en Espa{\~n}a. Define tipos de contratos, procedimientos, umbrales de publicidad y obligaciones de transparencia.
-  \item[Directiva UE 2014/24/EU] \cite{Directive2014} --- Directiva europea sobre contrataci{\'o}n p{\'u}blica que armoniza los procedimientos en la UE y establece los principios de concurrencia y transparencia.
-  \item[Ley 19/2013 de transparencia] \cite{Ley192013} --- Marco de reutilizaci{\'o}n de informaci{\'o}n p{\'u}blica espa{\~n}ola. Define qu{\'e} informaci{\'o}n es de acceso libre y sus condiciones de reutilizaci{\'o}n.
-  \item[RGPD y LOPDGDD] --- Los datos de contrataci{\'o}n incluyen informaci{\'o}n sobre personas f{\'i}sicas (administradores, representantes). El sistema garantiza que el an{\'a}lisis se realiza sobre datos publicados en el marco de obligaciones de transparencia.
-  \item[Reglamento de IA de la UE (AI Act, 2024)] \cite{AIAct2024} --- ProcureWatch genera puntuaciones de riesgo para priorizar revisi{\'o}n humana. Aunque el prototipo no adopta decisiones administrativas ni declara fraude, se dise{\~n}a bajo principios propios de sistemas sensibles: gesti{\'o}n de riesgos, documentaci{\'o}n t{\'e}cnica, transparencia, supervisi{\'o}n humana, exactitud, robustez y ciberseguridad.
-\end{description}
+\section{Ley 9/2017, de 8 de noviembre, de Contratos del Sector Público (LCSP)}
 
-\section{Implicaciones del AI Act sobre el scoring de riesgo}
-\label{sec:ai_act_scoring}
+La LCSP \cite{LCSP2017} constituye el eje central de la contratación pública en España. Define los tipos de contrato (obras, servicios, suministros, concesiones), los procedimientos de adjudicación (abierto, restringido, negociado, menor, emergencia), los umbrales de publicidad y las obligaciones de transparencia. Para ProcureWatch Analytics, la LCSP tiene tres implicaciones prácticas:
 
-El AI Act exige que los sistemas de IA con impacto potencial en derechos, acceso a servicios o decisiones institucionales incorporen controles proporcionales al riesgo. En ProcureWatch, el elemento m{\'a}s sensible no es el uso de Qwen3-8B para redactar fichas, sino el \textit{score} de riesgo que ordena contratos, organismos o adjudicatarios para revisi{\'o}n. Por ello, el dise{\~n}o adopta las siguientes salvaguardas:
+\begin{itemize}
+\item \textbf{Determina la semántica de los indicadores de riesgo}: Por ejemplo, el uso del contrato menor por encima de los umbrales legales (artículo 118) o la recurrencia a procedimientos negociados sin publicidad (artículo 168) solo son anómalos cuando se exceden ciertos límites. El sistema debe parametrizar sus \textit{red flags} (RF-01 a RF-15) conforme a estos umbrales.
 
-\begin{enumerate}
-  \item \textbf{Finalidad limitada.} El score solo prioriza revisi{\'o}n anal{\'i}tica; no determina fraude, sanci{\'o}n, exclusi{\'o}n ni responsabilidad jur{\'i}dica.
-  \item \textbf{Supervisi{\'o}n humana.} Toda interpretaci{\'o}n de riesgo requiere revisi{\'o}n por una persona. El dashboard debe mostrar advertencias claras sobre el car{\'a}cter indiciario del resultado.
-  \item \textbf{Explicabilidad individual.} Cada puntuaci{\'o}n debe mostrar red flags activadas, valores observados, umbrales, pesos y evidencias de apoyo.
-  \item \textbf{Trazabilidad.} Cada ejecuci{\'o}n conserva versi{\'o}n de datos, reglas, modelos, prompts, fecha de c{\'a}lculo y fuentes recuperadas.
-  \item \textbf{Control de sesgos y calidad.} Los resultados se acompa{\~n}an de m{\'e}tricas de completitud, nulos, cobertura temporal y limitaciones por fuente.
-  \item \textbf{Separaci{\'o}n entre modelo anal{\'i}tico y LLM.} Qwen3-8B no calcula el score ni decide el nivel de riesgo; solo redacta explicaciones a partir de evidencias estructuradas.
-  \item \textbf{Minimizaci{\'o}n de datos.} El sistema usa datos publicados por obligaciones de transparencia y evita incorporar datos personales no necesarios para el an{\'a}lisis contractual.
-\end{enumerate}
+\item \textbf{Exige publicidad de los contratos} (artículo 63), lo que legitima el uso de datos del BOE 2014-2024 y PLACE como fuentes abiertas. Los anuncios HTML objeto de web scraping se publican en cumplimiento de esta obligación, por lo que su análisis no vulnera derechos de confidencialidad.
 
-Estas medidas permiten defender el prototipo como herramienta acad{\'e}mica de apoyo a auditor{\'i}a, alineada con los principios de IA confiable y con la necesidad de evitar automatismos perjudiciales en la evaluaci{\'o}n de empresas o contratos.
+\item \textbf{No otorga potestad sancionadora al sistema}: La LCSP reserva la supervisión y sanción a los órganos de contratación y al Tribunal Administrativo Central de Recursos Contractuales. ProcureWatch Analytics es una herramienta de apoyo a la auditoría, nunca un sustituto de la decisión humana, en consonancia con el principio de supervisión humana obligatoria exigido por el AI Act.
+\end{itemize}
+
+\section{Directiva 2014/24/UE del Parlamento Europeo y del Consejo, de 26 de febrero de 2014}
+
+Esta directiva \cite{Directive2014} armoniza los procedimientos de contratación en la UE y establece los principios de concurrencia, transparencia, igualdad de trato y no discriminación. Aunque traspuesta a la LCSP, su mención en el marco normativo es relevante porque:
+
+\begin{itemize}
+\item \textbf{Funda la legitimidad del análisis de datos abiertos}: El principio de transparencia activa (artículo 21) impulsa la publicación de datos en formatos reutilizables, base del \textit{pipeline} OCDS de ProcureWatch.
+
+\item El proyecto europeo DIGIWHIST \cite{Fazekas2020DIGIWHIST} y la plataforma OpenTender.eu se construyeron sobre datos de 35 jurisdicciones europeas al amparo de esta directiva. El sistema se alinea con esa tradición analítica.
+\end{itemize}
+
+\section{Ley 19/2013, de 9 de diciembre, de transparencia, acceso a la información pública y buen gobierno}
+
+Esta ley \cite{Ley192013} regula el derecho de acceso a la información pública y la reutilización de datos abiertos. Define qué información es de libre acceso y bajo qué condiciones. Para ProcureWatch Analytics:
+
+\begin{itemize}
+\item \textbf{Los contratos públicos son información pública reutilizable} (artículo 5), sin necesidad de autorización expresa. El web scraping de los anuncios del BOE es conforme con esta ley, siempre que se realice sin sobrecargar los servidores y con fines de análisis no comercial.
+
+\item \textbf{La reutilización debe respetar la integridad de la información} (artículo 10). El sistema no modifica los datos originales, solo los transforma y analiza. La trazabilidad de fuentes (campo \texttt{Enlace HTML} en el dataset longitudinal) garantiza la verificabilidad.
+\end{itemize}
+
+\section{RGPD (Reglamento (UE) 2016/679) y LOPDGDD (Ley Orgánica 3/2018)}
+
+Los datos de contratación incluyen información sobre personas físicas: nombres de administradores, representantes legales o personas autónomas adjudicatarias. Aunque la publicación de estos datos se realiza en cumplimiento de obligaciones de transparencia (base de legitimación del artículo 6.1.e del RGPD: «misión en interés público»), el tratamiento posterior mediante algoritmos de \textit{scoring} de riesgo debe observar:
+
+\begin{itemize}
+\item \textbf{Principio de minimización} (artículo 5.1.c): Solo se tratan los datos estrictamente necesarios para la detección de patrones de riesgo. No se incluyen datos de contacto privados ni información bancaria.
+
+\item \textbf{Principio de limitación de la finalidad} (artículo 5.1.b): Los \textit{scores} de riesgo solo se utilizan para priorizar casos ante organismos de control, no para decisiones automáticas que afecten a derechos de las empresas. Se prohíbe explícitamente el uso del sistema para crear listas negras o denegar contratación.
+
+\item \textbf{Derecho de oposición y transparencia} (artículos 21 y 13-15): Las empresas señaladas con alto riesgo deben poder conocer los indicadores que motivaron esa puntuación. Por eso el sistema incluye fichas explicativas generadas con LLM local (Qwen3-7B) y métodos SHAP, que permiten desglosar el \textit{score}.
+\end{itemize}
+
+El uso de un \textbf{LLM local} en lugar de APIs externas (por ejemplo, OpenAI) elimina el riesgo de transferencia internacional de datos (artículo 44 RGPD) \cite{RGPD2016}. Todos los datos permanecen en la infraestructura local del organismo de control, cumpliendo con las garantías de privacidad desde el diseño («\textit{by design and by default}», artículo 25 RGPD). Adicionalmente, la LOPDGDD \cite{LOPDGDD2018} refuerza estos principios en el ordenamiento español.
+
+\section{Reglamento (UE) 2024/1689 del Parlamento Europeo y del Consejo, de 13 de junio de 2024 (AI Act)}
+
+El AI Act \cite{AIAct2024} es el marco jurídico más relevante para ProcureWatch Analytics, ya que clasifica los sistemas de IA según su nivel de riesgo. Aunque el sistema es un prototipo de investigación, su diseño debe anticipar los requisitos que aplicarían en un posible despliegue real.
+
+\subsection{Clasificación del sistema como de alto riesgo}
+
+El artículo 6 del AI Act define los sistemas de IA de \textbf{alto riesgo} como aquellos que pueden afectar negativamente a derechos fundamentales o la seguridad. El anexo III incluye, entre otros, los sistemas utilizados para «evaluar la solvencia o la fiabilidad crediticia de personas físicas» (punto 5b). Aunque no menciona explícitamente la auditoría de contratación pública, la generación de puntuaciones de riesgo sobre empresas que podrían influir en decisiones de organismos de control (investigaciones, inspecciones) ha sido interpretada por la literatura como sistema de alto riesgo por analogía \cite{Wachs2025ML, SHAPLIMEWiley2025}. Por tanto, ProcureWatch Analytics se diseña bajo los siguientes principios preventivos, exigibles a los sistemas de alto riesgo:
+
+\begin{itemize}
+\item \textbf{Trazabilidad completa} (artículo 13): Cada \textit{score} de riesgo debe poder descomponerse en los indicadores de \textit{red flags} y métricas de red que lo componen. El sistema implementa SHAP para el modelo de \textit{scoring} (Positive-Unlabeled Learning e Isolation Forest) y almacena el historial de cálculos.
+
+\item \textbf{Supervisión humana obligatoria} (artículo 14): Ninguna señal de riesgo se considera definitiva sin revisión por parte de un auditor o técnico. La interfaz de Streamlit está diseñada para apoyar la decisión humana, no para reemplazarla. El LLM local solo genera explicaciones, no recomendaciones de acción.
+
+\item \textbf{No discriminación y equidad} (artículo 10): El sistema debe evaluarse para evitar sesgos por tamaño de empresa, ubicación geográfica o tipo de procedimiento. Se incluirán análisis de equidad en la evaluación final (OE8).
+
+\item \textbf{Registro y documentación} (artículo 11): Se generará un registro de las versiones del modelo, los datos de entrenamiento (etiquetas parciales de \textit{ground truth}) y las métricas de validación. Todo el código es \textit{open-source} para permitir auditoría externa.
+\end{itemize}
+
+\subsection{Implicaciones específicas para el motor de \textit{red flags} y \textit{scoring}}
+
+El motor de \textit{red flags} (OE4) combina tres enfoques: (i) reglas explícitas basadas en la literatura (RF-01 a RF-15), (ii) Isolation Forest (no supervisado) y (iii) Positive-Unlabeled Learning (semisupervisado). El AI Act no prohíbe estos métodos, pero exige que:
+
+\begin{itemize}
+\item El usuario sea informado de que está interactuando con un sistema de IA (artículo 52). La interfaz de ProcureWatch Analytics indicará claramente que el \textit{score} de riesgo es una recomendación estadística, no una prueba de irregularidad.
+
+\item Los conjuntos de datos de entrenamiento sean representativos (artículo 10.2). Para PUL, las etiquetas positivas procederán de casos documentados (por ejemplo, la trama de Cantabria, informes de la OIReScon) y se verificará su distribucionalidad.
+
+\item Se realice una evaluación de la conformidad antes del despliegue (artículo 43). En el ámbito del TFM, se simulará esta evaluación mediante la validación con métricas (precisión \textgreater70 \%, modularidad Q \textgreater0,30, etc.) y un análisis de riesgos documentado.
+\end{itemize}
+
+\subsection{Consecuencias del uso de un LLM local}
+
+El AI Act exime de ciertos requisitos a los sistemas de IA de «uso libre» (artículo 2.6), pero no a los de alto riesgo. Sin embargo, el empleo de un \textbf{LLM local (Qwen3-7B)} con funciones estrictamente auxiliares (extraer entidades, estructurar fichas, no tomar decisiones) reduce la superficie de riesgo. Se siguen las siguientes buenas prácticas:
+
+\begin{itemize}
+\item El LLM no se \textit{fine-tune} con datos de contratación sensibles; se usa con \textit{prompting few-shot} controlado.
+\item No se almacenan las interacciones del LLM más allá de la sesión de análisis.
+\item Se auditan las salidas del LLM mediante el framework RAGAS (\textit{faithfulness}, \textit{answer relevancy}) para evitar alucinaciones que afecten la ficha explicativa.
+\end{itemize}
+
+\section{Otras normativas de referencia}
+
+\begin{itemize}
+\item \textbf{Directiva (UE) 2019/1024 sobre datos abiertos y reutilización de la información del sector público} \cite{OpenDataDirective2019}: Refuerza la obligación de publicar datos públicos en formatos abiertos y reutilizables. Justifica el uso del estándar OCDS en el \textit{pipeline} de datos.
+
+\item \textbf{Directiva 2022/2557 de Resiliencia de Entidades Críticas (CER)} \cite{CERDirective2022}: Contextualiza la necesidad de supervisar la contratación en infraestructuras críticas (energía, transporte, sanidad). ProcureWatch Analytics, al centrarse en la división CPV 71 (servicios de arquitectura, ingeniería e inspección), puede incidir en contratos relacionados con dichas infraestructuras.
+\end{itemize}
+
+\section{Síntesis de implicaciones para el diseño de ProcureWatch Analytics}
+
+La Tabla \ref{tab:normativa_impl} resume los principales requisitos normativos y su concreción en la arquitectura del sistema.
+
+\begin{table}[h]
+\centering
+\caption{Requisitos normativos e implementación en ProcureWatch Analytics}
+\label{tab:normativa_impl}
+\begin{tabular}{|p{4.5cm}|p{9cm}|}
+\hline
+\textbf{Requisito normativo} & \textbf{Implementación en el sistema} \\
+\hline
+Transparencia activa (LCSP, Ley 19/2013) & \textit{Pipeline} de datos abiertos (BOE 2014-2024, PLACE); web scraping de anuncios HTML públicos. \\
+\hline
+Minimización y limitación de finalidad (RGPD) & No se tratan datos personales superfluos; \textit{scores} solo para priorización, no para denegación de contratos. \\
+\hline
+Supervisión humana obligatoria (AI Act) & Interfaz con revisión manual; ninguna acción automática; generación de fichas explicativas con LLM local. \\
+\hline
+Trazabilidad y explicabilidad (AI Act) & SHAP para descomposición del \textit{score}; \textit{logs} de versiones; código abierto en repositorio GitHub. \\
+\hline
+Evaluación de riesgos y conformidad (AI Act) & Métricas de precisión (\textgreater70 \%), modularidad de grafos (Q\textgreater0,30), calidad RAG (Faithfulness\textgreater0,80) y usabilidad (SUS\textgreater68). \\
+\hline
+Datos locales y privacidad (RGPD + AI Act) & LLM local (Qwen3-7B) vía Ollama; ninguna API externa; todo el procesamiento en infraestructura local. \\
+\hline
+\end{tabular}
+\end{table}
+
+
+\section{Conclusión del marco normativo}
+
+El análisis de las normativas aplicables (LCSP, RGPD, AI Act, etc.) muestra que ProcureWatch Analytics es viable siempre que se respeten los principios de transparencia, explicabilidad, supervisión humana y minimización de datos. El diseño del sistema deberá reflejar estos principios, tal como se desarrollará en los capítulos siguientes.
+
 
 %=========================================================
 \chapter{Arquitectura T{\'e}cnica e Implementaci{\'o}n del Prototipo}
@@ -437,46 +587,81 @@ Estas medidas permiten defender el prototipo como herramienta acad{\'e}mica de a
 \section{Visi{\'o}n general}
 \label{sec:vision_general_arquitectura}
 
-Para la entrega del 20 de mayo de 2026, ProcureWatch Analytics se presenta como un \textbf{prototipo funcional avanzado}: no se formula como un producto cerrado ni como una herramienta de decisi{\'o}n administrativa, sino como una arquitectura implementable y parcialmente materializable que fija los componentes, flujos, agentes, datos, criterios de trazabilidad y decisiones tecnol{\'o}gicas necesarias para la fase de desarrollo. Esta formulaci{\'o}n permite defender el valor t{\'e}cnico del sistema sin afirmar una madurez productiva que todav{\'i}a no corresponde al calendario del TFM.
 
-El prototipo transforma datos abiertos de contrataci{\'o}n p{\'u}blica en indicadores explicables de riesgo. La arquitectura separa cuatro responsabilidades anal{\'i}ticas, alineadas con la \textit{Propuesta T{\'e}cnica SASM}: (1)~\textit{pipeline} de datos y normalizaci{\'o}n OCDS; (2)~red flags y \textit{scoring}; (3)~an{\'a}lisis de redes y comunidades; y (4)~\textit{web scraping}, NLP y recuperaci{\'o}n documental. Estas responsabilidades se implementan como agentes coordinados mediante LangGraph y apoyados por LangChain para la integraci{\'o}n RAG con Qdrant, Ollama y el modelo local Qwen3-8B.
+ProcureWatch Analytics se presenta como un prototipo funcional avanzado que demuestra la viabilidad de integrar múltiples técnicas analíticas —\textit{pipeline} de datos OCDS, indicadores de \textit{red flags}, análisis de redes, procesamiento de lenguaje natural y recuperación aumentada por generación (RAG)— para la detección de patrones de riesgo en contratación pública española. El sistema no emite juicios jurídicos ni declaraciones automáticas de fraude, sino que genera puntuaciones de riesgo trazables, acompañadas de las señales activadas, evidencias documentales y métricas de red, con el fin de priorizar casos para su revisión por parte de organismos de control o auditores.
 
-El dise{\~n}o evita que el sistema emita conclusiones jur{\'i}dicas autom{\'a}ticas. El resultado principal es un \textit{score} de riesgo trazable, acompa{\~n}ado de red flags activadas, evidencias documentales y relaciones de red. Por tanto, la plataforma se concibe como una herramienta de priorizaci{\'o}n anal{\'i}tica para revisi{\'o}n humana, no como un mecanismo de declaraci{\'o}n de fraude.
+La arquitectura separa cuatro responsabilidades analíticas, alineadas con la propuesta técnica:
+\begin{enumerate}
+\item \textit{pipeline} de datos y normalización OCDS;
+\item red flags y \textit{scoring};
+\item análisis de redes y comunidades;
+\item web scraping, NLP y recuperación documental.
+\end{enumerate}
+Estas responsabilidades se implementan como agentes coordinados mediante LangGraph y apoyados por LangChain para la integración RAG con Qdrant, Ollama y el modelo local Qwen3-8B. El resultado principal es un \textit{score} de riesgo trazable, acompañado de \textit{red flags} activadas, evidencias documentales y relaciones de red. La plataforma se concibe, por tanto, como una herramienta de priorización analítica para revisión humana, no como un mecanismo de declaración de fraude.
 
-\begin{figure}[ht]
+
+\begin{figure}[h]
 \centering
-\fbox{
-\begin{minipage}{0.96\textwidth}
-\centering
-\footnotesize
-\textbf{Fuentes abiertas}\\
-BOE 2014--2024/OCDS \quad PLACE \quad OpenTender \quad TED \quad documentos p{\'u}blicos\\[0.1cm]
-\(\downarrow\)\\[-0.05cm]
-\textbf{API y orquestaci{\'o}n}\\
-FastAPI \quad + \quad LangGraph/LangChain \quad + \quad Ollama con Qwen3-8B\\[0.1cm]
-\(\downarrow\)\\[-0.05cm]
-\begin{tabular}{>{\centering\arraybackslash}p{0.22\textwidth}>{\centering\arraybackslash}p{0.22\textwidth}>{\centering\arraybackslash}p{0.22\textwidth}>{\centering\arraybackslash}p{0.22\textwidth}}
-\textbf{Agente 1}\\Pipeline + OCDS &
-\textbf{Agente 2}\\Red flags + scoring &
-\textbf{Agente 3}\\Redes + comunidades &
-\textbf{Agente 4}\\Scraping/NLP/RAG \tabularnewline
-\end{tabular}\\[0.2cm]
-\(\downarrow\)\\[-0.05cm]
-\textbf{Capa de datos}\\
-PostgreSQL/OCDS \quad DuckDB/Parquet \quad Neo4j/NetworkX \quad Qdrant\\[0.1cm]
-\(\downarrow\)\\[-0.05cm]
-\textbf{Interfaz y evidencia}\\
-Streamlit \quad Plotly \quad Sigma.js/PyVis \quad fichas explicables con trazabilidad completa
-\end{minipage}
-}
-\caption{Arquitectura funcional avanzada de ProcureWatch Analytics para la entrega del 20 de mayo de 2026.}
-\label{fig:arquitectura_multiagente}
+\caption{Arquitectura multiagente de ProcureWatch Analytics}
+\label{fig:arquitectura_mermaid}
+\includegraphics[width=0.9\textwidth]{figuras/diagrama_arquitectura.png}
+% El diagrama se ha generado con el siguiente código Mermaid:
+% flowchart TB
+%     subgraph Frontend["FRONT-END (Streamlit)"]
+%         F1["Grafo"]; F2["Panel riesgo"]; F3["Ficha caso"]; F4["Timeline"]
+%     end
+%     subgraph Orquestador["ORQUESTADOR (LangGraph)"]
+%         A1["Agente 1<br/>Pipeline datos OCDS"]
+%         A2["Agente 2<br/>Red flags + scoring"]
+%         A3["Agente 3<br/>Análisis redes (Neo4j)"]
+%         A4["Agente 4<br/>NLP + web scraping + RAG"]
+%     end
+%     subgraph Datos["CAPA DE DATOS"]
+%         D1[("PostgreSQL")]; D2[("Neo4j")]; D3[("Qdrant")]; D4[("DuckDB")]
+%     end
+%     subgraph Infra["INFRAESTRUCTURA LOCAL (Ollama)"]
+%         I1["LLM Qwen3-7B"]; I2["Embeddings BGE-M3"]
+%     end
+%     A1 --> D1; A1 --> D2; A2 --> D1; A2 --> D2; A3 --> D2; A4 --> D3; A4 --> I1; A4 --> I2
+%     D1 --> A2; D2 --> A2; D2 --> A3; D3 --> A4
+%     Frontend --> Orquestador
+%     D1 -.-> Frontend; D2 -.-> Frontend; D3 -.-> Frontend
 \end{figure}
+
+%\begin{figure}[ht]
+%\centering
+%\fbox{
+%\begin{minipage}{0.96\textwidth}
+%\centering
+%\footnotesize
+%\textbf{Fuentes abiertas}\\
+%BOE 2014--2024/OCDS \quad PLACE \quad OpenTender \quad TED \quad documentos p{\'u}blicos\\[0.1cm]
+%\(\downarrow\)\\[-0.05cm]
+%\textbf{API y orquestaci{\'o}n}\\
+%FastAPI \quad + \quad LangGraph/LangChain \quad + \quad Ollama con Qwen3-8B\\[0.1cm]
+%\(\downarrow\)\\[-0.05cm]
+%\begin{tabular}{>{\centering\arraybackslash}p{0.22\textwidth}>{\centering\arraybackslash}p{0.22\textwidth}>{\centering\arraybackslash}p{0.22\textwidth}>{\centering\arraybackslash}p{0.22\textwidth}}
+%\textbf{Agente 1}\\Pipeline + OCDS &
+%\textbf{Agente 2}\\Red flags + scoring &
+%\textbf{Agente 3}\\Redes + comunidades &
+%\textbf{Agente 4}\\Scraping/NLP/RAG \tabularnewline
+%\end{tabular}\\[0.2cm]
+%\(\downarrow\)\\[-0.05cm]
+%\textbf{Capa de datos}\\
+%PostgreSQL/OCDS \quad DuckDB/Parquet \quad Neo4j/NetworkX \quad Qdrant\\[0.1cm]
+%\(\downarrow\)\\[-0.05cm]
+%\textbf{Interfaz y evidencia}\\
+%Streamlit \quad Plotly \quad Sigma.js/PyVis \quad fichas explicables con trazabilidad completa
+%\end{minipage}
+%}
+%\caption{Arquitectura funcional avanzada de ProcureWatch Analytics para la entrega del 20 de mayo de 2026.}
+%\label{fig:arquitectura_multiagente}
+%\end{figure}
 
 \section{Stack tecnol{\'o}gico definitivo}
 \label{sec:stack_definitivo}
 
-La selecci{\'o}n tecnol{\'o}gica prioriza cuatro criterios: ejecuci{\'o}n local, reproducibilidad acad{\'e}mica, ecosistema abierto y adecuaci{\'o}n al problema de contrataci{\'o}n p{\'u}blica. La Tabla~\ref{tab:stack_tecnologico} resume las decisiones definitivas para la entrega del 20 de mayo.
+La selección tecnológica prioriza cuatro criterios: ejecución local, reproducibilidad académica, ecosistema abierto y adecuación al problema de contratación pública. La Tabla~\ref{tab:stack_tecnologico} resume el stack tecnológico definitivo del prototipo.
 
 {\small
 \begin{longtable}{p{3.1cm}p{4.1cm}p{6.1cm}}
@@ -495,7 +680,7 @@ Procesamiento tabular & pandas, DuckDB y Polars \cite{DuckDBOfficial,PolarsOffic
 Persistencia relacional & PostgreSQL \cite{PostgreSQLOfficial} & Base relacional robusta para contratos, adjudicatarios, organismos, indicadores, scores y trazabilidad de ejecuciones. \\
 Grafo anal{\'i}tico & Neo4j Community y NetworkX \cite{Neo4jOfficial,NetworkXPython} & Neo4j facilita consulta y exploraci{\'o}n del grafo; NetworkX permite reproducir m{\'e}tricas y experimentos en scripts Python. \\
 Motor de red flags & Python, scikit-learn, Isolation Forest y reglas OCDS \cite{IsolationForestSklearn,OCP2024RedFlags} & Permite combinar reglas expl{\'i}citas, variables de red y detecci{\'o}n no supervisada de anomal{\'i}as. \\
-Web scraping y parsing documental & BeautifulSoup y spaCy \cite{Richardson,SpaCyOfficial} & Extraen informaci{\'o}n desde anuncios HTML, p{\'a}ginas p{\'u}blicas y contenido textual estructurado, con menor complejidad operativa que el tratamiento de documentos escaneados. \\
+Web scraping y parsing documental & BeautifulSoup y spaCy \cite{Richardson2024BeautifulSoup,SpaCyOfficial} & Extraen informaci{\'o}n desde anuncios HTML, p{\'a}ginas p{\'u}blicas y contenido textual estructurado, con menor complejidad operativa que el tratamiento de documentos escaneados. \\
 NLP cl{\'a}sico & spaCy \cite{SpaCyOfficial} & Adecuado para tokenizaci{\'o}n, NER, normalizaci{\'o}n ling{\"u}{\'i}stica y reglas de extracci{\'o}n en espa{\~n}ol. \\
 Embeddings & BGE-M3 \cite{BGEAM3Embeddings} & Modelo multiling{\"u}e adecuado para recuperaci{\'o}n sem{\'a}ntica sobre documentos en espa{\~n}ol y terminolog{\'i}a t{\'e}cnica. \\
 Vector store & Qdrant \cite{QdrantOfficial} & Base vectorial local para indexar fragmentos documentales y recuperar contexto por contrato o adjudicatario. \\
@@ -628,7 +813,7 @@ La ficha explicativa tendr{\'a} formato estructurado: resumen del contrato, indi
 \section{Implementaci{\'o}n multiagente}
 \label{sec:multiagente_cap6}
 
-La arquitectura multiagente se implementa con LangGraph porque permite definir un flujo de estados expl{\'i}cito y auditable. LangChain act{\'u}a como capa de integraci{\'o}n para herramientas, prompts, recuperadores y llamadas a Ollama. La decisi{\'o}n clave para esta entrega es mantener \textbf{cuatro agentes especializados}, exactamente alineados con la propuesta t{\'e}cnica, y tratar el orquestador como infraestructura de ejecuci{\'o}n, no como un quinto agente funcional.
+La arquitectura multiagente se implementa con LangGraph porque permite definir un flujo de estados expl{\'i}cito y auditable. LangChain act{\'u}a como capa de integraci{\'o}n para herramientas, prompts, recuperadores y llamadas a Ollama. La decisi{\'o}n clave es mantener \textbf{cuatro agentes especializados}, exactamente alineados con la propuesta t{\'e}cnica, y tratar el orquestador como infraestructura de ejecuci{\'o}n, no como un quinto agente funcional.
 
 {\small
 \begin{longtable}{p{3.2cm}p{5.7cm}p{4.5cm}}
@@ -704,21 +889,21 @@ Los criterios m{\'i}nimos de calidad son:
   \item separaci{\'o}n entre hechos observados, inferencias anal{\'i}ticas y limitaciones.
 \end{itemize}
 
-\section{Entregable t{\'e}cnico del 20 de mayo}
-\label{sec:entrega_20_mayo_cap6}
+%%\section{Entregable t{\'e}cnico del 20 de mayo}
+%\label{sec:entrega_20_mayo_cap6}
 
-Para la entrega del 20 de mayo de 2026, este cap{\'i}tulo deja cerradas las decisiones de dise{\~n}o necesarias para presentar ProcureWatch como prototipo funcional avanzado: arquitectura general, \textit{stack} definitivo, selecci{\'o}n de Qwen3-8B v{\'i}a Ollama, flujo de datos, cuatro agentes LangGraph/LangChain y criterios de trazabilidad. La implementaci{\'o}n posterior deber{\'a} materializar estas decisiones en scripts, servicios, pruebas y dashboard.
+%Para la entrega del 20 de mayo de 2026, este cap{\'i}tulo deja cerradas las decisiones de dise{\~n}o necesarias para presentar ProcureWatch como prototipo funcional avanzado: arquitectura general, \textit{stack} definitivo, selecci{\'o}n de Qwen3-8B v{\'i}a Ollama, flujo de datos, cuatro agentes LangGraph/LangChain y criterios de trazabilidad. La implementaci{\'o}n posterior deber{\'a} materializar estas decisiones en scripts, servicios, pruebas y dashboard.
 
-Los elementos que quedan fijados son:
+%Los elementos que quedan fijados son:
 
-\begin{enumerate}
-  \item uso de BOE 2014--2024 como fuente principal y PLACE/OpenTender como fuentes complementarias;
-  \item adopci{\'o}n de Qwen3-8B v{\'i}a Ollama como LLM local para NLP, RAG y fichas explicativas;
-  \item \textit{scoring} h{\'i}brido con base de reglas trazables, variables de red, anomal{\'i}as estad{\'i}sticas y explicaci{\'o}n asistida por LLM;
-  \item almacenamiento relacional en PostgreSQL, grafo en Neo4j/NetworkX e {\'i}ndice documental en Qdrant;
-  \item arquitectura multiagente con cuatro agentes especializados sobre LangGraph y LangChain;
-  \item dashboard explicable orientado a revisi{\'o}n humana.
-\end{enumerate}
+%\begin{enumerate}
+%  \item uso de BOE 2014--2024 como fuente principal y PLACE/OpenTender como fuentes complementarias;
+%  \item adopci{\'o}n de Qwen3-8B v{\'i}a Ollama como LLM local para NLP, RAG y fichas explicativas;
+%  \item \textit{scoring} h{\'i}brido con base de reglas trazables, variables de red, anomal{\'i}as estad{\'i}sticas y explicaci{\'o}n asistida por LLM;
+%  \item almacenamiento relacional en PostgreSQL, grafo en Neo4j/NetworkX e {\'i}ndice documental en Qdrant;
+%  \item arquitectura multiagente con cuatro agentes especializados sobre LangGraph y LangChain;
+%  \item dashboard explicable orientado a revisi{\'o}n humana.
+%\end{enumerate}
 
 %=========================================================
 \chapter{Conclusiones y Trabajo Futuro}
