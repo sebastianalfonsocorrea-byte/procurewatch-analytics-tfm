@@ -1035,6 +1035,104 @@ el dashboard calcula resultados en tiempo real a partir de datos brutos, resulta
 qu{\'e} versi{\'o}n de reglas se aplic{\'o}. En ProcureWatch, el dashboard consume artefactos ya
 calculados; su funci{\'o}n es explicar y explorar, no redefinir el resultado anal{\'i}tico.
 
+\section{Implementaci{\'o}n detallada de los agentes}
+\label{sec:implementacion_detallada_agentes}
+
+La implementaci{\'o}n final del MVP se apoya en cuatro agentes con contratos de entrada y salida
+expl{\'i}citos. Esta decisi{\'o}n es metodol{\'o}gicamente relevante porque permite evaluar cada fase por
+separado: Agent1 se valida por calidad y cobertura de datos; Agent2 por coherencia de reglas,
+scores y niveles de riesgo; Agent3 por consistencia de nodos, aristas y m{\'e}tricas; y Agent4 por
+trazabilidad de evidencias y generaci{\'o}n de contexto de caso. El resultado no es una cadena opaca,
+sino una composici{\'o}n de artefactos auditables.
+
+\subsection{Agent1: ingesta, normalizaci{\'o}n y can{\'o}nico}
+
+Agent1 concentra la mayor parte del riesgo de datos del sistema. Sus entradas proceden de BOE,
+PLACE y OpenTender, pero cada fuente presenta una estructura distinta: CSV u OCDS tabular en el
+caso BOE, paquetes XML/Atom y ZIP en PLACE, y registros JSONL o comprimidos en OpenTender. Por
+ello, la implementaci{\'o}n no intenta tratar todas las fuentes con un parser gen{\'e}rico, sino con
+conectores espec{\'i}ficos en \texttt{scr/procurewatch/data\_sources/}. Cada conector genera salidas
+normalizadas con una sem{\'a}ntica com{\'u}n: fuente, identificador de registro, organismo, proveedor,
+CPV, importes, fechas, procedimiento y campos auxiliares de trazabilidad.
+
+El artefacto central de Agent1 es \texttt{agent2\_contracts\_canonical.parquet}. Este fichero cumple
+dos funciones. En primer lugar, act{\'u}a como frontera estable entre ingesta y scoring: Agent2 no
+necesita conocer c{\'o}mo se descargaron o parsearon las fuentes, sino que consume una tabla ya
+normalizada. En segundo lugar, conserva la columna \texttt{contract\_key\_canon}, que permite
+deduplicar por fuente, medir cobertura y conectar los agentes posteriores. La pol{\'i}tica de esta
+clave es deliberadamente conservadora: si no existe evidencia suficiente para considerar dos filas
+como el mismo contrato, se evita forzar el enlace.
+
+Agent1 tambi{\'e}n produce salidas de diagn{\'o}stico. El reporte de ejecuci{\'o}n registra fuentes
+procesadas, filas generadas, rutas y errores; el resumen de calidad mide completitud, validez de
+identificadores y coherencia temporal; y la cobertura por clave can{\'o}nica muestra intersecciones
+entre BOE, PLACE y OpenTender. Esta capa es esencial para la defensa del TFM porque permite explicar
+no solo cu{\'a}ntos contratos se procesan, sino qu{\'e} parte del an{\'a}lisis queda limitada por datos
+ausentes, diferencias de granularidad o falta de intersecci{\'o}n entre fuentes.
+
+\subsection{Agent2: red flags, score y priorizaci{\'o}n}
+
+Agent2 transforma el can{\'o}nico de Agent1 en se{\~n}ales de riesgo. La versi{\'o}n MVP implementa
+RF-01 a RF-06 como reglas trazables y evita presentar como implementadas las red flags no verificadas
+en la versi{\'o}n de cierre. Las reglas activadas generan dos tipos de artefactos: una tabla de flags
+por contrato y una tabla de scores. La primera permite saber qu{\'e} indicador se activ{\'o}, con qu{\'e}
+versi{\'o}n de regla y sobre qu{\'e} contrato; la segunda resume el \textit{risk score}, el nivel de
+riesgo, el n{\'u}mero de se{\~n}ales y los principales factores explicativos.
+
+El dise{\~n}o de scoring se mantiene explicable. Las reglas no se sustituyen por un modelo opaco
+porque el proyecto no dispone de etiquetas supervisadas de fraude confirmado. En su lugar, el score
+agrega pesos asociados a se{\~n}ales comprensibles para revisi{\'o}n humana: baja concurrencia,
+procedimientos de mayor riesgo, recurrencia comprador-proveedor, concentraci{\'o}n, desviaci{\'o}n
+entre importe estimado y adjudicado y patrones temporales. Cuando una regla no puede evaluarse por
+falta de campos, el contrato no debe recibir una penalizaci{\'o}n artificial; el estado no evaluable
+forma parte de la salida anal{\'i}tica.
+
+La agregaci{\'o}n por adjudicatario permite pasar de una lectura contrato a contrato a una lectura
+por proveedor. Esta vista resume n{\'u}mero de contratos, importe adjudicado, organismos distintos,
+flags recurrentes y score agregado. Su funci{\'o}n no es se{\~n}alar empresas como fraudulentas, sino
+detectar perfiles que concentran m{\'u}ltiples se{\~n}ales y que, por tanto, pueden justificar una
+revisi{\'o}n m{\'a}s profunda.
+
+\subsection{Agent3: grafo derivado y variables relacionales}
+
+Agent3 construye un grafo a partir del can{\'o}nico o de una muestra integrada de demostraci{\'o}n. Sus
+nodos representan contratos, compradores, adjudicatarios, CPV y fuentes; sus aristas expresan
+relaciones observadas en los datos normalizados. Esta decisi{\'o}n evita que el grafo cree una fuente
+paralela de verdad: si un contrato no aparece correctamente normalizado en Agent1, Agent3 no debe
+inventar relaciones para completarlo.
+
+La salida de Agent3 se divide en varios artefactos: nodos, aristas, m{\'e}tricas contractuales,
+features para scoring y resumen de red. Las m{\'e}tricas incluyen grado, relaciones de comprador y
+proveedor, comunidad y variables de contexto. En entornos donde Neo4j est{\'a} disponible, el sistema
+puede cargar nodos y aristas para exploraci{\'o}n mediante consultas Cypher; cuando no lo est{\'a}, el
+flujo sigue siendo reproducible con Parquet y NetworkX. Por tanto, Neo4j mejora la exploraci{\'o}n,
+pero no es condici{\'o}n obligatoria para ejecutar el MVP.
+
+Las variables relacionales generadas por Agent3 son especialmente {\'u}tiles para contextualizar RF-03
+y RF-04: recurrencia, concentraci{\'o}n y patrones comprador-proveedor. Sin embargo, la memoria evita
+interpretar la centralidad o la pertenencia a una comunidad como prueba de irregularidad. Un actor
+central puede ser simplemente un proveedor relevante en un nicho t{\'e}cnico; el valor anal{\'i}tico
+aparece cuando esa posici{\'o}n se combina con red flags tabulares y evidencia documental.
+
+\subsection{Agent4: evidencia documental y ficha de caso}
+
+Agent4 aporta la capa documental del sistema. Su entrada combina un contrato priorizado, el score de
+Agent2, las features de Agent3 y un corpus de documentos o fragmentos asociados. El flujo incluye
+carga de corpus, fragmentaci{\'o}n, recuperaci{\'o}n de evidencias, composici{\'o}n de contexto y
+generaci{\'o}n de una ficha de caso. Qdrant y Ollama se soportan como servicios opcionales para
+b{\'u}squeda vectorial y generaci{\'o}n local; en pruebas y demo se mantiene un fallback determinista
+para no hacer depender la validaci{\'o}n de servicios externos.
+
+La ficha de caso no es una conclusi{\'o}n jur{\'i}dica. Su estructura separa datos del contrato, score,
+red flags, relaciones de grafo, evidencias recuperadas, citas y advertencias. Esta separaci{\'o}n
+reduce el riesgo de que el LLM introduzca afirmaciones no respaldadas: el texto generado debe
+apoyarse en fragmentos recuperados o en variables calculadas por los agentes anteriores. Si no hay
+evidencia suficiente, la respuesta correcta es reflejar esa limitaci{\'o}n.
+
+En conjunto, Agent4 convierte el ranking en un objeto revisable. Un auditor no recibe solo una
+puntuaci{\'o}n, sino un resumen estructurado que permite comprobar por qu{\'e} el caso fue priorizado,
+qu{\'e} datos faltan, qu{\'e} evidencias se recuperaron y qu{\'e} aspectos requieren revisi{\'o}n humana.
+
 \subsection{Separaci{\'o}n entre capa anal{\'i}tica y capa de demostraci{\'o}n}
 
 La implementaci{\'o}n distingue entre dos niveles de uso. El primer nivel es el flujo anal{\'i}tico
