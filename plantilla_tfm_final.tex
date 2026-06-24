@@ -1668,4 +1668,173 @@ El an{\'a}lisis se centra en las siguientes tipolog{\'i}as contractuales del BOE
 \end{tabular}
 \end{table}
 
+\chapter{Ap{\'e}ndice: Estructura t{\'e}cnica del repositorio}
+\label{ap:estructura_repo}
+
+La estructura t{\'e}cnica del repositorio de implementaci{\'o}n se resume en la
+Tabla~\ref{tab:estructura_repo}. No se listan datasets pesados ni artefactos temporales, ya que
+estos se mantienen fuera de Git por reproducibilidad y control de tama{\~n}o.
+
+{\small
+\begin{longtable}{p{5.0cm}p{8.2cm}}
+\caption{Estructura funcional del repositorio de implementaci{\'o}n}
+\label{tab:estructura_repo}\\
+\toprule
+\textbf{Ruta} & \textbf{Funci{\'o}n} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Ruta} & \textbf{Funci{\'o}n} \\
+\midrule
+\endhead
+\texttt{scr/procurewatch/cli.py} & CLI central del proyecto. \\
+\texttt{scr/procurewatch/batch.py} & Orquestaci{\'o}n de lotes, manifests y estado de ejecuci{\'o}n. \\
+\texttt{scr/procurewatch/settings.py} & Lectura de configuraci{\'o}n y disponibilidad de servicios. \\
+\texttt{scr/procurewatch/db.py} & Persistencia PostgreSQL de tablas anal{\'i}ticas. \\
+\texttt{scr/procurewatch/data\_sources/} & Parsers y conectores BOE, PLACE y OpenTender. \\
+\texttt{scr/procurewatch/agent1/} & Ingesta, normalizaci{\'o}n, esquema anal{\'i}tico, calidad y cobertura. \\
+\texttt{scr/procurewatch/agent2/} & Red flags, scoring, agregaci{\'o}n y reportes. \\
+\texttt{scr/procurewatch/agent3/} & Grafo, m{\'e}tricas de red, comunidades, features y Neo4j opcional. \\
+\texttt{scr/procurewatch/agent4/} & Corpus, chunking, retrieval, Qdrant/Ollama opcional, contexto de caso y evaluaci{\'o}n. \\
+\texttt{frontend/agent3\_demo.py} & Dashboard Streamlit integrado para exploraci{\'o}n del MVP. \\
+\texttt{tests/} & Pruebas automatizadas de agentes, fuentes, batch, CLI y servicios auxiliares. \\
+\texttt{docs/} & Hojas de ruta, seguimiento, planes t{\'e}cnicos, modelo de datos y decisiones de cierre. \\
+\texttt{docker-compose.yml} & Servicios locales PostgreSQL, Neo4j y Qdrant. \\
+\texttt{pyproject.toml} & Dependencias, extras, entrypoint de CLI y configuraci{\'o}n de tests. \\
+\bottomrule
+\end{longtable}
+}
+
+\chapter{Ap{\'e}ndice: Esquema anal{\'i}tico resumido}
+\label{ap:esquema_analitico}
+
+El esquema anal{\'i}tico implementado sigue la estructura m{\'i}nima exigida por la propuesta
+t{\'e}cnica. La Tabla~\ref{tab:contrato_schema_resumen} agrupa los campos por bloque funcional.
+
+{\small
+\begin{longtable}{p{3.5cm}p{9.6cm}}
+\caption{Bloques funcionales del esquema \texttt{CONTRATO}}
+\label{tab:contrato_schema_resumen}\\
+\toprule
+\textbf{Bloque} & \textbf{Campos principales} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Bloque} & \textbf{Campos principales} \\
+\midrule
+\endhead
+Identificaci{\'o}n & \texttt{id\_contrato}, \texttt{id\_licitacion}, \texttt{fuentes\_cruzadas}, \texttt{estado\_revision}. \\
+Organismo & \texttt{organismo\_contratante}, \texttt{codigo\_organismo}, \texttt{nivel\_administracion}. \\
+Contrato & \texttt{tipo\_contrato}, \texttt{procedimiento}, \texttt{cpv\_codigo}, \texttt{cpv\_descripcion}. \\
+Importes & \texttt{importe\_estimado}, \texttt{importe\_adjudicado}, \texttt{ratio\_desviacion\_importe}. \\
+Fechas & \texttt{fecha\_publicacion}, \texttt{fecha\_adjudicacion}, \texttt{dias\_resolucion}. \\
+Concurrencia & \texttt{numero\_ofertas\_recibidas}. \\
+Adjudicatario & \texttt{id\_adjudicatario}, \texttt{nif\_adjudicatario}, \texttt{nombre\_adjudicatario}. \\
+Riesgo & \texttt{score\_red\_flags\_total}, \texttt{red\_flags\_activados}, \texttt{nivel\_riesgo}. \\
+Grafo & \texttt{score\_centralidad\_red}, \texttt{comunidad\_red}. \\
+Documental & \texttt{fragmentos\_documentales\_recuperados}. \\
+\bottomrule
+\end{longtable}
+}
+
+El esquema \texttt{ADJUDICATARIO} recoge NIF, nombre, forma jur{\'i}dica, sector, total de contratos,
+importe adjudicado, organismos distintos, ratio de procedimientos menores, tasa de adjudicaci{\'o}n,
+riesgo agregado, centralidad, comunidades y red flags recurrentes. Esta separaci{\'o}n permite
+evaluar riesgo por contrato y riesgo acumulado por proveedor sin mezclar unidades de an{\'a}lisis.
+
+\chapter{Ap{\'e}ndice: Ejemplo de report y manifest}
+\label{ap:manifest_report}
+
+Los reports de ejecuci{\'o}n se almacenan como JSON para facilitar auditor{\'i}a y comparaci{\'o}n. Un
+report de Agent1 contiene, de forma resumida, las fuentes procesadas, versiones de parser, filas
+le{\'i}das, filas normalizadas, errores y rutas de salida. El siguiente ejemplo reproduce la forma
+del artefacto sin incluir hashes reales completos:
+
+\begin{verbatim}
+{
+  "run_at": "2026-06-23T00:01:04Z",
+  "parser_versions": {
+    "agent1": "1.0.0",
+    "boe": "1.0.0",
+    "place": "1.0.0",
+    "opentender": "1.3.0"
+  },
+  "boe": {
+    "total_data_lines": 97154,
+    "parsed_rows": 96809,
+    "parse_errors": 345,
+    "cpv71_rows": 8097
+  },
+  "outputs": {
+    "canonical": "data/processed/agent2_contracts_canonical.parquet",
+    "quality": "data/processed/agent1_data_quality_summary.json"
+  }
+}
+\end{verbatim}
+
+El manifest de batch permite saber si una ejecuci{\'o}n proces{\'o} datos nuevos o se salt{\'o} por no
+haber cambios. Su estructura m{\'i}nima es:
+
+\begin{verbatim}
+{
+  "batch_id": "monthly-2026-06",
+  "run_mode": "monthly",
+  "status": "updated",
+  "sources_checked": ["boe", "place", "opentender"],
+  "sources_changed": ["place"],
+  "input_hashes": {
+    "place": "sha256:..."
+  },
+  "output_hashes": {
+    "canonical": "sha256:...",
+    "agent2_scores": "sha256:..."
+  },
+  "versions": {
+    "code_commit": "19919bd",
+    "schema_version": "agent1-analytical-v1",
+    "scoring_version": "2.0.0"
+  }
+}
+\end{verbatim}
+
+Este dise{\~n}o facilita responder a una pregunta clave de auditor{\'i}a: con qu{\'e} datos, reglas y
+versi{\'o}n de c{\'o}digo se gener{\'o} un determinado score.
+
+\chapter{Ap{\'e}ndice: Comandos de validaci{\'o}n}
+\label{ap:comandos_validacion}
+
+Los comandos siguientes resumen la validaci{\'o}n t{\'e}cnica documentada para la rama de integraci{\'o}n.
+Se incluyen como referencia reproducible; la disponibilidad de servicios opcionales depende de la
+configuraci{\'o}n local.
+
+\begin{verbatim}
+PYTHONPATH=scr python -m procurewatch doctor
+PYTHONPATH=scr python -m pytest tests
+PYTHONPATH=scr python -m ruff check api scr tests frontend
+\end{verbatim}
+
+Para la demo integrada Agent3--Agent4:
+
+\begin{verbatim}
+PYTHONPATH=scr python -m procurewatch run-agent3 \
+  --input data/processed/agent3_agent4_demo_2026_06_23/agent2_contracts_canonical_demo.parquet \
+  --output-dir data/processed/agent3_agent4_demo_2026_06_23
+
+PYTHONPATH=scr python -m procurewatch agent4-case-context \
+  --contract-key PW-2024-0001 \
+  --question "evidencia documental y riesgos explicables" \
+  --canonical-path data/processed/agent3_agent4_demo_2026_06_23/agent2_contracts_canonical_demo.parquet \
+  --agent3-features-path data/processed/agent3_agent4_demo_2026_06_23/agent3_agent2_features.parquet \
+  --output data/processed/agent3_agent4_demo_2026_06_23/agent4_case_context_integrated_demo.json
+\end{verbatim}
+
+Para visualizar la demo:
+
+\begin{verbatim}
+PYTHONPATH=scr \
+PROCUREWATCH_AGENT3_DEMO_DIR=data/processed/agent3_agent4_demo_2026_06_23 \
+PROCUREWATCH_AGENT4_CASE_CONTEXT=data/processed/agent3_agent4_demo_2026_06_23/agent4_case_context_integrated_demo.json \
+streamlit run frontend/agent3_demo.py
+\end{verbatim}
+
 \end{document}
