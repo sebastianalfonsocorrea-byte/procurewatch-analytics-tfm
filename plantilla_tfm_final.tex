@@ -984,6 +984,68 @@ el dashboard calcula resultados en tiempo real a partir de datos brutos, resulta
 qu{\'e} versi{\'o}n de reglas se aplic{\'o}. En ProcureWatch, el dashboard consume artefactos ya
 calculados; su funci{\'o}n es explicar y explorar, no redefinir el resultado anal{\'i}tico.
 
+\section{Contratos de datos entre agentes}
+\label{sec:contratos_datos_agentes}
+
+Para que el MVP sea reproducible, cada agente se dise{\~n}a con un contrato de datos expl{\'i}cito:
+entradas esperadas, columnas m{\'i}nimas, salidas generadas y condiciones bajo las cuales una fila
+puede considerarse evaluable. Esta decisi{\'o}n es m{\'a}s importante que la tecnolog{\'i}a concreta de
+persistencia. Si el contrato de datos est{\'a} bien definido, el sistema puede ejecutarse con ficheros
+Parquet, con PostgreSQL o con servicios auxiliares sin cambiar la sem{\'a}ntica de los resultados.
+
+El contrato principal es el que conecta Agent1 y Agent2. Agent1 debe entregar una tabla can{\'o}nica
+con identificadores, fuente, organismo, adjudicatario, CPV, procedimiento, importes, fechas y campos
+de trazabilidad. Agent2 no debe leer directamente ficheros brutos de BOE, PLACE u OpenTender, porque
+eso mezclar{\'i}a normalizaci{\'o}n y scoring. Esta separaci{\'o}n permite sustituir o corregir un parser
+sin modificar las reglas de riesgo, siempre que el can{\'o}nico mantenga el mismo contrato de columnas.
+
+La Tabla~\ref{tab:contratos_datos_agentes} resume los contratos operativos utilizados por el MVP.
+
+{\small
+\begin{longtable}{p{2.4cm}p{3.4cm}p{3.8cm}p{3.8cm}}
+\caption{Contratos de datos entre agentes del MVP}
+\label{tab:contratos_datos_agentes}\\
+\toprule
+\textbf{Interfaz} & \textbf{Entrada m{\'i}nima} & \textbf{Salida esperada} & \textbf{Criterio de control} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Interfaz} & \textbf{Entrada m{\'i}nima} & \textbf{Salida esperada} & \textbf{Criterio de control} \\
+\midrule
+\endhead
+Fuentes--Agent1 & Ficheros BOE, PLACE u OpenTender con metadatos de fuente. & Tablas por fuente normalizadas y can{\'o}nico. & Filas procesadas, errores de parseo, hashes y rutas de entrada. \\
+Agent1--Agent2 & \texttt{agent2\_contracts\_canonical.parquet}. & Red flags, scores por contrato y scores por adjudicatario. & Campos obligatorios, contratos evaluables y reglas activadas. \\
+Agent2--Agent3 & Can{\'o}nico y, cuando existe, score por contrato. & Nodos, aristas, comunidades, m{\'e}tricas y features relacionales. & Integridad de claves, ausencia de nodos hu{\'e}rfanos y consistencia de aristas. \\
+Agent2/3--Agent4 & Caso priorizado, score, relaciones y corpus documental. & Contexto recuperado, evidencias, citas y ficha de caso. & Evidencia enlazada a fragmentos y advertencias si falta contexto. \\
+Agentes--Dashboard & Artefactos Parquet/JSON generados por el pipeline. & Vistas de resumen, detalle, relaciones, evidencias y trazabilidad. & Lectura sin recalcular reglas ni alterar outputs anal{\'i}ticos. \\
+\bottomrule
+\end{longtable}
+}
+
+El concepto de \textit{contrato evaluable} evita una fuente habitual de error en sistemas de riesgo:
+tratar la ausencia de datos como si fuera evidencia negativa o positiva. En ProcureWatch, una regla
+puede quedar en tres estados. El primer estado es \textbf{activada}, cuando los datos disponibles
+cumplen la condici{\'o}n definida por la regla. El segundo es \textbf{no activada}, cuando los datos
+permiten evaluarla y no se observa el patr{\'o}n de riesgo. El tercero es \textbf{no evaluable}, cuando
+faltan campos o existe una inconsistencia que impide calcularla con seguridad. Esta tercera situaci{\'o}n
+no debe ocultarse, porque puede ser relevante para la calidad de datos y para la revisi{\'o}n humana,
+pero tampoco debe convertirse autom{\'a}ticamente en una acusaci{\'o}n.
+
+La decisi{\'o}n de conservar estados no evaluables afecta especialmente a tres grupos de variables.
+En primer lugar, las fechas: si no existen fecha de publicaci{\'o}n y fecha de adjudicaci{\'o}n
+comparables, no se calcula una duraci{\'o}n fiable. En segundo lugar, los identificadores fiscales:
+si no hay NIF, no puede afirmarse que un adjudicatario sea el mismo en distintas fuentes solo por
+similitud textual. En tercer lugar, los importes: si falta importe estimado o adjudicado, no se debe
+calcular una desviaci{\'o}n aparente. El sistema prefiere devolver una limitaci{\'o}n trazable antes
+que completar artificialmente el dato.
+
+Esta pol{\'i}tica tambi{\'e}n facilita la integraci{\'o}n con servicios opcionales. PostgreSQL puede
+persistir las tablas anal{\'i}ticas, Neo4j puede explorar relaciones, Qdrant puede indexar fragmentos
+documentales y Ollama puede generar explicaciones, pero ninguno de esos servicios debe cambiar el
+estado evaluable de una regla. Los servicios auxiliares enriquecen consulta, exploraci{\'o}n o
+explicaci{\'o}n; la definici{\'o}n de los datos y de las reglas permanece en los artefactos versionados
+del pipeline.
+
 \section{Implementaci{\'o}n detallada de los agentes}
 \label{sec:implementacion_detallada_agentes}
 
