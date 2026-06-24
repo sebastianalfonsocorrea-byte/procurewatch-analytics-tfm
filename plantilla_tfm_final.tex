@@ -1421,7 +1421,166 @@ resulta preferible declarar el alcance real que presentar una precisi{\'o}n de f
 %\end{enumerate}
 
 %=========================================================
-\chapter{Conclusiones y Trabajo Futuro}
+\chapter{Limitaciones, Adaptaci{\'o}n del Alcance y Trabajo Futuro}
+\label{cap:limitaciones_trabajo_futuro}
+%=========================================================
+
+El desarrollo de ProcureWatch Analytics confirma la viabilidad de un prototipo multiagente
+orientado a priorizaci{\'o}n de riesgo, pero tambi{\'e}n muestra limitaciones propias de trabajar con
+datos p{\'u}blicos heterog{\'e}neos, ausencia de etiquetas de fraude confirmadas y servicios locales
+opcionales. Este cap{\'i}tulo documenta esas limitaciones como parte del resultado del TFM. No se
+tratan como fallos ocultos, sino como restricciones verificables que delimitan el uso correcto del
+sistema.
+
+\section{Adaptaci{\'o}n del alcance respecto a la propuesta t{\'e}cnica}
+\label{sec:adaptacion_alcance}
+
+La propuesta t{\'e}cnica original planteaba una plataforma ambiciosa con integraci{\'o}n de fuentes,
+red flags, machine learning, grafos, NLP, RAG, dashboard y servicios de datos. La implementaci{\'o}n
+final conserva esa arquitectura conceptual, pero la concreta como un MVP acad{\'e}mico reproducible.
+La diferencia principal es que el objetivo del cierre no ha sido construir una plataforma productiva
+completa, sino demostrar un flujo defendible de extremo a extremo: ingesta, normalizaci{\'o}n,
+scoring, grafo, evidencia documental, dashboard y validaci{\'o}n t{\'e}cnica.
+
+La Tabla~\ref{tab:propuesta_vs_impl} resume la relaci{\'o}n entre propuesta e implementaci{\'o}n real.
+
+{\small
+\begin{longtable}{p{4.0cm}p{4.5cm}p{4.7cm}}
+\caption{Correspondencia entre propuesta t{\'e}cnica e implementaci{\'o}n real}
+\label{tab:propuesta_vs_impl}\\
+\toprule
+\textbf{Elemento de la propuesta} & \textbf{Implementaci{\'o}n real} & \textbf{Lectura metodol{\'o}gica} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Elemento de la propuesta} & \textbf{Implementaci{\'o}n real} & \textbf{Lectura metodol{\'o}gica} \\
+\midrule
+\endhead
+Ingesta BOE, PLACE y OpenTender & Parsers y normalizadores implementados; can{\'o}nico generado. & Cumplido como flujo reproducible, con limitaci{\'o}n de matching entre fuentes. \\
+Esquema OCDS adaptado & Campos m{\'i}nimos implementados en \texttt{analytical\_schema.py}. & Cumplido y validable por tests. \\
+PostgreSQL & Persistencia anal{\'i}tica de Agent1 implementada. & Parcial para el conjunto multiagente completo. \\
+Red flags y scoring & RF-01 a RF-06 implementadas en MVP; scoring por contrato y adjudicatario. & Cumplido para MVP; RF adicionales quedan como extensi{\'o}n. \\
+Isolation Forest y PU Learning & Enfoque documentado como comparativa deseable, sin resultado final verificable en la inspecci{\'o}n de la rama. & No se presenta como validaci{\'o}n cerrada si no hay artefacto verificable. \\
+Grafo y comunidades & Agent3 implementa grafo, m{\'e}tricas, Louvain y features; Neo4j opcional. & Cumplido como an{\'a}lisis relacional reproducible. \\
+Neo4j & Carga opcional implementada. & Servicio no obligatorio para la demo local. \\
+RAG documental & Agent4 implementa corpus, chunks, retrieval, contexto de caso y fallback. & Cumplido como PoC/MVP documental, no como evaluaci{\'o}n masiva. \\
+Qdrant y Ollama & Soportados como servicios opcionales. & Dise{\~n}o flexible: la demo no queda bloqueada por servicios externos. \\
+Dashboard & Streamlit integrado y documentado. & Cumplido para exploraci{\'o}n local. \\
+Validaci{\'o}n de fraude & No hay etiquetas reales de fraude confirmado. & La evaluaci{\'o}n es proxy/exploratoria y orientada a revisi{\'o}n humana. \\
+\bottomrule
+\end{longtable}
+}
+
+Esta adaptaci{\'o}n es coherente con la finalidad acad{\'e}mica del TFM. El trabajo no pretende
+certificar irregularidades administrativas, sino demostrar que es posible construir una cadena
+anal{\'i}tica trazable que reduzca el espacio de revisi{\'o}n manual y explique por qu{\'e} determinados
+contratos deben priorizarse.
+
+\section{Limitaciones de datos}
+\label{sec:limitaciones_datos}
+
+La primera limitaci{\'o}n procede de la heterogeneidad de fuentes. BOE, PLACE y OpenTender no siempre
+publican los mismos identificadores, ni con la misma granularidad. Un contrato puede aparecer como
+expediente, lote, anuncio, adjudicaci{\'o}n o l{\'i}nea de adjudicaci{\'o}n. Por ello, la clave
+\texttt{contract\_key\_canon} se construye con una pol{\'i}tica conservadora basada en identificadores
+disponibles, organismo, fechas y fuente. Esta pol{\'i}tica evita emparejamientos dudosos, pero reduce
+la cobertura de intersecciones.
+
+En el snapshot local inspeccionado, las intersecciones BOE/PLACE/OpenTender fueron cero. El sistema
+puede seguir funcionando con datos reales intrafuente, porque Agent2, Agent3 y Agent4 no dependen
+obligatoriamente de que una misma licitaci{\'o}n aparezca en varias fuentes. Sin embargo, los an{\'a}lisis
+que requieren contraste cruzado fuerte entre fuentes quedan limitados. En la memoria, esta situaci{\'o}n
+se interpreta como limitaci{\'o}n de integraci{\'o}n y no como prueba de ausencia de coincidencias en la
+realidad.
+
+La segunda limitaci{\'o}n afecta a la completitud de campos cr{\'i}ticos. El informe de calidad local
+muestra que la completitud OCDS cr{\'i}tica no alcanza el objetivo inicial de 0,90 en el can{\'o}nico
+completo. La cobertura de NIF del adjudicatario tambi{\'e}n es insuficiente cuando se calcula sobre
+todo el dataset, aunque la validez del identificador es muy alta cuando el dato est{\'a} presente.
+Esto confirma que el problema principal no es la normalizaci{\'o}n del NIF disponible, sino la
+ausencia del campo en parte de las fuentes.
+
+La tercera limitaci{\'o}n afecta a la coherencia temporal. Muchos registros carecen de todas las fechas
+necesarias para calcular con seguridad los d{\'i}as entre publicaci{\'o}n y adjudicaci{\'o}n. Por tanto,
+los indicadores temporales solo son aplicables a la fracci{\'o}n evaluable. Cuando el dato no existe,
+el sistema marca el caso como no evaluable en lugar de imputar artificialmente una fecha.
+
+\section{Limitaciones de modelado y evaluaci{\'o}n}
+\label{sec:limitaciones_modelado}
+
+La principal limitaci{\'o}n de modelado es la ausencia de etiquetas de fraude confirmado. La literatura
+utiliza en ocasiones datasets con casos judiciales, sanciones o auditor{\'i}as cerradas, pero el
+proyecto no dispone de una fuente equivalente para el conjunto BOE/PLACE/OpenTender analizado. Por
+este motivo, no es metodol{\'o}gicamente correcto hablar de precisi{\'o}n supervisada en detecci{\'o}n
+de fraude.
+
+El score de Agent2 debe interpretarse como una priorizaci{\'o}n de riesgo basada en se{\~n}ales
+observables. Las red flags capturan patrones compatibles con riesgo: baja concurrencia, recurrencia,
+procedimiento menos competitivo, concentraci{\'o}n, desviaciones de importe o falta de evaluabilidad.
+Ninguna de estas se{\~n}ales prueba por s{\'i} sola una irregularidad. Su valor aparece al combinarse
+con contexto, trazabilidad y revisi{\'o}n humana.
+
+La evaluaci{\'o}n disponible se apoya en cuatro tipos de evidencia:
+
+\begin{enumerate}
+  \item m{\'e}tricas de calidad de datos y completitud;
+  \item consistencia interna de reglas y salidas;
+  \item pruebas automatizadas sobre parsers, agentes y CLI;
+  \item demo integrada documentada con caso explicable.
+\end{enumerate}
+
+Esta evaluaci{\'o}n es suficiente para defender un MVP acad{\'e}mico, pero no sustituye una validaci{\'o}n
+externa por expertos ni una auditor{\'i}a sobre casos reales confirmados.
+
+\section{Limitaciones operativas}
+\label{sec:limitaciones_operativas}
+
+El repositorio est{\'a} preparado para trabajar con PostgreSQL, Neo4j, Qdrant y Ollama mediante
+Docker Compose, pero la demo final no exige que todos estos servicios est{\'e}n activos. Esta decisi{\'o}n
+reduce el riesgo de dependencia operativa en la defensa y permite ejecutar tests con fallback local.
+La contrapartida es que algunas capacidades se demuestran como soporte opcional o PoC, no como
+despliegue productivo permanente.
+
+Tambi{\'e}n existe una limitaci{\'o}n de disponibilidad de artefactos. Algunos reports y hojas de
+seguimiento documentan una demo integrada Agent3--Agent4, pero la carpeta correspondiente no estaba
+presente en la copia local inspeccionada al redactar esta versi{\'o}n de la memoria. Por ello, la
+memoria diferencia entre resultados documentados en seguimiento y artefactos locales reabiertos.
+Si se incorpora un snapshot final consolidado, las cifras cuantitativas deber{\'a}n actualizarse
+con ese snapshot.
+
+\section{Trabajo futuro}
+\label{sec:trabajo_futuro}
+
+El trabajo futuro se organiza en cinco l{\'i}neas. La primera es mejorar el matching entre fuentes.
+Para ello ser{\'i}a necesario ampliar \texttt{contract\_key\_canon} con reglas jer{\'a}rquicas, similitud
+de texto, normalizaci{\'o}n avanzada de organismos, importes aproximados, ventanas temporales y
+validaci{\'o}n manual de una muestra. El objetivo no debe ser maximizar coincidencias, sino aumentar
+recall sin degradar precisi{\'o}n.
+
+La segunda l{\'i}nea consiste en ampliar el cat{\'a}logo de red flags. La propuesta t{\'e}cnica planteaba
+un conjunto mayor de indicadores; el MVP implementa las se{\~n}ales principales y deja margen para
+RF adicionales sobre fraccionamiento, cambios contractuales, patrones de lotes, recurrencia
+interanual, adjudicaciones cercanas a umbrales, relaciones societarias y documentaci{\'o}n t{\'e}cnica
+dirigida.
+
+La tercera l{\'i}nea es incorporar validaci{\'o}n externa. La forma m{\'a}s s{\'o}lida ser{\'i}a construir
+un peque{\~n}o conjunto etiquetado por expertos o cruzar el sistema con resoluciones administrativas,
+informes de fiscalizaci{\'o}n, expedientes sancionadores o casos judiciales cerrados. Sin esa capa,
+el sistema debe seguir describi{\'e}ndose como priorizador de riesgo y no como detector supervisado de
+fraude.
+
+La cuarta l{\'i}nea es robustecer la capa documental. Agent4 ya demuestra el flujo de corpus,
+fragmentaci{\'o}n, recuperaci{\'o}n y ficha explicativa, pero ser{\'i}a necesario ampliar el corpus real,
+medir RAGAS con suficiente volumen, incorporar controles de citas m{\'a}s estrictos y separar mejor
+hechos recuperados, inferencias y advertencias.
+
+La quinta l{\'i}nea es evolucionar de prototipo local a plataforma desplegable. Esto implica API
+productiva, autenticaci{\'o}n, control de roles, auditor{\'i}a de acciones de usuario, persistencia
+completa de outputs multiagente, monitorizaci{\'o}n, CI/CD y pol{\'i}ticas de retenci{\'o}n de datos.
+Estos elementos quedan fuera del MVP acad{\'e}mico, pero son necesarios para un uso institucional.
+
+%=========================================================
+\chapter{Conclusiones}
 %=========================================================
 
 ProcureWatch Analytics qued{\'o} definido como una plataforma multiagente reproducible para
@@ -1438,10 +1597,10 @@ mantuvieron visibles en lugar de forzar coincidencias artificiales.
 
 La segunda conclusi{\'o}n es que Agent~2 qued{\'o} operativo como motor determinista de red flags y
 scoring explicable. El sistema calcul{\'o} se{\~n}ales por contrato, agreg{\'o} riesgo por adjudicatario,
-compar{\'o} el enfoque de reglas con Isolation Forest y Positive-Unlabeled Learning, y almacen{\'o} la
-evidencia necesaria para justificar cada activaci{\'o}n. La evaluaci{\'o}n comparativa se present{\'o}
-como contraste proxy cuando no existieron etiquetas confirmadas de fraude, lo que preserv{\'o} la
-coherencia metodol{\'o}gica del TFM.
+y almacen{\'o} la evidencia necesaria para justificar cada activaci{\'o}n. La evaluaci{\'o}n se
+present{\'o} como contraste proxy cuando no existieron etiquetas confirmadas de fraude, lo que
+preserv{\'o} la coherencia metodol{\'o}gica del TFM y evit{\'o} afirmar una validaci{\'o}n supervisada
+que no estaba disponible en los artefactos inspeccionados.
 
 La tercera conclusi{\'o}n es que la orquestaci{\'o}n batch reforz{\'o} la reproducibilidad del prototipo.
 La ejecuci{\'o}n por lotes semanal y mensual, junto con los manifiestos de entrada y salida, el
