@@ -1162,6 +1162,151 @@ cumple el n{\'u}cleo de la propuesta como MVP reproducible, pero no convierte to
 investigaci{\'o}n planteadas inicialmente en producto final productivo. La diferencia entre objetivo
 ambicioso y cierre implementado queda documentada como adaptaci{\'o}n de alcance.
 
+\section{Decisiones de dise{\~n}o por agente}
+\label{sec:decisiones_diseno_agentes}
+
+La arquitectura multiagente no se adopt{\'o} solo como divisi{\'o}n narrativa del trabajo, sino como una
+forma de reducir acoplamiento entre problemas diferentes. La ingesta de datos, el scoring, el grafo
+y la recuperaci{\'o}n documental tienen ritmos de cambio distintos. Si se hubieran implementado en un
+{\'u}nico script monol{\'i}tico, cualquier ajuste de una regla de riesgo podr{\'i}a afectar al parsing de
+fuentes o al dashboard. La separaci{\'o}n por agentes permite modificar una capa sin invalidar todo el
+flujo.
+
+\subsection{Agent1: priorizar trazabilidad frente a completitud aparente}
+
+Agent1 se dise{\~n}{\'o} con una regla conservadora: no completar datos mediante inferencias no
+trazables. Si una fuente no proporciona NIF, fecha de adjudicaci{\'o}n o n{\'u}mero de ofertas, el
+campo se mantiene como nulo o no evaluable. Esta decisi{\'o}n reduce algunas m{\'e}tricas de calidad,
+pero preserva la integridad del an{\'a}lisis. En un sistema de revisi{\'o}n de contrataci{\'o}n p{\'u}blica,
+una imputaci{\'o}n no justificada podr{\'i}a producir red flags artificiales.
+
+Tambi{\'e}n se decidi{\'o} conservar artefactos intermedios por fuente. Aunque el resultado principal es
+el can{\'o}nico, las tablas BOE, PLACE y OpenTender permiten auditar la transformaci{\'o}n. Si un
+contrato aparece con un importe inesperado o sin adjudicatario, puede revisarse la fuente
+normalizada antes de atribuir el problema al scoring. Esta trazabilidad es especialmente importante
+porque los errores de datos se propagan: un fallo en importe afecta a RF-05; un fallo en organismo
+afecta a concentraci{\'o}n; y un fallo en clave can{\'o}nica afecta a grafo y RAG.
+
+\subsection{Agent2: scoring explicable antes que modelo opaco}
+
+Agent2 prioriza reglas deterministas y ponderadas porque el proyecto no dispone de etiquetas
+supervisadas de fraude. Un modelo puramente no supervisado podr{\'i}a ordenar anomal{\'i}as, pero ser{\'i}a
+m{\'a}s dif{\'i}cil explicar por qu{\'e} un contrato aparece arriba en el ranking. La decisi{\'o}n de
+implementar RF-01 a RF-06 responde a esa necesidad de explicabilidad: cada se{\~n}al tiene una
+motivaci{\'o}n comprensible para un auditor, un campo de entrada y una consecuencia en el score.
+
+El nivel de riesgo bajo, medio, alto o cr{\'i}tico se interpreta como ayuda de priorizaci{\'o}n. La
+clasificaci{\'o}n no sustituye una revisi{\'o}n jur{\'i}dica porque no incorpora todos los elementos del
+expediente: informes t{\'e}cnicos completos, comunicaciones internas, justificaci{\'o}n administrativa,
+posibles recursos o informaci{\'o}n societaria no publicada en las fuentes analizadas. Por tanto, el
+valor de Agent2 est{\'a} en reducir el volumen de revisi{\'o}n y ordenar indicios, no en cerrar una
+conclusi{\'o}n sancionadora.
+
+\subsection{Agent3: grafo derivado y no fuente primaria}
+
+Agent3 no descarga datos nuevos ni redefine contratos. Su entrada es el can{\'o}nico o una demo
+can{\'o}nica. Esta decisi{\'o}n evita que el grafo cree una versi{\'o}n paralela de la verdad. Las
+relaciones que aparecen en nodos y aristas son derivadas de los contratos ya normalizados. As{\'i}, si
+Agent1 marca una clave como no cruzada, Agent3 no debe resolver el cruce por su cuenta salvo que se
+implemente una fase expl{\'i}cita de reconciliaci{\'o}n.
+
+Las m{\'e}tricas de red se utilizan como contexto. Un adjudicatario con alta centralidad puede ser un
+proveedor leg{\'i}timamente relevante en un sector especializado. Del mismo modo, una comunidad densa
+puede reflejar estructura territorial o especializaci{\'o}n t{\'e}cnica. Por ello, las variables de
+grafo se interpretan junto con red flags tabulares y evidencias documentales, no como indicadores
+aislados.
+
+\subsection{Agent4: evidencia citada y control de alucinaciones}
+
+Agent4 se limita a producir contexto explicativo basado en documentos o fragmentos recuperados. La
+arquitectura evita que el LLM genere conclusiones sin soporte: la ficha de caso debe incluir citas,
+identificadores de fragmento y advertencias cuando la evidencia no es suficiente. En la demo
+integrada, esta funci{\'o}n se demuestra con corpus peque{\~n}o y fallback offline, lo que permite
+validar el flujo sin depender de un servicio externo.
+
+El papel del LLM es, por tanto, ling{\"u}{\'i}stico y documental. Resume, organiza y redacta; no decide
+el score. Esta separaci{\'o}n es coherente con el AI Act y con el principio de revisi{\'o}n humana. Si
+en el futuro se ampliara el corpus documental, ser{\'i}a necesario medir fidelidad, cobertura de
+contexto y tasa de citas v{\'a}lidas antes de utilizar las fichas en un entorno operativo.
+
+\section{Controles de calidad y riesgos t{\'e}cnicos}
+\label{sec:controles_calidad_riesgos}
+
+El sistema incorpora controles t{\'e}cnicos para evitar que las limitaciones de datos se conviertan en
+resultados enga{\~n}osos. La Tabla~\ref{tab:riesgos_controles} resume los principales riesgos y las
+medidas de mitigaci{\'o}n aplicadas en el MVP.
+
+{\small
+\begin{longtable}{p{4.0cm}p{4.4cm}p{4.7cm}}
+\caption{Riesgos t{\'e}cnicos y controles aplicados}
+\label{tab:riesgos_controles}\\
+\toprule
+\textbf{Riesgo} & \textbf{Impacto} & \textbf{Control aplicado} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Riesgo} & \textbf{Impacto} & \textbf{Control aplicado} \\
+\midrule
+\endhead
+Campos ausentes & Red flags no evaluables o scores incompletos. & Marcado expl{\'i}cito como nulo/no evaluable; no imputaci{\'o}n artificial. \\
+Duplicados por fuente & Sobrerrepresentaci{\'o}n de contratos o adjudicatarios. & Deduplicaci{\'o}n por fuente y clave can{\'o}nica. \\
+Matching incorrecto & Mezcla de contratos distintos y evidencias err{\'o}neas. & Pol{\'i}tica conservadora de \texttt{contract\_key\_canon}. \\
+Reglas opacas & Dificultad de defensa ante auditor o tribunal. & RF versionadas, tabla de reglas y reporte JSON. \\
+Servicios no disponibles & Fallo de demo si Neo4j/Qdrant/Ollama no est{\'a}n activos. & Servicios opcionales y fallback determinista en tests. \\
+Resultados pesados en Git & Repositorio inmanejable o datos duplicados. & \texttt{.gitignore} para datasets y outputs pesados. \\
+Alucinaci{\'o}n LLM & Ficha con afirmaciones no respaldadas. & Uso de evidencias recuperadas, citas y separaci{\'o}n entre hechos e inferencias. \\
+Confusi{\'o}n fraude/riesgo & Interpretaci{\'o}n jur{\'i}dica indebida. & Redacci{\'o}n como priorizaci{\'o}n de revisi{\'o}n humana. \\
+\bottomrule
+\end{longtable}
+}
+
+Estos controles no eliminan todas las limitaciones, pero hacen que sean visibles. La calidad de un
+prototipo de auditor{\'i}a no depende solo de producir rankings, sino de saber cu{\'a}ndo no se puede
+evaluar un contrato y por qu{\'e}. En ese sentido, el estado \texttt{not\_evaluable} es una salida
+v{\'a}lida: informa de que el dato disponible no permite aplicar una regla sin riesgo de error.
+
+\section{Lectura operativa de los resultados}
+\label{sec:lectura_operativa_resultados}
+
+Los resultados de Agent2 muestran una distribuci{\'o}n amplia de riesgo, con miles de contratos en
+niveles bajo y medio, y un subconjunto menor en alto y cr{\'i}tico. Esta distribuci{\'o}n es coherente
+con una herramienta de priorizaci{\'o}n: si todos los contratos aparecieran como cr{\'i}ticos, el sistema
+no reducir{\'i}a la carga de revisi{\'o}n; si casi ninguno tuviera se{\~n}ales, las reglas ser{\'i}an
+demasiado poco sensibles. El objetivo pr{\'a}ctico es generar un ranking que permita seleccionar
+casos para revisi{\'o}n m{\'a}s profunda.
+
+La interpretaci{\'o}n operativa puede organizarse en tres niveles:
+
+\begin{description}
+  \item[Nivel 1: cribado autom{\'a}tico.] Se ejecuta el pipeline sobre el can{\'o}nico y se obtienen
+  flags, scores y niveles. Esta fase es autom{\'a}tica, reproducible y no concluye fraude.
+  \item[Nivel 2: revisi{\'o}n anal{\'i}tica.] Un analista revisa contratos alto/cr{\'i}tico, comprueba
+  campos no evaluables, interpreta recurrencias y observa el entorno de grafo.
+  \item[Nivel 3: revisi{\'o}n documental.] Para casos priorizados, se recuperan documentos y se
+  contrasta si las se{\~n}ales tabulares tienen justificaci{\'o}n administrativa o indicios adicionales.
+\end{description}
+
+Esta lectura evita usar el sistema como caja negra. Un contrato cr{\'i}tico no es autom{\'a}ticamente
+irregular; es un contrato que merece atenci{\'o}n antes que otros por acumulaci{\'o}n de se{\~n}ales. Del
+mismo modo, un contrato sin score alto no queda exento de revisi{\'o}n si existe denuncia, alerta
+externa o informaci{\'o}n documental no incluida en el dataset.
+
+\section{Reproducibilidad y gesti{\'o}n de artefactos}
+\label{sec:reproducibilidad_gestion_artefactos}
+
+La reproducibilidad se aborda mediante tres capas. La primera es la reproducibilidad de c{\'o}digo:
+el repositorio fija dependencias en \texttt{pyproject.toml}, define un entrypoint de CLI y contiene
+tests automatizados. La segunda es la reproducibilidad de datos: los ficheros de entrada y salida
+se acompa{\~n}an de rutas, hashes, manifests y reportes. La tercera es la reproducibilidad de
+ejecuci{\'o}n: los comandos documentados permiten repetir fases concretas sin reescribir notebooks.
+
+La decisi{\'o}n de no versionar datasets grandes en Git forma parte de esa estrategia. Un repositorio
+con Parquet pesados, ZIPs de fuentes y temporales de descarga ser{\'i}a dif{\'i}cil de revisar y
+sincronizar. En su lugar, se versionan c{\'o}digo, esquemas, documentaci{\'o}n y, cuando procede,
+manifiestos ligeros. Para una entrega final consolidada, el elemento adecuado no ser{\'i}a subir todos
+los datos al repositorio, sino acompa{\~n}ar el TFM de un snapshot controlado o de instrucciones de
+regeneraci{\'o}n con hashes verificables.
+
 \section{Comandos de ejecuci{\'o}n y reproducci{\'o}n}
 \label{sec:comandos_reproduccion}
 
