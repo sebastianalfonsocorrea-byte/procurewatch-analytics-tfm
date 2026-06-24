@@ -580,7 +580,7 @@ El análisis de las normativas aplicables (LCSP, RGPD, AI Act, etc.) muestra que
 
 
 %=========================================================
-\chapter{Arquitectura T{\'e}cnica e Implementaci{\'o}n del Prototipo}
+\chapter{Metodolog{\'i}a y dise{\~n}o del sistema}
 \label{cap:arquitectura_tecnica}
 %=========================================================
 
@@ -589,6 +589,8 @@ El análisis de las normativas aplicables (LCSP, RGPD, AI Act, etc.) muestra que
 
 
 ProcureWatch Analytics se presenta como un prototipo funcional avanzado que demuestra la viabilidad de integrar múltiples técnicas analíticas —\textit{pipeline} de datos OCDS, indicadores de \textit{red flags}, análisis de redes, procesamiento de lenguaje natural y recuperación aumentada por generación (RAG)— para la detección de patrones de riesgo en contratación pública española. El sistema no emite juicios jurídicos ni declaraciones automáticas de fraude, sino que genera puntuaciones de riesgo trazables, acompañadas de las señales activadas, evidencias documentales y métricas de red, con el fin de priorizar casos para su revisión por parte de organismos de control o auditores.
+
+Este cap{\'i}tulo recoge el dise{\~n}o metodol{\'o}gico del sistema: enfoque multiagente, selecci{\'o}n tecnol{\'o}gica, modelo de datos, estrategia de scoring, grafo anal{\'i}tico y componente documental. La implementaci{\'o}n concreta de esos elementos, sus salidas y sus mecanismos de reproducci{\'o}n se desarrollan en los cap{\'i}tulos posteriores para separar con claridad el dise{\~n}o de la ejecuci{\'o}n.
 
 La arquitectura separa cuatro responsabilidades analíticas, alineadas con el alcance inicial del TFM:
 \begin{enumerate}
@@ -809,6 +811,16 @@ El flujo RAG se limita a explicar casos, no a decidir el nivel de riesgo:
 \end{enumerate}
 
 La ficha explicativa tendr{\'a} formato estructurado: resumen del contrato, indicadores activados, evidencia tabular, evidencia de red, evidencia documental, limitaciones y recomendaci{\'o}n de revisi{\'o}n humana.
+
+\chapter{Implementaci{\'o}n por agentes y componentes}
+\label{cap:implementacion_agentes_componentes}
+%=========================================================
+
+Una vez definido el dise{\~n}o general, la implementaci{\'o}n se organiza en agentes y componentes
+con responsabilidades separadas. Esta separaci{\'o}n evita que la ingesta de datos, el c{\'a}lculo de
+riesgo, el an{\'a}lisis relacional, la recuperaci{\'o}n documental y la visualizaci{\'o}n queden
+acoplados en una sola pieza de software. El resultado es un MVP que puede ejecutarse por fases,
+validarse con tests y defenderse mediante artefactos intermedios.
 
 \section{Implementaci{\'o}n multiagente}
 \label{sec:multiagente_cap6}
@@ -1288,6 +1300,16 @@ irregular; es un contrato que merece atenci{\'o}n antes que otros por acumulaci{
 mismo modo, un contrato sin score alto no queda exento de revisi{\'o}n si existe denuncia, alerta
 externa o informaci{\'o}n documental no incluida en el dataset.
 
+\chapter{Orquestaci{\'o}n, reproducibilidad y artefactos}
+\label{cap:orquestacion_reproducibilidad}
+%=========================================================
+
+La reproducibilidad del prototipo no se limita a conservar el c{\'o}digo. En ProcureWatch Analytics
+se apoya en comandos repetibles, artefactos Parquet y JSON, manifests, hashes de entrada y salida,
+reportes de calidad y una estrategia batch que evita reprocesar fuentes cuando no existen cambios.
+Este cap{\'i}tulo describe esa capa operativa y explica c{\'o}mo se reconstruye una ejecuci{\'o}n del
+MVP.
+
 \section{Reproducibilidad y gesti{\'o}n de artefactos}
 \label{sec:reproducibilidad_gestion_artefactos}
 
@@ -1496,7 +1518,7 @@ fuente y entidades relacionadas. Para la defensa del TFM, esta capacidad es m{\'
 mera visualizaci{\'o}n del grafo, porque conecta las m{\'e}tricas de red con la ficha explicativa de
 caso.
 
-\section{Resultados y evaluaci{\'o}n}
+\chapter{Resultados y evaluaci{\'o}n}
 \label{cap:resultados_evaluacion}
 
 Los resultados cuantitativos presentados corresponden a los artefactos generados por el pipeline en
@@ -1505,7 +1527,7 @@ proyecto si existe una ejecuci{\'o}n consolidada con datasets adicionales del eq
 metodol{\'o}gica ha sido no inventar resultados y distinguir entre salidas generadas por el sistema,
 validaciones t{\'e}cnicas realizadas y cifras hist{\'o}ricas procedentes de documentos anteriores.
 
-\subsection{Resultados de ingesta y normalizaci{\'o}n}
+\section{Resultados de ingesta y normalizaci{\'o}n}
 
 En la ejecuci{\'o}n disponible, el pipeline de Agent1 gener{\'o} el dataset can{\'o}nico consumido por
 Agent2 y varias tablas intermedias por fuente. La Tabla~\ref{tab:resultados_agent1_filas} resume
@@ -1548,7 +1570,7 @@ para justificar la selecci{\'o}n del dominio. La ejecuci{\'o}n disponible de Age
 expedientes, l{\'i}neas de adjudicaci{\'o}n y fuentes complementarias; por tanto, no debe forzarse una
 equivalencia directa entre ambas magnitudes.
 
-\subsection{Calidad del can{\'o}nico y cobertura entre fuentes}
+\section{Calidad del can{\'o}nico y cobertura entre fuentes}
 
 El informe \texttt{agent1\_data\_quality\_summary.json} registra 17.927 filas can{\'o}nicas y 17.748
 claves contractuales en el universo de cobertura. La cobertura por fuente fue: 3.883 claves BOE,
@@ -1592,7 +1614,7 @@ y los artefactos se generan, pero no todas las m{\'e}tricas de calidad alcanzan 
 iniciales. La memoria no debe ocultar esta diferencia: forma parte de la evaluaci{\'o}n del prototipo
 y delimita el alcance de los resultados.
 
-\subsection{Resultados de red flags y scoring}
+\section{Resultados de red flags y scoring}
 
 Agent2 se ejecuta sobre \texttt{agent2\_contracts\_canonical.parquet}. En la ejecuci{\'o}n disponible, el
 informe \texttt{agent2\_run\_report.json} registra 17.927 filas, de las cuales 13.764 fueron
@@ -1653,7 +1675,7 @@ esa ejecuci{\'o}n no se observaron activaciones efectivas de RF-06. Esta ausenci
 indica que, con los datos de esa ejecuci{\'o}n, no se produjo el patr{\'o}n concreto que la activa o no
 qued{\'o} registrado en el desglose.
 
-\subsection{Resultados de grafo, RAG y dashboard}
+\section{Resultados de grafo, RAG y dashboard}
 
 La documentaci{\'o}n t{\'e}cnica del proyecto registra una demo conjunta Agent3--Agent4
 en \texttt{data/processed/agent3\_agent4\_demo\_2026\_06\_23/}. Seg{\'u}n
@@ -1674,7 +1696,7 @@ caso seleccionado, relaciones, evidencias y trazabilidad. Esta organizaci{\'o}n 
 principio de revisi{\'o}n humana: el usuario no recibe una decisi{\'o}n autom{\'a}tica, sino una ruta
 de exploraci{\'o}n desde el ranking de riesgo hasta la evidencia concreta.
 
-\subsection{Evaluaci{\'o}n t{\'e}cnica y tests}
+\section{Evaluaci{\'o}n t{\'e}cnica y tests}
 
 La versi{\'o}n de cierre del MVP incluye una bater{\'i}a amplia de tests. La validaci{\'o}n t{\'e}cnica
 realizada indica:
