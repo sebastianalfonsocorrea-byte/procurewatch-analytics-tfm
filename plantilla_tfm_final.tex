@@ -69,7 +69,7 @@ El reciente \textit{dataset} longitudinal del BOE 2014--2024 \cite{MunozPla2026}
 
 \section{Planteamiento del trabajo}
 
-Este TFM propone dise{\~n}ar, desarrollar y evaluar \textbf{ProcureWatch Analytics}, una plataforma multiagente que integra: (a)~un \textit{pipeline} de adquisici{\'o}n e integraci{\'o}n de datos Open Data en un est{\'a}ndar OCDS com{\'u}n; (b)~un motor anal{\'i}tico de detecci{\'o}n de red flags y patrones de riesgo basado en indicadores de la literatura y modelos de machine learning; (c)~un m{\'o}dulo NLP que extrae mediante web scraping criterios de adjudicaci{\'o}n, certificaciones y condiciones contractuales de los anuncios del BOE y PLACE; (d)~un sistema OCR y NLP para procesamiento de pliegos, resoluciones y documentos p{\'u}blicos; y (e)~un \textit{front-end} anal{\'i}tico con red de relaciones interactiva, panel de riesgo, evoluci{\'o}n temporal y ficha explicativa de caso.
+Este TFM propone dise{\~n}ar, desarrollar y evaluar \textbf{ProcureWatch Analytics}, una plataforma multiagente que integra: (a)~un \textit{pipeline} de adquisici{\'o}n e integraci{\'o}n de datos Open Data en un est{\'a}ndar OCDS com{\'u}n; (b)~un motor anal{\'i}tico de detecci{\'o}n de red flags y patrones de riesgo basado en indicadores de la literatura y modelos de machine learning; (c)~un m{\'o}dulo documental basado en NLP/RAG, web scraping y evidencias disponibles de anuncios y documentos p{\'u}blicos; (d)~fichas explicativas de caso orientadas a revisi{\'o}n humana, dejando el OCR masivo de pliegos como posible extensi{\'o}n del sistema; y (e)~un \textit{front-end} anal{\'i}tico con red de relaciones interactiva, panel de riesgo, evoluci{\'o}n temporal y ficha explicativa de caso.
 
 El prototipo se valida sobre el dominio CPV~71 (Servicios de arquitectura, ingenier{\'i}a e inspecci{\'o}n), seleccionado por razones metodol{\'o}gicas detalladas en la Secci{\'o}n~\ref{sec:dominio_cpv71}.
 
@@ -79,7 +79,13 @@ El prototipo se valida sobre el dominio CPV~71 (Servicios de arquitectura, ingen
   \item \textbf{Cap{\'i}tulo~2 ---} An{\'a}lisis del contexto: descripci{\'o}n del problema, datos justificativos, preguntas de investigaci{\'o}n y dominio de an{\'a}lisis.
   \item \textbf{Cap{\'i}tulo~3 ---} Contexto y estado del arte: revisi{\'o}n de los cinco bloques tem{\'a}ticos con referencias acad{\'e}micas y conclusiones sobre la brecha que justifica el proyecto.
   \item \textbf{Cap{\'i}tulo~4 ---} Objetivos: objetivo general SMART y ocho objetivos espec{\'i}ficos medibles y operativos.
-  \item \textbf{Cap{\'i}tulos~5--8 ---} Desarrollo t{\'e}cnico, resultados, evaluaci{\'o}n y conclusiones.
+  \item \textbf{Cap{\'i}tulo~5 ---} Marco normativo aplicable a datos abiertos, contrataci{\'o}n p{\'u}blica, protecci{\'o}n de datos y sistemas de IA.
+  \item \textbf{Cap{\'i}tulo~6 ---} Metodolog{\'i}a y dise{\~n}o del sistema, incluyendo arquitectura, modelo de datos, agentes y criterios de evaluaci{\'o}n.
+  \item \textbf{Cap{\'i}tulo~7 ---} Implementaci{\'o}n del prototipo multiagente y descripci{\'o}n t{\'e}cnica de sus componentes.
+  \item \textbf{Cap{\'i}tulo~8 ---} Reproducibilidad, artefactos, comandos de ejecuci{\'o}n, manifests, hashes y trazabilidad.
+  \item \textbf{Cap{\'i}tulo~9 ---} Resultados y evaluaci{\'o}n t{\'e}cnica del prototipo.
+  \item \textbf{Cap{\'i}tulo~10 ---} Limitaciones, adaptaci{\'o}n del alcance y trabajo futuro.
+  \item \textbf{Cap{\'i}tulo~11 ---} Conclusiones del TFM.
 \end{itemize}
 
 \medskip
@@ -211,11 +217,11 @@ Tras el an{\'a}lisis exploratorio del \textit{dataset} BOE 2014--2024, se ha sel
 La elecci{\'o}n se fundamenta en tres criterios metodol{\'o}gicos:
 
 \begin{description}
-  \item[Validez de indicadores de riesgo tabulares.] A diferencia del CPV 45 (Obras, n\,=\,11.808), los servicios de ingenier{\'i}a presentan menor incidencia de modificaciones contractuales legalmente justificadas. En obras, las desviaciones de importe son frecuentes y a menudo leg{\'i}timas, lo que introduce ruido en los modelos de detecci{\'o}n. Los servicios de ingenier{\'i}a ---mayoritariamente estructurados en tarifas horarias y entregables definidos--- ofrecen una base m{\'a}s estable para indicadores como RF-03 (desviaci{\'o}n de importe) o RF-04 (plazo de resoluci{\'o}n inusualmente corto) \cite{OCP2024RedFlags}.
+  \item[Validez de indicadores de riesgo tabulares.] A diferencia del CPV 45 (Obras, n\,=\,11.808), los servicios de ingenier{\'i}a presentan menor incidencia de modificaciones contractuales legalmente justificadas. En obras, las desviaciones de importe son frecuentes y a menudo leg{\'i}timas, lo que introduce ruido en los modelos de detecci{\'o}n. Los servicios de ingenier{\'i}a ---mayoritariamente estructurados en tarifas horarias y entregables definidos--- ofrecen una base m{\'a}s estable para indicadores como la desviaci{\'o}n de importe (RF-05) o los patrones temporales an{\'o}malos cuando existen fechas suficientes (RF-06) \cite{OCP2024RedFlags}.
 
   \item[Riqueza para el an{\'a}lisis de redes.] El mercado de la ingenier{\'i}a p{\'u}blica presenta una estructura fragmentada pero interconectada: con 2.031 empresas para 3.443 contratos (ratio 1,7), la concentraci{\'o}n del Top~1 es inferior al 1\,\%, lo que sugiere la existencia de nichos de concentraci{\'o}n por organismo o subcategor{\'i}a CPV s{\'o}lo detectables mediante an{\'a}lisis de grafos. Adem{\'a}s, el sector presenta alta propensidad a la formaci{\'o}n de Uniones Temporales de Empresas (UTEs), que enriquecen el grafo bipartito con relaciones de colaboraci{\'o}n recurrente entre competidores \cite{Wachs2025ML,Traag2019Leiden}.
 
-  \item[Adecuaci{\'o}n al m{\'o}dulo NLP.] Los pliegos de prescripciones t{\'e}cnicas en el {\'a}mbito de la ingenier{\'i}a contienen con frecuencia criterios de adjudicaci{\'o}n sujetos a juicio de valor ---experiencia en proyectos similares, metodolog{\'i}a propuesta, cualificaci{\'o}n del equipo--- que pueden representar hasta el 49\,\% de la puntuaci{\'o}n total. Estos criterios son extra{\'i}bles mediante NLP sobre los anuncios del BOE y los PDFs en PLACE, constituyendo el corpus id{\'o}neo para detectar posibles direccionamientos t{\'e}cnicos (\textit{tailored tenders}). La especificidad del vocabulario (c{\'o}digos CPV de 8 d{\'i}gitos como 71311000 --Consultor{\'i}a en ingenier{\'i}a civil-- o 71356000 --Servicios t{\'e}cnicos--) permite segmentaci{\'o}n precisa que reduce la varianza esp{\'u}ria en la comparaci{\'o}n de importes \cite{CPVCodes71}.
+  \item[Adecuaci{\'o}n al m{\'o}dulo NLP.] Los pliegos de prescripciones t{\'e}cnicas en el {\'a}mbito de la ingenier{\'i}a contienen con frecuencia criterios de adjudicaci{\'o}n sujetos a juicio de valor ---experiencia en proyectos similares, metodolog{\'i}a propuesta, cualificaci{\'o}n del equipo--- que pueden representar hasta el 49\,\% de la puntuaci{\'o}n total. En el MVP, el m{\'o}dulo documental trabaja con anuncios, evidencias disponibles y fichas explicativas; el procesamiento masivo de PDFs y OCR queda como ampliaci{\'o}n natural del corpus. La especificidad del vocabulario (c{\'o}digos CPV de 8 d{\'i}gitos como 71311000 --Consultor{\'i}a en ingenier{\'i}a civil-- o 71356000 --Servicios t{\'e}cnicos--) permite segmentaci{\'o}n precisa que reduce la varianza esp{\'u}ria en la comparaci{\'o}n de importes \cite{CPVCodes71}.
 \end{description}
 
 Esta aproximaci{\'o}n sectorial est{\'a} alineada con la metodolog{\'i}a del proyecto europeo DIGIWHIST \cite{DIGIWHISTProject}, que segmenta el an{\'a}lisis por mercados espec{\'i}ficos para garantizar la comparabilidad de los indicadores de riesgo.
@@ -232,12 +238,12 @@ Esta aproximaci{\'o}n sectorial est{\'a} alineada con la metodolog{\'i}a del pro
 \toprule
 \textbf{Dimensión} & \textbf{Estado actual} & \textbf{ProcureWatch} \\
 \midrule
-Red flags en literatura & Bien documentados \cite{OCP2024RedFlags} & Implementados y evaluados \\
-ML para detección fraude & Demostrado en Italia, México, Kenya & Adaptado a datos españoles \\
-Análisis de redes & Probado en Portugal, Europa & Aplicado al dominio CPV 71 \\
-NLP en contratación & Survey reciente, sin prototipo & Implementado sobre pliegos ES \\
-Plataforma integrada & No existe en datos españoles & Propuesta de este TFM \\
-Reproducibilidad & Baja en estudios existentes & 100\,\% open-source + Docker \\
+Red flags en literatura & Bien documentados \cite{OCP2024RedFlags} & MVP con reglas trazables y evaluaci{\'o}n proxy \\
+ML para detección fraude & Demostrado en Italia, México, Kenya & Comparativa exploratoria adaptada a datos espa{\~n}oles \\
+Análisis de redes & Probado en Portugal, Europa & Aplicado al dominio CPV 71 en versi{\'o}n MVP \\
+NLP en contratación & Survey reciente, sin prototipo & MVP documental con evidencias y fichas explicativas \\
+Plataforma integrada & No existe en datos españoles & Prototipo integrado de ProcureWatch Analytics \\
+Reproducibilidad & Baja en estudios existentes & C{\'o}digo versionado, CLI, Docker y artefactos trazables \\
 \bottomrule
 \end{tabularx}
 \normalsize
@@ -254,9 +260,9 @@ Reproducibilidad & Baja en estudios existentes & 100\,\% open-source + Docker \\
 %Red flags en literatura & Bien documentados \cite{OCP2024RedFlags} & Implementados y evaluados \\
 %ML para detecci{\'o}n fraude & Demostrado en Italia, M{\'e}xico, Kenya & Adaptado a datos espa{\~n}oles \\
 %An{\'a}lisis de redes & Probado en Portugal, Europa & Aplicado al dominio CPV 71 \\
-%NLP en contrataci{\'o}n & Survey reciente, sin prototipo & Implementado sobre pliegos ES \\
-%Plataforma integrada & No existe en datos espa{\~n}oles & Propuesta de este TFM \\
-%Reproducibilidad & Baja en estudios existentes & 100\,\% open-source + Docker \\
+%NLP en contrataci{\'o}n & Survey reciente, sin prototipo & MVP documental con evidencias y fichas explicativas \\
+%Plataforma integrada & No existe en datos espa{\~n}oles & Prototipo integrado de ProcureWatch Analytics \\
+%Reproducibilidad & Baja en estudios existentes & C{\'o}digo versionado, CLI, Docker y artefactos trazables \\
 %\bottomrule
 %\end{tabular}
 %\end{table}
@@ -402,6 +408,8 @@ El an{\'a}lisis de la literatura permite extraer cuatro conclusiones que justifi
 \chapter{Objetivos}
 %=========================================================
 
+Los objetivos espec{\'i}ficos recogen el alcance inicial del TFM y sirven como marco de trabajo para el dise{\~n}o del prototipo. Su grado de cumplimiento en la versi{\'o}n de cierre se eval{\'u}a posteriormente en las Secciones~\ref{sec:evaluacion_por_objetivos} y~\ref{sec:adaptacion_alcance}, distinguiendo entre funcionalidades implementadas, soporte opcional, validaci{\'o}n disponible y l{\'i}neas de trabajo futuro.
+
 \section{Objetivo General}
 
 Dise{\~n}ar, desarrollar y evaluar \textbf{ProcureWatch Analytics}, una plataforma anal{\'i}tica multiagente que, a partir de datos abiertos de contrataci{\'o}n p{\'u}blica espa{\~n}ola (BOE 2014--2026 y PLACE) y europea, detecte, cuantifique y visualice patrones de riesgo e indicadores de red flags en licitaciones, adjudicaciones y empresas adjudicatarias del dominio CPV~71, mediante an{\'a}lisis de datos masivos, an{\'a}lisis de redes societarias, NLP documental y modelos de scoring de anomal{\'i}as, generando fichas de riesgo explicables que apoyen la priorizaci{\'o}n de casos para revisi{\'o}n por organismos de control.
@@ -527,7 +535,7 @@ El motor de \textit{red flags} (OE4) se diseña inicialmente con tres posibles e
 
 \item Los conjuntos de datos de entrenamiento sean representativos (artículo 10.2). Para una eventual ampliación con PUL, las etiquetas positivas deberían proceder de casos documentados y verificarse su distribución, sin asumir que la ausencia de etiqueta equivale a ausencia de fraude.
 
-\item Se realice una evaluación de la conformidad antes del despliegue (artículo 43). En el ámbito del TFM, se simulará esta evaluación mediante la validación con métricas (precisión \textgreater70 \%, modularidad Q \textgreater0,30, etc.) y un análisis de riesgos documentado.
+\item Se realice una evaluación de la conformidad antes del despliegue (artículo 43). En el ámbito del TFM, esta evaluación se aproxima mediante validación técnica, tests automatizados, métricas de calidad de datos, consistencia de reglas, trazabilidad de salidas y análisis de riesgos documentado. Las métricas supervisadas de precisión, la modularidad objetivo del grafo, la evaluación RAGAS completa y la usabilidad formal quedan reservadas para una validación posterior con datos y usuarios suficientes.
 \end{itemize}
 
 \subsection{Consecuencias del uso de un LLM local}
@@ -568,7 +576,7 @@ Supervisión humana obligatoria (AI Act) & Interfaz con revisión manual; ningun
 \hline
 Trazabilidad y explicabilidad (AI Act) & Reglas versionadas, registros de ejecución, trazabilidad de datos y código versionado para auditoría técnica. \\
 \hline
-Evaluación de riesgos y conformidad (AI Act) & Métricas de precisión (\textgreater70 \%), modularidad de grafos (Q\textgreater0,30), calidad RAG (Faithfulness\textgreater0,80) y usabilidad (SUS\textgreater68). \\
+Evaluación de riesgos y conformidad (AI Act) & Evaluación técnica del MVP mediante tests, métricas de calidad de datos, consistencia de reglas, evaluación proxy del scoring y documentación de limitaciones; precisión supervisada, RAGAS, modularidad objetivo y SUS quedan como objetivos de validación futura. \\
 \hline
 Datos locales y privacidad (RGPD + AI Act) & LLM local v{\'i}a Ollama; ninguna API externa; todo el procesamiento en infraestructura local. \\
 \hline
@@ -795,12 +803,12 @@ El motor de red flags transforma variables observables en indicadores de riesgo.
 La primera versi{\'o}n prioriza indicadores implementables con los campos BOE/OCDS, variables derivadas y evidencia documental:
 
 \begin{enumerate}
-  \item \textbf{RF-01 Licitaci{\'o}n con baja concurrencia:} contratos con una sola oferta o informaci{\'o}n equivalente cuando el dato est{\'e} disponible.
-  \item \textbf{RF-02 Procedimiento restrictivo o excepcional:} uso de procedimientos negociados, menores o sin publicidad en patrones recurrentes.
-  \item \textbf{RF-03 Desviaci{\'o}n de importe:} diferencia at{\'i}pica entre importe estimado y adjudicado, comparada con contratos similares del CPV~71.
-  \item \textbf{RF-04 Plazo an{\'o}malo:} intervalo inusualmente corto entre publicaci{\'o}n, adjudicaci{\'o}n y formalizaci{\'o}n.
-  \item \textbf{RF-05 Concentraci{\'o}n proveedor-organismo:} porcentaje elevado de contratos o importe adjudicado a un mismo proveedor por un organismo.
-  \item \textbf{RF-06 Recurrencia temporal:} adjudicaciones repetidas al mismo proveedor en ventanas temporales cercanas.
+  \item \textbf{RF-01 Baja concurrencia o identificaci{\'o}n insuficiente:} contratos con una sola oferta, ausencia de adjudicatario o informaci{\'o}n equivalente cuando el dato est{\'e} disponible.
+  \item \textbf{RF-02 Procedimiento de riesgo:} uso de procedimientos sensibles, excepcionales o menos competitivos seg{\'u}n la normalizaci{\'o}n disponible.
+  \item \textbf{RF-03 Recurrencia comprador-proveedor:} adjudicaciones repetidas entre el mismo organismo comprador y adjudicatario.
+  \item \textbf{RF-04 Concentraci{\'o}n de importe comprador-proveedor:} peso elevado del importe adjudicado dentro de una misma pareja comprador-proveedor.
+  \item \textbf{RF-05 Desviaci{\'o}n de importe:} adjudicaciones por encima del importe estimado o relaciones estimado/adjudicado at{\'i}picas.
+  \item \textbf{RF-06 Patr{\'o}n temporal an{\'o}malo:} intervalo an{\'o}malo entre publicaci{\'o}n, adjudicaci{\'o}n y formalizaci{\'o}n cuando existen fechas suficientes.
 \end{enumerate}
 
 RF-07 a RF-15, incluyendo fragmentaci{\'o}n avanzada y riesgo de red como indicador directo, forman parte del cat{\'a}logo de ampliaci{\'o}n, pero no se presentan como reglas evaluadas del MVP si no existe artefacto verificable. El \textit{score} compuesto se plantea como \textbf{h{\'i}brido}, pero no opaco. La base de la puntuaci{\'o}n procede de reglas expl{\'i}citas y ponderadas; las variables de red enriquecen el contexto; los modelos no supervisados, como Isolation Forest, se reservan para comparar anomal{\'i}as cuando existan datos suficientes; y el LLM genera explicaciones a partir de evidencias ya calculadas o recuperadas. La puntuaci{\'o}n final se expresa en una escala 0--100 y se traduce en niveles bajo, medio, alto o cr{\'i}tico, siempre acompa{\~n}ada de los factores que la han producido.
@@ -1866,7 +1874,9 @@ dudosos por similitud aproximada, por lo que puede dejar contratos sin cruce int
 
 \textbf{Ruta:} \texttt{scr/procurewatch/agent2/mvp\_scoring.py}. Agent2 calcula el score con pesos
 expl{\'i}citos y evidencias asociadas a cada regla. El siguiente fragmento muestra la l{\'o}gica
-principal de RF-01, RF-02, RF-05 y RF-06 en la versi{\'o}n MVP.
+principal de las reglas evaluables a nivel de contrato individual: RF-01, RF-02, RF-05 y RF-06.
+RF-03 y RF-04 se aplican posteriormente en \texttt{agent2/mvp\_pipeline.py}, donde existe contexto
+agregado suficiente para medir recurrencia y concentraci{\'o}n en la pareja comprador-proveedor.
 
 \begin{verbatim}
 FLAG_WEIGHTS = {
@@ -2101,12 +2111,12 @@ irregularidad, sino como indicadores de priorizaci{\'o}n.
 \textbf{C{\'o}digo} & \textbf{Indicador} & \textbf{L{\'o}gica anal{\'i}tica} & \textbf{Tipo} \\
 \midrule
 \endhead
-RF-01 & Baja concurrencia o se{\~n}al equivalente & Activa riesgo cuando la informaci{\'o}n disponible apunta a competencia reducida o no evaluable de forma segura. & Competencia \\
-RF-02 & Procedimiento de riesgo & Penaliza procedimientos restrictivos, excepcionales o menos competitivos seg{\'u}n normalizaci{\'o}n disponible. & Procedimiento \\
-RF-03 & Recurrencia proveedor-organismo & Detecta adjudicaciones repetidas entre el mismo comprador y adjudicatario. & Concentraci{\'o}n \\
-RF-04 & Concentraci{\'o}n de adjudicatario & Eval{\'u}a concentraci{\'o}n de contratos o importe alrededor de un adjudicatario. & Proveedor \\
-RF-05 & Desviaci{\'o}n de importe & Analiza adjudicaciones por encima de valores esperados o relaciones estimado/adjudicado at{\'i}picas. & Importe \\
-RF-06 & Calidad/evaluabilidad de datos & Identifica situaciones en las que la falta de datos impide una evaluaci{\'o}n robusta. & Calidad \\
+RF-01 & Baja concurrencia o identificaci{\'o}n insuficiente & Activa riesgo cuando existe una sola oferta, falta el adjudicatario o la informaci{\'o}n disponible apunta a competencia reducida. & Competencia \\
+RF-02 & Procedimiento de riesgo & Penaliza procedimientos sensibles, excepcionales o menos competitivos seg{\'u}n la normalizaci{\'o}n disponible. & Procedimiento \\
+RF-03 & Recurrencia comprador-proveedor & Detecta adjudicaciones repetidas entre el mismo comprador y adjudicatario. & Recurrencia \\
+RF-04 & Concentraci{\'o}n de importe comprador-proveedor & Eval{\'u}a si una pareja comprador-proveedor concentra una proporci{\'o}n relevante del importe adjudicado. & Concentraci{\'o}n \\
+RF-05 & Desviaci{\'o}n de importe & Analiza adjudicaciones por encima del importe estimado o relaciones estimado/adjudicado at{\'i}picas. & Importe \\
+RF-06 & Patr{\'o}n temporal an{\'o}malo & Identifica intervalos an{\'o}malos entre publicaci{\'o}n, adjudicaci{\'o}n y formalizaci{\'o}n cuando existen fechas suficientes. & Temporal \\
 \bottomrule
 \end{longtable}
 }
