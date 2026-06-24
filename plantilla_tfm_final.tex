@@ -988,6 +988,180 @@ Tests & \texttt{tests/} & Pruebas automatizadas de agentes, fuentes, batch, CLI,
 \end{longtable}
 }
 
+\section{Flujo extremo a extremo del MVP}
+\label{sec:flujo_end_to_end_mvp}
+
+El flujo extremo a extremo del MVP se dise{\~n}{\'o} con una restricci{\'o}n central: cada agente debe
+producir un artefacto legible por el siguiente agente sin depender de estado impl{\'i}cito. Esta
+decisi{\'o}n permite aislar errores, repetir una fase concreta y defender el sistema ante un tercero
+sin necesidad de ejecutar toda la cadena completa en cada revisi{\'o}n. La Tabla~\ref{tab:flujo_e2e}
+resume las entradas, procesos y salidas de cada etapa.
+
+{\small
+\begin{longtable}{p{2.8cm}p{3.7cm}p{3.9cm}p{3.3cm}}
+\caption{Flujo extremo a extremo del MVP}
+\label{tab:flujo_e2e}\\
+\toprule
+\textbf{Etapa} & \textbf{Entrada} & \textbf{Proceso} & \textbf{Salida} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Etapa} & \textbf{Entrada} & \textbf{Proceso} & \textbf{Salida} \\
+\midrule
+\endhead
+Fuentes & BOE, PLACE, OpenTender & Parsing, normalizaci{\'o}n de tipos, filtrado CPV~71, deduplicaci{\'o}n. & Tablas por fuente. \\
+Agent1 & Tablas normalizadas & Construcci{\'o}n de \texttt{contract\_key\_canon}, esquema anal{\'i}tico, calidad y cobertura. & Can{\'o}nico y reports. \\
+Agent2 & Can{\'o}nico Agent1 & Aplicaci{\'o}n de RF-01 a RF-06, score 0--100 y nivel de riesgo. & Flags, scores y reporte. \\
+Agent3 & Can{\'o}nico o muestra demo & Grafo contrato-comprador-adjudicatario-CPV-fuente, m{\'e}tricas y comunidades. & Nodos, aristas, m{\'e}tricas y features. \\
+Agent4 & Contrato, score, grafo y corpus & Recuperaci{\'o}n de fragmentos, composici{\'o}n de contexto y ficha explicativa. & Evidencias, citas y ficha. \\
+Dashboard & Outputs Agent2--Agent4 & Visualizaci{\'o}n, filtros, caso seleccionado y trazabilidad. & Exploraci{\'o}n humana. \\
+\bottomrule
+\end{longtable}
+}
+
+Esta organizaci{\'o}n evita dos problemas frecuentes en prototipos anal{\'i}ticos. El primero es la
+dependencia de notebooks manuales: si una fase solo existe como celdas ejecutadas de forma
+interactiva, la trazabilidad desaparece. El segundo es la mezcla de c{\'a}lculo y visualizaci{\'o}n: si
+el dashboard calcula resultados en tiempo real a partir de datos brutos, resulta dif{\'i}cil saber
+qu{\'e} versi{\'o}n de reglas se aplic{\'o}. En ProcureWatch, el dashboard consume artefactos ya
+calculados; su funci{\'o}n es explicar y explorar, no redefinir el resultado anal{\'i}tico.
+
+\subsection{Separaci{\'o}n entre capa anal{\'i}tica y capa de demostraci{\'o}n}
+
+La implementaci{\'o}n distingue entre dos niveles de uso. El primer nivel es el flujo anal{\'i}tico
+general, que opera sobre los artefactos disponibles en \texttt{data/processed}. Este flujo es el que
+produce resultados cuantitativos sobre miles de registros y permite medir calidad, cobertura y
+distribuci{\'o}n de riesgo. El segundo nivel es la demo integrada Agent3--Agent4, que usa una muestra
+peque{\~n}a y controlada para ense{\~n}ar el comportamiento de grafo, evidencias y dashboard sin
+obligar a procesar datasets grandes durante la defensa.
+
+Esta separaci{\'o}n no genera dos sistemas distintos. El c{\'o}digo reutiliza los mismos contratos de
+datos, los mismos nombres de columnas y la misma clave \texttt{contract\_key\_canon}. Lo que cambia es
+el tama{\~n}o y finalidad de los artefactos: el flujo general sirve para resultados; la demo sirve
+para explicar el recorrido de un caso concreto. Esta distinci{\'o}n es relevante porque evita
+confundir una muestra did{\'a}ctica con una ejecuci{\'o}n completa del pipeline.
+
+\section{Pol{\'i}tica de clave can{\'o}nica y trazabilidad del cruce}
+\label{sec:politica_contract_key_canon_memoria}
+
+La clave \texttt{contract\_key\_canon} es el mecanismo utilizado para identificar contratos de forma
+estable dentro del sistema. Su objetivo no es sustituir los identificadores oficiales de cada
+fuente, sino proporcionar una referencia com{\'u}n para deduplicaci{\'o}n, cobertura y conexi{\'o}n entre
+agentes. En contrataci{\'o}n p{\'u}blica espa{\~n}ola esta tarea no es trivial porque las fuentes pueden
+publicar un mismo hecho contractual con granularidades distintas: anuncio, expediente, lote,
+adjudicaci{\'o}n, formalizaci{\'o}n o l{\'i}nea de adjudicaci{\'o}n.
+
+La pol{\'i}tica aplicada es conservadora. Cuando existe un identificador de expediente o registro
+fiable, se prioriza; cuando no existe, se combina con organismo, fecha, fuente e identificador de
+entrada. Antes de construir la clave se normalizan textos: may{\'u}sculas, eliminaci{\'o}n de espacios
+superfluos, reducci{\'o}n de caracteres no estables y fechas en formato comparable. Si faltan campos
+cr{\'i}ticos, el sistema conserva la fila con su identificador de fuente, pero no fuerza un cruce
+interfuente.
+
+La Tabla~\ref{tab:politica_contract_key} resume la regla funcional.
+
+{\small
+\begin{longtable}{p{3.0cm}p{4.8cm}p{5.2cm}}
+\caption{Pol{\'i}tica funcional de \texttt{contract\_key\_canon}}
+\label{tab:politica_contract_key}\\
+\toprule
+\textbf{Fuente} & \textbf{Campos priorizados} & \textbf{Criterio de seguridad} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Fuente} & \textbf{Campos priorizados} & \textbf{Criterio de seguridad} \\
+\midrule
+\endhead
+BOE & Identificador de aviso, expediente, l{\'i}nea de adjudicaci{\'o}n, organismo y fecha. & Preferencia por unidad de adjudicaci{\'o}n cuando existe. \\
+PLACE & Expediente, DIR3 u organismo, fecha de publicaci{\'o}n e identificador de entrada. & Conserva granularidad de perfil/expediente sin inferir equivalencias dudosas. \\
+OpenTender & Identificador de registro, comprador, fecha y fuente. & Mantiene trazabilidad europea y evita emparejar solo por nombres similares. \\
+Can{\'o}nico & Fuente, identificador normalizado, organismo y fecha cuando procede. & No hay match si la evidencia no permite equivalencia razonable. \\
+\bottomrule
+\end{longtable}
+}
+
+La consecuencia pr{\'a}ctica de esta decisi{\'o}n es que el sistema prefiere subestimar coincidencias
+antes que introducir falsos emparejamientos. En un contexto de auditor{\'i}a, esta decisi{\'o}n es
+defendible: si se unieran por error dos contratos diferentes, se contaminar{\'i}an las red flags, las
+m{\'e}tricas de red y las evidencias documentales. En cambio, si dos registros potencialmente
+relacionados quedan sin unir, el resultado es una limitaci{\'o}n de cobertura visible y documentada.
+
+\subsection{Trazabilidad cuando no hay intersecciones}
+
+El hecho de que una ejecuci{\'o}n no encuentre intersecciones {\'u}tiles entre BOE, PLACE y OpenTender
+no debe quedar como un resultado opaco. Por ello, Agent1 produce un artefacto espec{\'i}fico de
+cobertura por \texttt{contract\_key\_canon}. Este artefacto permite saber cu{\'a}ntas claves proceden
+de cada fuente, cu{\'a}les son las intersecciones y cu{\'a}l es el universo total. En el snapshot local
+analizado, esa trazabilidad muestra universo de 17.748 claves, 3.883 claves BOE, 12.605 PLACE,
+1.260 OpenTender e intersecciones cero.
+
+Este resultado afecta de forma distinta a cada agente. Agent1 queda afectado porque no puede afirmar
+integraci{\'o}n contractual fuerte entre fuentes. Agent2 puede seguir calculando se{\~n}ales intrafuente
+sobre contratos reales, pero no debe afirmar contraste entre fuentes. Agent3 puede construir grafos
+con entidades del can{\'o}nico, aunque las relaciones interfuente deben interpretarse con cautela.
+Agent4 puede recuperar y citar evidencias asociadas a la clave disponible, pero no debe mezclar
+documentos de fuentes distintas como si fueran necesariamente el mismo contrato si la clave no lo
+acredita.
+
+\section{Gobernanza de evidencias y revisi{\'o}n humana}
+\label{sec:gobernanza_evidencias}
+
+ProcureWatch se dise{\~n}a bajo el principio de supervisi{\'o}n humana. El score no cierra un caso, no
+declara fraude y no recomienda una sanci{\'o}n. Su funci{\'o}n es ordenar prioridades de revisi{\'o}n y
+reunir evidencia trazable. Para que esta funci{\'o}n sea defendible, la memoria distingue tres tipos
+de afirmaciones:
+
+\begin{enumerate}
+  \item \textbf{Hechos observados}: valores procedentes de fuentes o artefactos, como importe,
+  procedimiento, fecha, adjudicatario, n{\'u}mero de ofertas o fuente de origen.
+  \item \textbf{Se{\~n}ales anal{\'i}ticas}: red flags, scores, niveles de riesgo, m{\'e}tricas de red o
+  estado no evaluable, calculados por reglas o algoritmos documentados.
+  \item \textbf{Inferencias explicativas}: texto generado o redactado para ayudar a entender el caso,
+  siempre apoyado en hechos o se{\~n}ales y nunca presentado como prueba jur{\'i}dica.
+\end{enumerate}
+
+Esta separaci{\'o}n responde a una exigencia normativa y metodol{\'o}gica. Un contrato con riesgo alto
+puede ser perfectamente legal si existe justificaci{\'o}n administrativa. Del mismo modo, un contrato
+con riesgo bajo puede contener problemas que el sistema no observa por falta de datos. Por tanto,
+la salida correcta de ProcureWatch no es ``fraude/no fraude'', sino una ficha revisable que indica:
+qu{\'e} se observ{\'o}, qu{\'e} regla se activ{\'o}, con qu{\'e} datos se calcul{\'o} y qu{\'e} limitaciones
+afectan al caso.
+
+\section{Evaluaci{\'o}n por objetivos espec{\'i}ficos}
+\label{sec:evaluacion_por_objetivos}
+
+Los objetivos definidos al inicio del TFM pueden evaluarse de forma m{\'a}s precisa al contrastarlos
+con la implementaci{\'o}n real. La Tabla~\ref{tab:evaluacion_objetivos} sintetiza ese contraste.
+
+{\small
+\begin{longtable}{p{1.5cm}p{5.7cm}p{5.8cm}}
+\caption{Evaluaci{\'o}n de objetivos espec{\'i}ficos frente a la implementaci{\'o}n}
+\label{tab:evaluacion_objetivos}\\
+\toprule
+\textbf{Obj.} & \textbf{Resultado implementado} & \textbf{Valoraci{\'o}n} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Obj.} & \textbf{Resultado implementado} & \textbf{Valoraci{\'o}n} \\
+\midrule
+\endhead
+OE1 & An{\'a}lisis de fuentes BOE, PLACE y OpenTender; foco CPV~71; perfilado de calidad. & Cumplido como an{\'a}lisis de disponibilidad y calidad, con limitaciones documentadas. \\
+OE2 & Esquema OCDS adaptado para contrato y adjudicatario, implementado en c{\'o}digo. & Cumplido; los campos m{\'i}nimos est{\'a}n formalizados. \\
+OE3 & Pipeline reproducible con parsers, can{\'o}nico, reportes y persistencia opcional. & Cumplido parcialmente en calidad: el pipeline existe, pero algunas m{\'e}tricas no alcanzan umbral. \\
+OE4 & RF-01 a RF-06 y scoring 0--100 por contrato/adjudicatario. & Cumplido como MVP; el cat{\'a}logo completo de 15 RF queda como extensi{\'o}n. \\
+OE5 & Grafo con nodos, aristas, m{\'e}tricas, comunidades y features. & Cumplido como grafo derivado; Neo4j es opcional. \\
+OE6 & Agent4 con corpus, chunks, retrieval, contexto de caso y citas. & Cumplido como PoC/MVP documental; evaluaci{\'o}n masiva RAG queda limitada. \\
+OE7 & Dashboard Streamlit integrado con vistas de resumen, caso, relaciones y evidencias. & Cumplido para demo local. \\
+OE8 & Validaci{\'o}n con tests, reports y documentaci{\'o}n de cierre. & Cumplido como validaci{\'o}n t{\'e}cnica; no es validaci{\'o}n supervisada de fraude. \\
+\bottomrule
+\end{longtable}
+}
+
+Esta evaluaci{\'o}n permite defender el trabajo sin sobredimensionar el resultado. La implementaci{\'o}n
+cumple el n{\'u}cleo de la propuesta como MVP reproducible, pero no convierte todas las l{\'i}neas de
+investigaci{\'o}n planteadas inicialmente en producto final productivo. La diferencia entre objetivo
+ambicioso y cierre implementado queda documentada como adaptaci{\'o}n de alcance.
+
 \section{Comandos de ejecuci{\'o}n y reproducci{\'o}n}
 \label{sec:comandos_reproduccion}
 
