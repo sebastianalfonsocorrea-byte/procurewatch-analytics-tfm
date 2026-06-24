@@ -2358,6 +2358,54 @@ certificar irregularidades administrativas, sino demostrar que es posible constr
 anal{\'i}tica trazable que reduzca el espacio de revisi{\'o}n manual y explique por qu{\'e} determinados
 contratos deben priorizarse.
 
+\section{Impacto de las limitaciones por componente}
+\label{sec:impacto_limitaciones_componente}
+
+Las limitaciones no afectan por igual a todos los agentes. Algunas reducen cobertura de datos, otras
+afectan a la interpretaci{\'o}n del score y otras condicionan la profundidad de la demostraci{\'o}n
+documental. Identificar el impacto por componente permite defender el sistema con precisi{\'o}n: no
+todo queda invalidado por una limitaci{\'o}n, pero tampoco debe ocultarse qu{\'e} conclusiones quedan
+restringidas.
+
+La Tabla~\ref{tab:impacto_limitaciones_componentes} resume este impacto.
+
+{\small
+\begin{longtable}{p{2.5cm}p{4.2cm}p{3.5cm}p{3.4cm}}
+\caption{Impacto de las limitaciones sobre los componentes del MVP}
+\label{tab:impacto_limitaciones_componentes}\\
+\toprule
+\textbf{Componente} & \textbf{Limitaci{\'o}n principal} & \textbf{Impacto} & \textbf{Mitigaci{\'o}n aplicada} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Componente} & \textbf{Limitaci{\'o}n principal} & \textbf{Impacto} & \textbf{Mitigaci{\'o}n aplicada} \\
+\midrule
+\endhead
+Agent1 & Heterogeneidad BOE/PLACE/OpenTender y falta de intersecciones por clave can{\'o}nica. & Limita an{\'a}lisis cruzado entre fuentes. & Matching conservador, reports de cobertura y no forzar equivalencias. \\
+Agent1 & NIF y fechas incompletas. & Reduce evaluabilidad de algunas m{\'e}tricas de calidad. & Marcar no evaluable y separar validez cuando el dato est{\'a} presente. \\
+Agent2 & Ausencia de etiquetas de fraude confirmado. & Impide medir precisi{\'o}n supervisada real. & Evaluaci{\'o}n proxy, reglas explicables y revisi{\'o}n humana. \\
+Agent2 & Cat{\'a}logo RF reducido en MVP. & No cubre todos los patrones planteados inicialmente. & Priorizar RF-01 a RF-06 verificables y documentar extensiones. \\
+Agent3 & Demo relacional limitada por artefactos disponibles. & No permite afirmar escalado completo de grafo. & Features reproducibles y Neo4j opcional para exploraci{\'o}n. \\
+Agent4 & Corpus documental no masivo en la evidencia disponible. & Limita evaluaci{\'o}n RAG cuantitativa. & Ficha demostrable, citas, fallback y advertencias de contexto. \\
+Dashboard & Validaci{\'o}n headless, no estudio formal de usuarios. & No mide usabilidad institucional completa. & Dise{\~n}o orientado a revisi{\'o}n humana y trazabilidad visible. \\
+Batch & Dependencia de manifests y estado anterior. & Si se pierde estado, se reduce capacidad incremental. & Hashes, modo force y snapshot final reproducible. \\
+\bottomrule
+\end{longtable}
+}
+
+Esta matriz muestra que la limitaci{\'o}n m{\'a}s fuerte se concentra en la validaci{\'o}n sustantiva del
+fraude, no en la ejecuci{\'o}n del pipeline. El sistema puede ingerir, normalizar, puntuar, construir
+artefactos y presentar casos; lo que no puede afirmar, sin una capa externa de validaci{\'o}n, es que
+un contrato sea fraudulento. Esta diferencia es esencial para interpretar correctamente el alcance
+del TFM.
+
+Tambi{\'e}n permite distinguir limitaciones de \textbf{datos}, \textbf{modelo} y \textbf{operaci{\'o}n}.
+Las limitaciones de datos afectan a completitud, NIF, fechas y matching. Las limitaciones de modelo
+afectan a la ausencia de etiquetas y a la imposibilidad de calibrar una precisi{\'o}n supervisada. Las
+limitaciones operativas afectan a servicios opcionales, demos y disponibilidad de snapshots. En todos
+los casos, la respuesta metodol{\'o}gica elegida fue hacer visible la restricci{\'o}n, no esconderla en
+el c{\'a}lculo.
+
 \section{Limitaciones de datos}
 \label{sec:limitaciones_datos}
 
@@ -2508,6 +2556,22 @@ documentado que parte de las m{\'e}tricas de Agent~1 no alcanzaron el objetivo p
 evaluaci{\'o}n de Agent~2 se apoy{\'o} en una referencia proxy por la ausencia de etiquetas reales de
 fraude. Lejos de ser un defecto narrativo, estas limitaciones delimitan con precisi{\'o}n el alcance
 real del prototipo y evitan sobredimensionar sus resultados.
+
+El valor principal del trabajo reside en haber convertido un problema amplio y heterog{\'e}neo en una
+arquitectura ejecutable, trazable y explicable. La combinaci{\'o}n de can{\'o}nico OCDS adaptado,
+reglas de riesgo, grafo, evidencia documental, dashboard y batch reproducible proporciona una base
+suficiente para demostrar c{\'o}mo podr{\'i}a organizarse una revisi{\'o}n anal{\'i}tica de contrataci{\'o}n
+p{\'u}blica sin depender de decisiones opacas. Esta aportaci{\'o}n es especialmente relevante porque
+mantiene separadas tres capas que a menudo se confunden: dato observado, se{\~n}al de riesgo e
+interpretaci{\'o}n experta.
+
+El uso correcto del sistema exige conservar esa separaci{\'o}n. ProcureWatch Analytics no debe
+utilizarse para automatizar sanciones, excluir proveedores o afirmar irregularidades sin revisi{\'o}n.
+Su funci{\'o}n es reducir el espacio de b{\'u}squeda, ordenar casos, mostrar por qu{\'e} se han
+priorizado y dejar constancia de los datos que faltan. Desde esta perspectiva, el MVP no es un
+producto cerrado de auditor{\'i}a, sino una plataforma acad{\'e}mica reproducible sobre la que pueden
+incorporarse nuevas reglas, validaci{\'o}n experta, corpus documental ampliado y despliegue
+institucional.
 
 En conjunto, el TFM cerr{\'o} un MVP coherente de extremo a extremo: ingesta, normalizaci{\'o}n,
 scoring, persistencia, comparativa anal{\'i}tica y congelado reproducible. La extensi{\'o}n hacia
