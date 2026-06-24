@@ -1537,9 +1537,16 @@ peque{\~n}os s{\'i} son adecuados para documentar reproducibilidad.
 \label{sec:fragmentos_codigo_relevantes}
 
 El objetivo de esta secci{\'o}n no es reproducir listados completos, sino mostrar decisiones de
-implementaci{\'o}n que explican el comportamiento del prototipo. El primer fragmento corresponde al
-esquema anal{\'i}tico m{\'i}nimo. La implementaci{\'o}n no deja el modelo de datos como una tabla
-informal de la memoria, sino como una estructura ejecutable que los tests pueden comprobar.
+implementaci{\'o}n que explican el comportamiento del prototipo. Los fragmentos se muestran de forma
+resumida y proceden de componentes concretos del sistema; su funci{\'o}n es ilustrar decisiones de
+dise{\~n}o, no sustituir la documentaci{\'o}n completa del c{\'o}digo.
+
+\subsection{Esquema anal{\'i}tico ejecutable}
+
+\textbf{Ruta:} \texttt{scr/procurewatch/agent1/analytical\_schema.py}. El primer fragmento
+corresponde al esquema anal{\'i}tico m{\'i}nimo. La implementaci{\'o}n no deja el modelo de datos como
+una tabla informal de la memoria, sino como una estructura ejecutable que los tests pueden
+comprobar.
 
 \begin{verbatim}
 CONTRACT_REQUIRED_FIELDS = (
@@ -1569,40 +1576,126 @@ CONTRACT_REQUIRED_FIELDS = (
 )
 \end{verbatim}
 
-Este fragmento es importante porque vincula directamente la propuesta t{\'e}cnica con el c{\'o}digo:
+Este fragmento es importante porque vincula directamente el alcance inicial con el c{\'o}digo:
 los campos de \texttt{CONTRATO} no son una aspiraci{\'o}n documental, sino una lista de requisitos
 que el pipeline puede validar. Adem{\'a}s, cada campo queda asociado a un agente responsable:
 Agent1 cubre identificadores, fuentes, organismos, fechas e importes; Agent2 completa red flags y
 riesgo; Agent3 aporta centralidad y comunidad; Agent4 aporta fragmentos documentales; y la interfaz
 gestiona el estado de revisi{\'o}n.
 
-El segundo fragmento resume la idea de manifiesto de batch. La implementaci{\'o}n mantiene hash,
-tama{\~n}o, URL y estado de cada fuente para evitar reprocesamientos innecesarios.
+\subsection{Construcci{\'o}n conservadora de \texttt{contract\_key\_canon}}
+
+\textbf{Ruta:} \texttt{scr/procurewatch/agent1/pipeline.py}. La clave can{\'o}nica se construye con
+criterios distintos por fuente y con fallback trazable. El fragmento siguiente resume la parte
+central de la funci{\'o}n \texttt{\_build\_contract\_keys}; se omiten detalles auxiliares de
+normalizaci{\'o}n para mantener legibilidad.
 
 \begin{verbatim}
-{
-  "batch_id": "weekly-2026-06-24",
-  "run_mode": "weekly",
-  "status": "skipped",
-  "sources_checked": ["boe", "place", "opentender"],
-  "sources_changed": [],
-  "input_hashes": {
-    "boe": "sha256:...",
-    "place": "sha256:...",
-    "opentender": "sha256:..."
-  },
-  "outputs": {
-    "canonical": "data/processed/agent2_contracts_canonical.parquet",
-    "agent2_scores": "data/processed/agent2_risk_scores.parquet"
-  }
-}
+if source == "boe":
+    file_id = _norm_text(id_frame["file_number"]).fillna("")
+    buyer_name = _norm_text(id_frame["buyer_name"]).fillna("")
+    date = _norm_date(_norm_text(id_frame["publication_date"])).fillna("")
+    primary = file_id + "|" + buyer_name + "|" + date
+    fallback = id_frame["contract_id"].astype("string")
+    final = _norm_key_candidates(primary, fallback)
+elif source == "place":
+    contract_folder_id = _norm_text(id_frame["contract_folder_id"])
+    buyer_dir3 = _norm_text(id_frame["buyer_dir3"]).fillna("")
+    published_date = _norm_date(_norm_text(id_frame["published_date"])).fillna("")
+    key_parts = contract_folder_id + "|" + buyer_dir3 + "|" + published_date
+    fallback = _norm_text(id_frame["source_entry_id"]).fillna("")
+    final = _norm_key_candidates(key_parts, fallback)
 \end{verbatim}
 
-La utilidad de este manifiesto es doble. En primer lugar, permite justificar por qu{\'e} una ejecuci{\'o}n
-no reley{\'o} todas las fuentes si no hab{\'i}a cambios; en segundo lugar, convierte cada resultado en
-un producto reproducible, asociado a entradas concretas y a versiones de c{\'o}digo.
+La decisi{\'o}n t{\'e}cnica consiste en priorizar identificadores fuertes cuando existen y combinar
+campos auxiliares solo como apoyo. Esta regla mejora la trazabilidad porque cada clave puede
+reconstruirse desde campos de origen. Su limitaci{\'o}n es deliberada: no resuelve emparejamientos
+dudosos por similitud aproximada, por lo que puede dejar contratos sin cruce interfuente.
 
-El tercer fragmento muestra una consulta Cypher representativa del an{\'a}lisis de grafo. En la
+\subsection{Red flags y score de Agent2}
+
+\textbf{Ruta:} \texttt{scr/procurewatch/agent2/mvp\_scoring.py}. Agent2 calcula el score con pesos
+expl{\'i}citos y evidencias asociadas a cada regla. El siguiente fragmento muestra la l{\'o}gica
+principal de RF-01, RF-02, RF-05 y RF-06 en la versi{\'o}n MVP.
+
+\begin{verbatim}
+FLAG_WEIGHTS = {
+    "RF-01": 15.0,
+    "RF-02": 20.0,
+    "RF-05": 25.0,
+    "RF-06": 15.0,
+}
+
+if missing_supplier(contract):
+    red_flags.append("RF-01")
+    evidence["supplier_name"] = contract.supplier_name
+elif contract.supplier_count_in_tender == 1:
+    red_flags.append("RF-01")
+    evidence["supplier_count_in_tender"] = contract.supplier_count_in_tender
+if risky_procedure(contract):
+    red_flags.append("RF-02")
+    evidence["procedure"] = contract.procedure
+if awarded_above_estimate(contract, deviation_threshold=deviation_threshold):
+    red_flags.append("RF-05")
+if temporal_anomaly(contract):
+    red_flags.append("RF-06")
+
+risk_score = min(sum(FLAG_WEIGHTS.get(flag, 0.0) for flag in red_flags), 100.0)
+\end{verbatim}
+
+Este fragmento muestra por qu{\'e} el score es explicable: cada incremento est{\'a} ligado a una regla
+con c{\'o}digo, peso y evidencia. La limitaci{\'o}n es que no todas las red flags previstas
+inicialmente est{\'a}n implementadas en el MVP; por tanto, RF-07 a RF-15 no deben presentarse como
+resultado evaluado.
+
+\textbf{Ruta:} \texttt{scr/procurewatch/agent2/mvp\_pipeline.py}. El nivel de riesgo se asigna
+mediante umbrales transparentes:
+
+\begin{verbatim}
+def _risk_level_from_score(score: float) -> str:
+    if score >= 75:
+        return "critico"
+    if score >= 50:
+        return "alto"
+    if score >= 25:
+        return "medio"
+    return "bajo"
+\end{verbatim}
+
+La ventaja de esta decisi{\'o}n es que un evaluador puede reproducir manualmente la categor{\'i}a de
+riesgo a partir del score. La desventaja es que los umbrales no proceden de entrenamiento
+supervisado contra fraude confirmado; son criterios de priorizaci{\'o}n para revisi{\'o}n humana.
+
+\subsection{Batch incremental y estado \texttt{skipped}}
+
+\textbf{Rutas:} \texttt{scr/procurewatch/batch.py} y \texttt{tests/test\_batch.py}. La l{\'o}gica de
+batch registra hashes y evita reejecutar Agent1 cuando las fuentes no han cambiado. El test de
+regresi{\'o}n reproduce el escenario semanal sin cambios:
+
+\begin{verbatim}
+with mock.patch("procurewatch.batch.run_agent1") as run_agent1_mock:
+    result = run_batch(
+        run_mode="weekly",
+        force=False,
+        boe_input=boe_input,
+        open_tender_input=open_tender_input,
+        batch_state_path=batch_state_path,
+        batch_manifest_dir=workspace / "data/manifest/batches",
+    )
+
+self.assertFalse(run_agent1_mock.called)
+self.assertEqual(result["status"], "skipped")
+self.assertEqual(result["agent1_executed"], False)
+\end{verbatim}
+
+Este fragmento es relevante porque valida una propiedad operativa del MVP: el sistema no descarga ni
+procesa todo en cada ejecuci{\'o}n si los hashes, tama{\~n}os y rutas de entrada no cambian. La
+limitaci{\'o}n es que esta estrategia depende de que las fuentes mantengan metadatos comparables y de
+que el estado anterior de batch no se pierda.
+
+\subsection{Consulta de vecindario en Neo4j}
+
+El {\'u}ltimo fragmento muestra una consulta Cypher representativa del an{\'a}lisis de grafo. En la
 implementaci{\'o}n real, Neo4j es opcional, pero el modelo de nodos y relaciones s{\'i} est{\'a}
 preparado para cargar contratos y recuperar su entorno relacional.
 
