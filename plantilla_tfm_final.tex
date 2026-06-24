@@ -928,10 +928,10 @@ servicios opcionales utilizados cuando el entorno de ejecuci{\'o}n dispone de el
 \endhead
 CLI & \texttt{scr/procurewatch/cli.py} & Expone comandos de diagn{\'o}stico, normalizaci{\'o}n, ejecuci{\'o}n de agentes, batch, RAG, evaluaci{\'o}n y carga Neo4j. \\
 Fuentes BOE & \texttt{data\_sources/boe.py} & Normaliza el CSV BOE 2014--2024, extrae contratos y l{\'i}neas de adjudicaci{\'o}n CPV~71 y genera reportes de calidad. \\
-Fuentes PLACE & \texttt{data\_sources/place.py}, \texttt{place\_normalize.py} & Gestiona descarga/inspecci{\'o}n de fuentes PLACE, parsing de ZIP/Atom/XML, filtrado CPV y deduplicaci{\'o}n. \\
+Fuentes PLACE & \texttt{data\_sources/place.py}, \texttt{place\_normalize.py} & Gestiona descarga y lectura de fuentes PLACE, parsing de ZIP/Atom/XML, filtrado CPV y deduplicaci{\'o}n. \\
 Fuentes OpenTender & \texttt{data\_sources/opentender.py} & Descubre y procesa ficheros JSONL/GZ/ZIP de OpenTender, normalizando registros CPV~71 para el can{\'o}nico. \\
 Agent1 & \texttt{agent1/pipeline.py} & Construye el can{\'o}nico de contratos, cobertura entre fuentes, datasets anal{\'i}ticos y reportes de calidad. \\
-Esquema anal{\'i}tico & \texttt{agent1/analytical\_schema.py} & Define los campos m{\'i}nimos de \texttt{CONTRATO} y \texttt{ADJUDICATARIO} exigidos por la propuesta. \\
+Esquema anal{\'i}tico & \texttt{agent1/analytical\_schema.py} & Define los campos m{\'i}nimos de \texttt{CONTRATO} y \texttt{ADJUDICATARIO} definidos en el alcance del TFM. \\
 Persistencia relacional & \texttt{db.py} & Inserta tablas anal{\'i}ticas de Agent1 en PostgreSQL cuando el servicio est{\'a} disponible. \\
 Agent2 estable & \texttt{agent2/pipeline.py} & Calcula red flags y scores sobre el can{\'o}nico de Agent1 con reglas versionadas. \\
 Agent2 MVP & \texttt{agent2/mvp\_pipeline.py} & Ejecuta RF-01 a RF-06, genera flags, scores por contrato y adjudicatario, y reporte JSON. \\
@@ -1187,7 +1187,7 @@ afectan al caso.
 \label{sec:evaluacion_por_objetivos}
 
 Los objetivos definidos al inicio del TFM pueden evaluarse de forma m{\'a}s precisa al contrastarlos
-con la implementaci{\'o}n real. La Tabla~\ref{tab:evaluacion_objetivos} sintetiza ese contraste.
+con la versi{\'o}n de cierre del prototipo. La Tabla~\ref{tab:evaluacion_objetivos} sintetiza ese contraste.
 
 {\small
 \begin{longtable}{p{1.5cm}p{5.7cm}p{5.8cm}}
@@ -1214,7 +1214,7 @@ OE8 & Validaci{\'o}n con tests, reports y documentaci{\'o}n de cierre. & Cumplid
 }
 
 Esta evaluaci{\'o}n permite defender el trabajo sin sobredimensionar el resultado. La implementaci{\'o}n
-cumple el n{\'u}cleo de la propuesta como MVP reproducible, pero no convierte todas las l{\'i}neas de
+cumple el n{\'u}cleo de los objetivos definidos inicialmente como MVP reproducible, pero no convierte todas las l{\'i}neas de
 investigaci{\'o}n planteadas inicialmente en producto final productivo. La diferencia entre objetivo
 ambicioso y cierre implementado queda documentada como adaptaci{\'o}n de alcance.
 
@@ -1460,7 +1460,7 @@ Tabla~\ref{tab:artefactos_sistema} agrupa los artefactos principales.
 \texttt{contracts\_place\_cpv71.parquet} & PLACE parser & Contratos PLACE filtrados por CPV~71. \\
 \texttt{contracts\_opentender\_2024\_cpv71.parquet} & OpenTender parser & Registros OpenTender espa{\~n}oles CPV~71. \\
 \texttt{agent2\_contracts\_canonical.parquet} & Agent1 & Dataset can{\'o}nico consumido por Agent2. \\
-\texttt{contracts\_analytical.parquet} & Agent1 & Tabla anal{\'i}tica de contratos alineada con el esquema de la propuesta. \\
+\texttt{contracts\_analytical.parquet} & Agent1 & Tabla anal{\'i}tica de contratos alineada con el esquema objetivo del TFM. \\
 \texttt{suppliers\_analytical.parquet} & Agent1 & Tabla anal{\'i}tica de adjudicatarios. \\
 \texttt{agent1\_run\_report.json} & Agent1 & Informe de fuentes, versiones de parsers, filas procesadas y errores. \\
 \texttt{agent1\_data\_quality\_summary.json} & Agent1 & Resumen de calidad, cobertura, completitud y coherencia. \\
@@ -1645,7 +1645,7 @@ que el estado anterior de batch no se pierda.
 \subsection{Consulta de vecindario en Neo4j}
 
 El {\'u}ltimo fragmento muestra una consulta Cypher representativa del an{\'a}lisis de grafo. En la
-implementaci{\'o}n real, Neo4j es opcional, pero el modelo de nodos y relaciones s{\'i} est{\'a}
+versi{\'o}n de cierre, Neo4j es opcional, pero el modelo de nodos y relaciones s{\'i} est{\'a}
 preparado para cargar contratos y recuperar su entorno relacional.
 
 \begin{verbatim}
@@ -1751,7 +1751,7 @@ Intersecciones BOE/PLACE/OpenTender & 0 & -- & Limitaci{\'o}n de matching, no se
 
 Estos resultados obligan a una lectura prudente. El pipeline est{\'a} implementado, el esquema existe
 y los artefactos se generan, pero no todas las m{\'e}tricas de calidad alcanzan los objetivos
-iniciales. La memoria no debe ocultar esta diferencia: forma parte de la evaluaci{\'o}n del prototipo
+iniciales. Esta diferencia forma parte de la evaluaci{\'o}n del prototipo
 y delimita el alcance de los resultados.
 
 \section{Resultados de red flags y scoring}
@@ -1824,10 +1824,10 @@ m{\'e}tricas contractuales y 3 filas de features sobre un can{\'o}nico sint{\'e}
 gener{\'o} una ficha integrada para \texttt{PW-2024-0001} con \texttt{risk\_score=0.5}, dos red
 flags, m{\'e}tricas Agent3, dos evidencias documentales y dos citas.
 
-En la copia de trabajo utilizada para esta versi{\'o}n de la memoria no estaba disponible f{\'i}sicamente
-esa carpeta de demo en \texttt{data/processed/}. Por tanto, la cifra anterior se trata como resultado
-recogido en la documentaci{\'o}n t{\'e}cnica del proyecto, no como artefacto reabierto junto con los
-Parquet principales de la ejecuci{\'o}n disponible.
+Esa carpeta de demo no se conserva como artefacto cuantitativo principal dentro del paquete de
+resultados utilizado para las tablas anteriores. Por tanto, la cifra anterior se trata como resultado
+recogido en la documentaci{\'o}n t{\'e}cnica del proyecto, no como salida Parquet consolidada junto con
+los artefactos principales de la ejecuci{\'o}n disponible.
 
 El dashboard integrado est{\'a} implementado en \texttt{frontend/agent3\_demo.py}. La validaci{\'o}n
 t{\'e}cnica recoge su ejecuci{\'o}n en modo headless con HTTP 200, sin artefactos faltantes y con
@@ -1968,7 +1968,7 @@ que requieren contraste cruzado fuerte entre fuentes quedan limitados. En la mem
 se interpreta como limitaci{\'o}n de integraci{\'o}n y no como prueba de ausencia de coincidencias en la
 realidad.
 
-La segunda limitaci{\'o}n afecta a la completitud de campos cr{\'i}ticos. El informe de calidad local
+La segunda limitaci{\'o}n afecta a la completitud de campos cr{\'i}ticos. El informe de calidad generado
 muestra que la completitud OCDS cr{\'i}tica no alcanza el objetivo inicial de 0,90 en el can{\'o}nico
 completo. La cobertura de NIF del adjudicatario tambi{\'e}n es insuficiente cuando se calcula sobre
 todo el dataset, aunque la validez del identificador es muy alta cuando el dato est{\'a} presente.
@@ -2184,8 +2184,8 @@ estos se mantienen fuera de Git por reproducibilidad y control de tama{\~n}o.
 \chapter{Ap{\'e}ndice: Esquema anal{\'i}tico resumido}
 \label{ap:esquema_analitico}
 
-El esquema anal{\'i}tico implementado sigue la estructura m{\'i}nima exigida por la propuesta
-t{\'e}cnica. La Tabla~\ref{tab:contrato_schema_resumen} agrupa los campos por bloque funcional.
+El esquema anal{\'i}tico implementado sigue la estructura m{\'i}nima definida para el TFM.
+La Tabla~\ref{tab:contrato_schema_resumen} agrupa los campos por bloque funcional.
 
 {\small
 \begin{longtable}{p{3.5cm}p{9.6cm}}
