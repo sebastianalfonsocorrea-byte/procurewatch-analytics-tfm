@@ -221,7 +221,7 @@ La elecci{\'o}n se fundamenta en tres criterios metodol{\'o}gicos:
 
   \item[Riqueza para el an{\'a}lisis de redes.] El mercado de la ingenier{\'i}a p{\'u}blica presenta una estructura fragmentada pero interconectada: con 2.031 empresas para 3.443 contratos (ratio 1,7), la concentraci{\'o}n del Top~1 es inferior al 1\,\%, lo que sugiere la existencia de nichos de concentraci{\'o}n por organismo o subcategor{\'i}a CPV s{\'o}lo detectables mediante an{\'a}lisis de grafos. Adem{\'a}s, el sector presenta alta propensidad a la formaci{\'o}n de Uniones Temporales de Empresas (UTEs), que enriquecen el grafo bipartito con relaciones de colaboraci{\'o}n recurrente entre competidores \cite{Wachs2025ML,Traag2019Leiden}.
 
-  \item[Adecuaci{\'o}n al m{\'o}dulo NLP.] Los pliegos de prescripciones t{\'e}cnicas en el {\'a}mbito de la ingenier{\'i}a contienen con frecuencia criterios de adjudicaci{\'o}n sujetos a juicio de valor ---experiencia en proyectos similares, metodolog{\'i}a propuesta, cualificaci{\'o}n del equipo--- que pueden representar hasta el 49\,\% de la puntuaci{\'o}n total. En el MVP, el m{\'o}dulo documental trabaja con anuncios, evidencias disponibles y fichas explicativas; el procesamiento masivo de PDFs y OCR queda como ampliaci{\'o}n natural del corpus. La especificidad del vocabulario (c{\'o}digos CPV de 8 d{\'i}gitos como 71311000 --Consultor{\'i}a en ingenier{\'i}a civil-- o 71356000 --Servicios t{\'e}cnicos--) permite segmentaci{\'o}n precisa que reduce la varianza esp{\'u}ria en la comparaci{\'o}n de importes \cite{CPVCodes71}.
+  \item[Adecuaci{\'o}n al m{\'o}dulo NLP.] Los pliegos de prescripciones t{\'e}cnicas en el {\'a}mbito de la ingenier{\'i}a contienen con frecuencia criterios de adjudicaci{\'o}n sujetos a juicio de valor ---experiencia en proyectos similares, metodolog{\'i}a propuesta, cualificaci{\'o}n del equipo--- que pueden representar hasta el 49\,\% de la puntuaci{\'o}n total. En la versi{\'o}n evaluada, el m{\'o}dulo documental trabaja con anuncios, evidencias disponibles y fichas explicativas; el procesamiento masivo de PDFs y OCR queda como ampliaci{\'o}n natural del corpus. La especificidad del vocabulario (c{\'o}digos CPV de 8 d{\'i}gitos como 71311000 --Consultor{\'i}a en ingenier{\'i}a civil-- o 71356000 --Servicios t{\'e}cnicos--) permite segmentaci{\'o}n precisa que reduce la varianza esp{\'u}ria en la comparaci{\'o}n de importes \cite{CPVCodes71}.
 \end{description}
 
 Esta aproximaci{\'o}n sectorial est{\'a} alineada con la metodolog{\'i}a del proyecto europeo DIGIWHIST \cite{DIGIWHISTProject}, que segmenta el an{\'a}lisis por mercados espec{\'i}ficos para garantizar la comparabilidad de los indicadores de riesgo.
@@ -238,10 +238,10 @@ Esta aproximaci{\'o}n sectorial est{\'a} alineada con la metodolog{\'i}a del pro
 \toprule
 \textbf{Dimensión} & \textbf{Estado actual} & \textbf{ProcureWatch} \\
 \midrule
-Red flags en literatura & Bien documentados \cite{OCP2024RedFlags} & MVP con reglas trazables y evaluaci{\'o}n proxy \\
+Red flags en literatura & Bien documentados \cite{OCP2024RedFlags} & Prototipo con reglas trazables y evaluaci{\'o}n proxy \\
 ML para detección fraude & Demostrado en Italia, México, Kenya & Comparativa exploratoria adaptada a datos espa{\~n}oles \\
-Análisis de redes & Probado en Portugal, Europa & Aplicado al dominio CPV 71 en versi{\'o}n MVP \\
-NLP en contratación & Survey reciente, sin prototipo & MVP documental con evidencias y fichas explicativas \\
+Análisis de redes & Probado en Portugal, Europa & Aplicado al dominio CPV 71 en la versi{\'o}n evaluada \\
+NLP en contratación & Survey reciente, sin prototipo & M{\'o}dulo documental con evidencias y fichas explicativas \\
 Plataforma integrada & No existe en datos españoles & Prototipo integrado de ProcureWatch Analytics \\
 Reproducibilidad & Baja en estudios existentes & C{\'o}digo versionado, CLI, Docker y artefactos trazables \\
 \bottomrule
@@ -260,7 +260,7 @@ Reproducibilidad & Baja en estudios existentes & C{\'o}digo versionado, CLI, Doc
 %Red flags en literatura & Bien documentados \cite{OCP2024RedFlags} & Implementados y evaluados \\
 %ML para detecci{\'o}n fraude & Demostrado en Italia, M{\'e}xico, Kenya & Adaptado a datos espa{\~n}oles \\
 %An{\'a}lisis de redes & Probado en Portugal, Europa & Aplicado al dominio CPV 71 \\
-%NLP en contrataci{\'o}n & Survey reciente, sin prototipo & MVP documental con evidencias y fichas explicativas \\
+%NLP en contrataci{\'o}n & Survey reciente, sin prototipo & M{\'o}dulo documental con evidencias y fichas explicativas \\
 %Plataforma integrada & No existe en datos espa{\~n}oles & Prototipo integrado de ProcureWatch Analytics \\
 %Reproducibilidad & Baja en estudios existentes & C{\'o}digo versionado, CLI, Docker y artefactos trazables \\
 %\bottomrule
@@ -503,7 +503,7 @@ Los datos de contratación incluyen información sobre personas físicas: nombre
 
 \item \textbf{Principio de limitación de la finalidad} (artículo 5.1.b): Los \textit{scores} de riesgo solo se utilizan para priorizar casos ante organismos de control, no para decisiones automáticas que afecten a derechos de las empresas. Se prohíbe explícitamente el uso del sistema para crear listas negras o denegar contratación.
 
-\item \textbf{Derecho de oposición y transparencia} (artículos 21 y 13-15): Las empresas señaladas con alto riesgo deben poder conocer los indicadores que motivaron esa puntuación. Por eso el sistema incluye fichas explicativas generadas con LLM local y desgloses por reglas activadas. SHAP se mantiene como técnica de referencia para extensiones con modelos predictivos, pero no se presenta como componente evaluado del MVP.
+\item \textbf{Derecho de oposición y transparencia} (artículos 21 y 13-15): Las empresas señaladas con alto riesgo deben poder conocer los indicadores que motivaron esa puntuación. Por eso el sistema incluye fichas explicativas generadas con LLM local y desgloses por reglas activadas. SHAP se mantiene como técnica de referencia para extensiones con modelos predictivos, pero no se presenta como componente evaluado de la versi{\'o}n final.
 \end{itemize}
 
 El uso de un \textbf{LLM local} en lugar de APIs externas (por ejemplo, OpenAI) elimina el riesgo de transferencia internacional de datos (artículo 44 RGPD) \cite{RGPD2016}. Todos los datos permanecen en la infraestructura local del organismo de control, cumpliendo con las garantías de privacidad desde el diseño («\textit{by design and by default}», artículo 25 RGPD). Adicionalmente, la LOPDGDD \cite{LOPDGDD2018} refuerza estos principios en el ordenamiento español.
@@ -517,7 +517,7 @@ El AI Act \cite{AIAct2024} es el marco jurídico más relevante para ProcureWatc
 El artículo 6 del AI Act define los sistemas de IA de \textbf{alto riesgo} como aquellos que pueden afectar negativamente a derechos fundamentales o la seguridad. El anexo III incluye, entre otros, los sistemas utilizados para «evaluar la solvencia o la fiabilidad crediticia de personas físicas» (punto 5b). Aunque no menciona explícitamente la auditoría de contratación pública, la generación de puntuaciones de riesgo sobre empresas que podrían influir en decisiones de organismos de control (investigaciones, inspecciones) ha sido interpretada por la literatura como sistema de alto riesgo por analogía \cite{Wachs2025ML, SHAPLIMEWiley2025}. Por tanto, ProcureWatch Analytics se diseña bajo los siguientes principios preventivos, exigibles a los sistemas de alto riesgo:
 
 \begin{itemize}
-\item \textbf{Trazabilidad completa} (artículo 13): Cada \textit{score} de riesgo debe poder descomponerse en los indicadores de \textit{red flags} y métricas de red que lo componen. En el MVP esta descomposición se consigue mediante reglas versionadas, evidencias y reportes; SHAP, Positive-Unlabeled Learning e Isolation Forest quedan como técnicas de ampliación o contraste cuando existan artefactos y etiquetas suficientes.
+\item \textbf{Trazabilidad completa} (artículo 13): Cada \textit{score} de riesgo debe poder descomponerse en los indicadores de \textit{red flags} y métricas de red que lo componen. En la versi{\'o}n evaluada esta descomposición se consigue mediante reglas versionadas, evidencias y reportes; SHAP, Positive-Unlabeled Learning e Isolation Forest quedan como técnicas de ampliación o contraste cuando existan artefactos y etiquetas suficientes.
 
 \item \textbf{Supervisión humana obligatoria} (artículo 14): Ninguna señal de riesgo se considera definitiva sin revisión por parte de un auditor o técnico. La interfaz de Streamlit está diseñada para apoyar la decisión humana, no para reemplazarla. El LLM local solo genera explicaciones, no recomendaciones de acción.
 
@@ -528,7 +528,7 @@ El artículo 6 del AI Act define los sistemas de IA de \textbf{alto riesgo} como
 
 \subsection{Implicaciones específicas para el motor de \textit{red flags} y \textit{scoring}}
 
-El motor de \textit{red flags} (OE4) se diseña inicialmente con tres posibles enfoques: (i) reglas explícitas basadas en la literatura, (ii) Isolation Forest no supervisado y (iii) Positive-Unlabeled Learning semisupervisado. La versi{\'o}n evaluada del MVP prioriza reglas explicables; los enfoques estad{\'i}sticos se documentan como comparativa o ampliación cuando existan datos suficientes. El AI Act no prohíbe estos métodos, pero exige que:
+El motor de \textit{red flags} (OE4) se diseña inicialmente con tres posibles enfoques: (i) reglas explícitas basadas en la literatura, (ii) Isolation Forest no supervisado y (iii) Positive-Unlabeled Learning semisupervisado. La versi{\'o}n evaluada prioriza reglas explicables; los enfoques estad{\'i}sticos se documentan como comparativa o ampliación cuando existan datos suficientes. El AI Act no prohíbe estos métodos, pero exige que:
 
 \begin{itemize}
 \item El usuario sea informado de que está interactuando con un sistema de IA (artículo 52). La interfaz de ProcureWatch Analytics indicará claramente que el \textit{score} de riesgo es una recomendación estadística, no una prueba de irregularidad.
@@ -576,7 +576,7 @@ Supervisión humana obligatoria (AI Act) & Interfaz con revisión manual; ningun
 \hline
 Trazabilidad y explicabilidad (AI Act) & Reglas versionadas, registros de ejecución, trazabilidad de datos y código versionado para auditoría técnica. \\
 \hline
-Evaluación de riesgos y conformidad (AI Act) & Evaluación técnica del MVP mediante tests, métricas de calidad de datos, consistencia de reglas, evaluación proxy del scoring y documentación de limitaciones; precisión supervisada, RAGAS, modularidad objetivo y SUS quedan como objetivos de validación futura. \\
+Evaluación de riesgos y conformidad (AI Act) & Evaluación técnica del prototipo mediante tests, métricas de calidad de datos, consistencia de reglas, evaluación proxy del scoring y documentación de limitaciones; precisión supervisada, RAGAS, modularidad objetivo y SUS quedan como objetivos de validación futura. \\
 \hline
 Datos locales y privacidad (RGPD + AI Act) & LLM local v{\'i}a Ollama; ninguna API externa; todo el procesamiento en infraestructura local. \\
 \hline
@@ -614,16 +614,16 @@ Estas responsabilidades se articulan mediante agentes especializados y component
 
 \begin{figure}[h]
 \centering
-\caption{Arquitectura del MVP reproducible de ProcureWatch Analytics}
+\caption{Arquitectura del prototipo reproducible de ProcureWatch Analytics}
 \label{fig:arquitectura_mermaid}
 \resizebox{0.98\textwidth}{!}{\input{figuras/arquitectura_mvp.tex}}
 \end{figure}
 
-\section{Criterios metodol{\'o}gicos del MVP}
+\section{Criterios metodol{\'o}gicos del prototipo funcional}
 \label{sec:criterios_metodologicos_mvp}
 
-El dise{\~n}o del MVP no se limita a reducir alcance para facilitar la implementaci{\'o}n. Se construye
-como una versi{\'o}n m{\'i}nima pero defendible del sistema completo: debe cubrir el flujo de extremo a
+El dise{\~n}o del prototipo funcional no se limita a reducir alcance para facilitar la implementaci{\'o}n. Se construye
+como una versi{\'o}n acotada pero defendible del sistema completo: debe cubrir el flujo de extremo a
 extremo, generar artefactos verificables y dejar claras sus limitaciones. Esto exige priorizar
 profundidad operativa sobre amplitud superficial. En otras palabras, resulta preferible implementar
 menos indicadores con trazabilidad completa que declarar un cat{\'a}logo amplio de reglas no
@@ -634,7 +634,7 @@ Los criterios metodol{\'o}gicos aplicados fueron los siguientes:
 \begin{enumerate}
   \item \textbf{Ejecuci{\'o}n local y reproducible.} El sistema debe poder ejecutarse sin depender de
   servicios externos no controlados. Los servicios como PostgreSQL, Neo4j, Qdrant u Ollama enriquecen
-  el flujo, pero el MVP mantiene rutas de ejecuci{\'o}n y prueba que no bloquean la validaci{\'o}n si no
+  el flujo, pero el prototipo mantiene rutas de ejecuci{\'o}n y prueba que no bloquean la validaci{\'o}n si no
   est{\'a}n disponibles.
   \item \textbf{Fronteras claras entre agentes.} Cada agente produce artefactos que pueden revisarse
   de forma independiente. Esta frontera evita que un error de visualizaci{\'o}n o una dependencia de
@@ -654,7 +654,7 @@ Estos criterios se aplican de manera transversal. En Agent1 justifican una pol{\
 de \texttt{contract\_key\_canon}; en Agent2 justifican reglas trazables RF-01 a RF-06; en Agent3
 justifican que el grafo sea una proyecci{\'o}n derivada del can{\'o}nico; en Agent4 justifican que el
 LLM no decida riesgo y que toda ficha de caso deba apoyarse en evidencias recuperadas. La coherencia
-del MVP depende precisamente de mantener estas restricciones en todos los componentes.
+del prototipo depende precisamente de mantener estas restricciones en todos los componentes.
 
 \section{Alcance evaluable y alcance extensible}
 \label{sec:alcance_evaluable_extensible}
@@ -667,7 +667,7 @@ evidencia suficiente.
 
 Esta separaci{\'o}n afecta especialmente a tres grupos de elementos. El primero es el cat{\'a}logo de
 red flags. El planteamiento inicial contemplaba un conjunto m{\'a}s amplio de indicadores; la versi{\'o}n
-evaluable del MVP se concentra en RF-01 a RF-06 porque son las reglas respaldadas por el can{\'o}nico
+evaluable del prototipo se concentra en RF-01 a RF-06 porque son las reglas respaldadas por el can{\'o}nico
 disponible y por el flujo de scoring documentado. El segundo grupo son las t{\'e}cnicas comparativas
 de aprendizaje autom{\'a}tico, como Isolation Forest y Positive-Unlabeled Learning. Son coherentes con
 el problema, pero requieren datasets y etiquetas o estrategias de validaci{\'o}n que no deben
@@ -681,11 +681,11 @@ La Tabla~\ref{tab:alcance_evaluable_extensible} resume esta distinci{\'o}n.
 \caption{Separaci{\'o}n entre alcance evaluable y alcance extensible}
 \label{tab:alcance_evaluable_extensible}\\
 \toprule
-\textbf{Bloque} & \textbf{Alcance evaluable en el MVP} & \textbf{Alcance extensible} \\
+\textbf{Bloque} & \textbf{Alcance evaluable en la versi{\'o}n evaluada} & \textbf{Alcance extensible} \\
 \midrule
 \endfirsthead
 \toprule
-\textbf{Bloque} & \textbf{Alcance evaluable en el MVP} & \textbf{Alcance extensible} \\
+\textbf{Bloque} & \textbf{Alcance evaluable en la versi{\'o}n evaluada} & \textbf{Alcance extensible} \\
 \midrule
 \endhead
 Ingesta & BOE, PLACE y OpenTender con can{\'o}nico, reports y calidad. & Nuevas fuentes, matching probabil{\'i}stico y validaci{\'o}n manual asistida. \\
@@ -725,16 +725,16 @@ Lenguaje principal & Python & Ecosistema maduro para ciencia de datos, NLP, apre
 Procesamiento tabular & pandas, DuckDB y Polars \cite{DuckDBOfficial,PolarsOfficial} & pandas garantiza compatibilidad con el ecosistema; DuckDB permite SQL anal{\'i}tico sobre Parquet sin servidor; Polars acelera transformaciones sobre datasets de mayor volumen. \\
 Persistencia relacional & PostgreSQL \cite{PostgreSQLOfficial} & Base relacional robusta para contratos, adjudicatarios, organismos, indicadores, scores y trazabilidad de ejecuciones. \\
 Grafo anal{\'i}tico & Neo4j Community y NetworkX \cite{Neo4jOfficial,NetworkXPython} & Neo4j facilita consulta y exploraci{\'o}n del grafo; NetworkX permite reproducir m{\'e}tricas y experimentos en scripts Python. \\
-Motor de red flags & Python, reglas OCDS y soporte de comparativa con scikit-learn \cite{IsolationForestSklearn,OCP2024RedFlags} & El MVP prioriza reglas expl{\'i}citas y trazables; Isolation Forest se conserva como comparativa o extensi{\'o}n no supervisada. \\
+Motor de red flags & Python, reglas OCDS y soporte de comparativa con scikit-learn \cite{IsolationForestSklearn,OCP2024RedFlags} & La versi{\'o}n evaluada prioriza reglas expl{\'i}citas y trazables; Isolation Forest se conserva como comparativa o extensi{\'o}n no supervisada. \\
 Web scraping y parsing documental & BeautifulSoup y spaCy \cite{Richardson2024BeautifulSoup,SpaCyOfficial} & Extraen informaci{\'o}n desde anuncios HTML, p{\'a}ginas p{\'u}blicas y contenido textual estructurado, con menor complejidad operativa que el tratamiento de documentos escaneados. \\
 NLP cl{\'a}sico & spaCy \cite{SpaCyOfficial} & Adecuado para tokenizaci{\'o}n, NER, normalizaci{\'o}n ling{\"u}{\'i}stica y reglas de extracci{\'o}n en espa{\~n}ol. \\
 Embeddings & BGE-M3 \cite{BGEAM3Embeddings} & Modelo multiling{\"u}e adecuado para recuperaci{\'o}n sem{\'a}ntica sobre documentos en espa{\~n}ol y terminolog{\'i}a t{\'e}cnica. \\
 Vector store & Qdrant \cite{QdrantOfficial} & Base vectorial local para indexar fragmentos documentales y recuperar contexto por contrato o adjudicatario. \\
 LLM local & \textbf{Qwen3-8B v{\'i}a Ollama} \cite{AlibabaQwen3,Qwen3TechnicalReport,OllamaOfficial} & Modelo de 8.2B par{\'a}metros, licencia Apache-2.0, soporte multiling{\"u}e, contexto amplio y capacidades de razonamiento/uso de herramientas. Se adopta para generaci{\'o}n de fichas explicables, no para decidir fraude. \\
 Orquestaci{\'o}n multiagente & CLI, batch y dise{\~n}o compatible con LangGraph/LangChain \cite{LangChain2024LangGraph,LangChainOfficial} & La versi{\'o}n evaluada se reproduce mediante comandos y batch; LangGraph/LangChain se documentan como soporte de orquestaci{\'o}n ampliable. \\
-API de servicio & FastAPI como extensi{\'o}n prevista \cite{FastAPIOfficial} & No es requisito de ejecuci{\'o}n del MVP evaluado; se reserva para exponer consultas y fichas en una versi{\'o}n de servicio. \\
+API de servicio & FastAPI como extensi{\'o}n prevista \cite{FastAPIOfficial} & No es requisito de ejecuci{\'o}n de la versi{\'o}n evaluada; se reserva para exponer consultas y fichas en una versi{\'o}n de servicio. \\
 Evaluaci{\'o}n RAG & RAGAS como marco de referencia \cite{RAGASOfficial} & La evaluaci{\'o}n disponible es local/proxy; RAGAS queda para evaluaciones documentales con corpus mayor y artefactos suficientes. \\
-Dashboard & Streamlit, Plotly y soporte de extensiones con Sigma.js/PyVis \cite{StreamlitOfficial,PlotlyOfficial,SigmaJSOfficial,PyVisOfficial} & Streamlit cubre la demo local; Sigma.js/PyVis no son obligatorios para el MVP evaluado. \\
+Dashboard & Streamlit, Plotly y soporte de extensiones con Sigma.js/PyVis \cite{StreamlitOfficial,PlotlyOfficial,SigmaJSOfficial,PyVisOfficial} & Streamlit cubre la demo local; Sigma.js/PyVis no son obligatorios para la versi{\'o}n evaluada. \\
 Reproducibilidad & Docker Compose, Git y scripts parametrizados \cite{DockerComposeOfficial} & Facilitan ejecuci{\'o}n local, versionado, trazabilidad de resultados y defensa t{\'e}cnica del prototipo. \\
 \bottomrule
 \end{longtable}
@@ -811,7 +811,7 @@ La primera versi{\'o}n prioriza indicadores implementables con los campos BOE/OC
   \item \textbf{RF-06 Patr{\'o}n temporal an{\'o}malo:} intervalo an{\'o}malo entre publicaci{\'o}n, adjudicaci{\'o}n y formalizaci{\'o}n cuando existen fechas suficientes.
 \end{enumerate}
 
-RF-07 a RF-15, incluyendo fragmentaci{\'o}n avanzada y riesgo de red como indicador directo, forman parte del cat{\'a}logo de ampliaci{\'o}n, pero no se presentan como reglas evaluadas del MVP si no existe artefacto verificable. El \textit{score} compuesto se plantea como \textbf{h{\'i}brido}, pero no opaco. La base de la puntuaci{\'o}n procede de reglas expl{\'i}citas y ponderadas; las variables de red enriquecen el contexto; los modelos no supervisados, como Isolation Forest, se reservan para comparar anomal{\'i}as cuando existan datos suficientes; y el LLM genera explicaciones a partir de evidencias ya calculadas o recuperadas. La puntuaci{\'o}n final se expresa en una escala 0--100 y se traduce en niveles bajo, medio, alto o cr{\'i}tico, siempre acompa{\~n}ada de los factores que la han producido.
+RF-07 a RF-15, incluyendo fragmentaci{\'o}n avanzada y riesgo de red como indicador directo, forman parte del cat{\'a}logo de ampliaci{\'o}n, pero no se presentan como reglas evaluadas si no existe artefacto verificable. El \textit{score} compuesto se plantea como \textbf{h{\'i}brido}, pero no opaco. La base de la puntuaci{\'o}n procede de reglas expl{\'i}citas y ponderadas; las variables de red enriquecen el contexto; los modelos no supervisados, como Isolation Forest, se reservan para comparar anomal{\'i}as cuando existan datos suficientes; y el LLM genera explicaciones a partir de evidencias ya calculadas o recuperadas. La puntuaci{\'o}n final se expresa en una escala 0--100 y se traduce en niveles bajo, medio, alto o cr{\'i}tico, siempre acompa{\~n}ada de los factores que la han producido.
 
 \begin{equation}
 Score = w_r R + w_g G + w_d D + w_a A
@@ -861,7 +861,7 @@ La ficha explicativa tendr{\'a} formato estructurado: resumen del contrato, indi
 Una vez definido el dise{\~n}o general, la implementaci{\'o}n se organiza en agentes y componentes
 con responsabilidades separadas. Esta separaci{\'o}n evita que la ingesta de datos, el c{\'a}lculo de
 riesgo, el an{\'a}lisis relacional, la recuperaci{\'o}n documental y la visualizaci{\'o}n queden
-acoplados en una sola pieza de software. El resultado es un MVP que puede ejecutarse por fases,
+acoplados en una sola pieza de software. El resultado es un prototipo que puede ejecutarse por fases,
 validarse con tests y defenderse mediante artefactos intermedios.
 
 \section{Implementaci{\'o}n multiagente}
@@ -982,7 +982,7 @@ puede concluirse con los datos disponibles.
 \section{Dise{\~n}o de visualizaci{\'o}n y explicabilidad}
 \label{sec:visualizacion_explicabilidad_dashboard}
 
-La visualizaci{\'o}n del MVP sigue un principio de progresividad. El usuario no debe comenzar por una
+La visualizaci{\'o}n del prototipo sigue un principio de progresividad. El usuario no debe comenzar por una
 tabla extensa de contratos, sino por una s{\'i}ntesis que indique d{\'o}nde concentrar la atenci{\'o}n.
 Desde esa visi{\'o}n general se desciende al ranking, despu{\'e}s al detalle de contrato y finalmente a
 evidencias concretas. Esta progresividad reduce carga cognitiva y evita que la interfaz se convierta
@@ -1003,7 +1003,7 @@ ausencia de dato es una se{\~n}al de calidad, no un detalle secundario.
 En la versi{\'o}n de cierre, Streamlit cubre esta necesidad de forma suficiente para una defensa
 acad{\'e}mica y una demo local. Tecnolog{\'i}as como Sigma.js o una API FastAPI pueden mejorar una
 versi{\'o}n productiva, pero no son necesarias para demostrar el flujo de revisi{\'o}n humana asistida.
-Esta decisi{\'o}n mantiene el MVP ejecutable y reduce dependencias, sin cerrar la puerta a una
+Esta decisi{\'o}n mantiene el prototipo ejecutable y reduce dependencias, sin cerrar la puerta a una
 evoluci{\'o}n posterior.
 
 \section{Trazabilidad, calidad y reproducibilidad}
@@ -1062,7 +1062,7 @@ documentales y dos citas.
 
 La validaci{\'o}n t{\'e}cnica del cierre se realiz{\'o} con pruebas unitarias y reglas de estilo sobre
 los m{\'o}dulos de Agent~3 y Agent~4, y dej{\'o} alineado el bloque de relaciones y el bloque
-documental con el contrato can{\'o}nico y con el resto del MVP del sistema.
+documental con el contrato can{\'o}nico y con el resto del sistema.
 
 \section{Implementaci{\'o}n final del prototipo}
 \label{sec:implementacion_real_integracion}
@@ -1106,7 +1106,7 @@ Agent1 & \texttt{agent1/pipeline.py} & Construye el can{\'o}nico de contratos, c
 Esquema anal{\'i}tico & \texttt{agent1/analytical\_schema.py} & Define los campos m{\'i}nimos de \texttt{CONTRATO} y \texttt{ADJUDICATARIO} definidos en el alcance del TFM. \\
 Persistencia relacional & \texttt{db.py} & Inserta tablas anal{\'i}ticas de Agent1 en PostgreSQL cuando el servicio est{\'a} disponible. \\
 Agent2 estable & \texttt{agent2/pipeline.py} & Calcula red flags y scores sobre el can{\'o}nico de Agent1 con reglas versionadas. \\
-Agent2 MVP & \texttt{agent2/mvp\_pipeline.py} & Ejecuta RF-01 a RF-06, genera flags, scores por contrato y adjudicatario, y reporte JSON. \\
+Agent2 versi{\'o}n evaluada & \texttt{agent2/mvp\_pipeline.py} & Ejecuta RF-01 a RF-06, genera flags, scores por contrato y adjudicatario, y reporte JSON. \\
 Agent3 & \texttt{agent3/} & Construye grafo, nodos, aristas, m{\'e}tricas, comunidades Louvain, resumen de red y features para otros agentes. \\
 Neo4j opcional & \texttt{agent3/neo4j\_store.py} & Define constraints, carga nodos/aristas y ejecuta consultas de control cuando Neo4j est{\'a} activo. \\
 Agent4 & \texttt{agent4/} & Carga corpus, fragmenta documentos, recupera evidencias, genera contexto de caso y eval{\'u}a la calidad local del RAG. \\
@@ -1118,10 +1118,10 @@ Tests & \texttt{tests/} & Pruebas automatizadas de agentes, fuentes, batch, CLI,
 \end{longtable}
 }
 
-\section{Flujo extremo a extremo del MVP}
+\section{Flujo extremo a extremo del prototipo}
 \label{sec:flujo_end_to_end_mvp}
 
-El flujo extremo a extremo del MVP se dise{\~n}{\'o} con una restricci{\'o}n central: cada agente debe
+El flujo extremo a extremo del prototipo se dise{\~n}{\'o} con una restricci{\'o}n central: cada agente debe
 producir un artefacto legible por el siguiente agente sin depender de estado impl{\'i}cito. Esta
 decisi{\'o}n permite aislar errores, repetir una fase concreta y defender el sistema ante un tercero
 sin necesidad de ejecutar toda la cadena completa en cada revisi{\'o}n. La Tabla~\ref{tab:flujo_e2e}
@@ -1129,7 +1129,7 @@ resume las entradas, procesos y salidas de cada etapa.
 
 {\small
 \begin{longtable}{p{2.8cm}p{3.7cm}p{3.9cm}p{3.3cm}}
-\caption{Flujo extremo a extremo del MVP}
+\caption{Flujo extremo a extremo del prototipo}
 \label{tab:flujo_e2e}\\
 \toprule
 \textbf{Etapa} & \textbf{Entrada} & \textbf{Proceso} & \textbf{Salida} \\
@@ -1159,7 +1159,7 @@ calculados; su funci{\'o}n es explicar y explorar, no redefinir el resultado ana
 \section{Contratos de datos entre agentes}
 \label{sec:contratos_datos_agentes}
 
-Para que el MVP sea reproducible, cada agente se dise{\~n}a con un contrato de datos expl{\'i}cito:
+Para que el prototipo sea reproducible, cada agente se dise{\~n}a con un contrato de datos expl{\'i}cito:
 entradas esperadas, columnas m{\'i}nimas, salidas generadas y condiciones bajo las cuales una fila
 puede considerarse evaluable. Esta decisi{\'o}n es m{\'a}s importante que la tecnolog{\'i}a concreta de
 persistencia. Si el contrato de datos est{\'a} bien definido, el sistema puede ejecutarse con ficheros
@@ -1171,11 +1171,11 @@ de trazabilidad. Agent2 no debe leer directamente ficheros brutos de BOE, PLACE 
 eso mezclar{\'i}a normalizaci{\'o}n y scoring. Esta separaci{\'o}n permite sustituir o corregir un parser
 sin modificar las reglas de riesgo, siempre que el can{\'o}nico mantenga el mismo contrato de columnas.
 
-La Tabla~\ref{tab:contratos_datos_agentes} resume los contratos operativos utilizados por el MVP.
+La Tabla~\ref{tab:contratos_datos_agentes} resume los contratos operativos utilizados por el prototipo.
 
 {\small
 \begin{longtable}{p{2.4cm}p{3.4cm}p{3.8cm}p{3.8cm}}
-\caption{Contratos de datos entre agentes del MVP}
+\caption{Contratos de datos entre agentes del prototipo}
 \label{tab:contratos_datos_agentes}\\
 \toprule
 \textbf{Interfaz} & \textbf{Entrada m{\'i}nima} & \textbf{Salida esperada} & \textbf{Criterio de control} \\
@@ -1221,7 +1221,7 @@ del pipeline.
 \section{Implementaci{\'o}n detallada de los agentes}
 \label{sec:implementacion_detallada_agentes}
 
-La implementaci{\'o}n final del MVP se apoya en cuatro agentes con contratos de entrada y salida
+La implementaci{\'o}n final del prototipo se apoya en cuatro agentes con contratos de entrada y salida
 expl{\'i}citos. Esta decisi{\'o}n es metodol{\'o}gicamente relevante porque permite evaluar cada fase por
 separado: Agent1 se valida por calidad y cobertura de datos; Agent2 por coherencia de reglas,
 scores y niveles de riesgo; Agent3 por consistencia de nodos, aristas y m{\'e}tricas; y Agent4 por
@@ -1255,7 +1255,7 @@ ausentes, diferencias de granularidad o falta de intersecci{\'o}n entre fuentes.
 
 \subsection{Agent2: red flags, score y priorizaci{\'o}n}
 
-Agent2 transforma el can{\'o}nico de Agent1 en se{\~n}ales de riesgo. La versi{\'o}n MVP implementa
+Agent2 transforma el can{\'o}nico de Agent1 en se{\~n}ales de riesgo. La versi{\'o}n evaluada implementa
 RF-01 a RF-06 como reglas trazables y evita presentar como implementadas las red flags no verificadas
 en la versi{\'o}n de cierre. Las reglas activadas generan dos tipos de artefactos: una tabla de flags
 por contrato y una tabla de scores. La primera permite saber qu{\'e} indicador se activ{\'o}, con qu{\'e}
@@ -1289,7 +1289,7 @@ features para scoring y resumen de red. Las m{\'e}tricas incluyen grado, relacio
 proveedor, comunidad y variables de contexto. En entornos donde Neo4j est{\'a} disponible, el sistema
 puede cargar nodos y aristas para exploraci{\'o}n mediante consultas Cypher; cuando no lo est{\'a}, el
 flujo sigue siendo reproducible con Parquet y NetworkX. Por tanto, Neo4j mejora la exploraci{\'o}n,
-pero no es condici{\'o}n obligatoria para ejecutar el MVP.
+pero no es condici{\'o}n obligatoria para ejecutar el prototipo.
 
 Las variables relacionales generadas por Agent3 son especialmente {\'u}tiles para contextualizar RF-03
 y RF-04: recurrencia, concentraci{\'o}n y patrones comprador-proveedor. Sin embargo, la memoria evita
@@ -1383,7 +1383,7 @@ no debe quedar como un resultado opaco. Por ello, Agent1 produce un artefacto es
 cobertura por \texttt{contract\_key\_canon}. Este artefacto permite saber cu{\'a}ntas claves proceden
 de cada fuente, cu{\'a}les son las intersecciones y cu{\'a}l es el universo total. En la ejecuci{\'o}n
 disponible del prototipo, esa trazabilidad muestra un universo de 17.748 claves, 3.883 claves BOE, 12.605 PLACE,
-1.260 OpenTender e intersecciones cero.
+25.057 OpenTender y matching conservador entre fuentes.
 
 Este resultado afecta de forma distinta a cada agente. Agent1 queda afectado porque no puede afirmar
 integraci{\'o}n contractual fuerte entre fuentes. Agent2 puede seguir calculando se{\~n}ales intrafuente
@@ -1438,9 +1438,9 @@ con la versi{\'o}n de cierre del prototipo. La Tabla~\ref{tab:evaluacion_objetiv
 OE1 & An{\'a}lisis de fuentes BOE, PLACE y OpenTender; foco CPV~71; perfilado de calidad. & Cumplido como an{\'a}lisis de disponibilidad y calidad, con limitaciones documentadas. \\
 OE2 & Esquema OCDS adaptado para contrato y adjudicatario, implementado en c{\'o}digo. & Cumplido; los campos m{\'i}nimos est{\'a}n formalizados. \\
 OE3 & Pipeline reproducible con parsers, can{\'o}nico, reportes y persistencia opcional. & Cumplido parcialmente en calidad: el pipeline existe, pero algunas m{\'e}tricas no alcanzan umbral. \\
-OE4 & RF-01 a RF-06 y scoring 0--100 por contrato/adjudicatario. & Cumplido como MVP; el cat{\'a}logo completo de 15 RF queda como extensi{\'o}n. \\
+OE4 & RF-01 a RF-06 y scoring 0--100 por contrato/adjudicatario. & Cumplido en la versi{\'o}n evaluada; el cat{\'a}logo completo de 15 RF queda como extensi{\'o}n. \\
 OE5 & Grafo con nodos, aristas, m{\'e}tricas, comunidades y features. & Cumplido como grafo derivado; Neo4j es opcional. \\
-OE6 & Agent4 con corpus, chunks, retrieval, contexto de caso y citas. & Cumplido como PoC/MVP documental; evaluaci{\'o}n masiva RAG queda limitada. \\
+OE6 & Agent4 con corpus, chunks, retrieval, contexto de caso y citas. & Cumplido como componente documental del prototipo; evaluaci{\'o}n masiva RAG queda limitada. \\
 OE7 & Dashboard Streamlit integrado con vistas de resumen, caso, relaciones y evidencias. & Cumplido para demo local. \\
 OE8 & Validaci{\'o}n con tests, reports y documentaci{\'o}n de cierre. & Cumplido como validaci{\'o}n t{\'e}cnica; no es validaci{\'o}n supervisada de fraude. \\
 \bottomrule
@@ -1448,7 +1448,7 @@ OE8 & Validaci{\'o}n con tests, reports y documentaci{\'o}n de cierre. & Cumplid
 }
 
 Esta evaluaci{\'o}n permite defender el trabajo sin sobredimensionar el resultado. La implementaci{\'o}n
-cumple el n{\'u}cleo de los objetivos definidos inicialmente como MVP reproducible, pero no convierte todas las l{\'i}neas de
+cumple el n{\'u}cleo de los objetivos definidos inicialmente para un prototipo reproducible, pero no convierte todas las l{\'i}neas de
 investigaci{\'o}n planteadas inicialmente en producto final productivo. La diferencia entre objetivo
 ambicioso y cierre implementado queda documentada como adaptaci{\'o}n de alcance.
 
@@ -1524,7 +1524,7 @@ contexto y tasa de citas v{\'a}lidas antes de utilizar las fichas en un entorno 
 
 El sistema incorpora controles t{\'e}cnicos para evitar que las limitaciones de datos se conviertan en
 resultados enga{\~n}osos. La Tabla~\ref{tab:riesgos_controles} resume los principales riesgos y las
-medidas de mitigaci{\'o}n aplicadas en el MVP.
+medidas de mitigaci{\'o}n aplicadas en el prototipo.
 
 {\small
 \begin{longtable}{p{4.0cm}p{4.4cm}p{4.7cm}}
@@ -1589,7 +1589,7 @@ La reproducibilidad del prototipo no se limita a conservar el c{\'o}digo. En Pro
 se apoya en comandos repetibles, artefactos Parquet y JSON, manifests, hashes de entrada y salida,
 reportes de calidad y una estrategia batch que evita reprocesar fuentes cuando no existen cambios.
 Este cap{\'i}tulo describe esa capa operativa y explica c{\'o}mo se reconstruye una ejecuci{\'o}n del
-MVP.
+prototipo.
 
 \section{Reproducibilidad y gesti{\'o}n de artefactos}
 \label{sec:reproducibilidad_gestion_artefactos}
@@ -1629,7 +1629,7 @@ La Tabla~\ref{tab:modos_batch} resume la finalidad de cada modo.
 
 {\small
 \begin{longtable}{p{3.2cm}p{4.4cm}p{3.4cm}p{2.6cm}}
-\caption{Modos de ejecuci{\'o}n batch del MVP}
+\caption{Modos de ejecuci{\'o}n batch del prototipo}
 \label{tab:modos_batch}\\
 \toprule
 \textbf{Modo} & \textbf{Objetivo} & \textbf{Salida principal} & \textbf{Criterio de Agent2} \\
@@ -1689,6 +1689,9 @@ El prototipo se ejecuta mediante una CLI Python. Esta decisi{\'o}n reduce la amb
 defensa t{\'e}cnica: cada parte relevante del sistema puede reproducirse con un comando versionado.
 La Tabla~\ref{tab:comandos_cli} recoge los comandos identificados en la implementaci{\'o}n. Algunos
 comandos procesan datos reales y otros generan muestras o validan componentes de forma aislada.
+El c{\'o}digo fuente de la implementaci{\'o}n t{\'e}cnica de ProcureWatch Analytics se encuentra
+disponible en el repositorio del proyecto:
+\url{https://github.com/sebastianalfonsocorrea-byte/tfm-procurewatch.git}.
 
 {\small
 \begin{longtable}{p{4.0cm}p{9.1cm}}
@@ -1710,9 +1713,9 @@ comandos procesan datos reales y otros generan muestras o validan componentes de
 \texttt{normalize-opentender} & Normaliza registros OpenTender. \\
 \texttt{run-agent1} & Ejecuta la ingesta integrada y construye el can{\'o}nico de Agent1. \\
 \texttt{report-agent1-coverage} & Genera informe de cobertura y calidad de Agent1. \\
-\texttt{run-mvp} & Ejecuta el flujo m{\'i}nimo viable de Agent1 con persistencia opcional. \\
+\texttt{run-mvp} & Ejecuta un flujo compacto de Agent1 con persistencia opcional. \\
 \texttt{run-agent2} & Calcula red flags y scores con el pipeline estable de Agent2. \\
-\texttt{run-agent2-mvp} & Ejecuta la versi{\'o}n MVP de Agent2 con RF-01 a RF-06. \\
+\texttt{run-agent2-mvp} & Ejecuta la versi{\'o}n evaluada de Agent2 con RF-01 a RF-06. \\
 \texttt{run-agent3} & Genera grafo, m{\'e}tricas, comunidades y features relacionales. \\
 \texttt{agent3-load-neo4j} & Carga outputs de Agent3 en Neo4j si el servicio est{\'a} disponible. \\
 \texttt{agent4-smoke} & Comprueba disponibilidad b{\'a}sica de Qdrant/Ollama y fallback. \\
@@ -1729,13 +1732,15 @@ comandos procesan datos reales y otros generan muestras o validan componentes de
 Un ejemplo representativo de reproducci{\'o}n de la demo integrada es:
 
 \begin{verbatim}
-PYTHONPATH=scr python -m procurewatch doctor
-PYTHONPATH=scr python -m procurewatch run-agent2 \
+PYTHONPATH=scr python -m procurewatch.cli doctor
+PYTHONPATH=scr python -m procurewatch.cli run-agent2-mvp \
   --input data/processed/agent2_contracts_canonical.parquet \
   --output-dir data/processed
-PYTHONPATH=scr python -m procurewatch run-agent3 \
+PYTHONPATH=scr python -m procurewatch.cli run-agent3 \
   --input data/processed/agent2_contracts_canonical.parquet \
   --output-dir data/processed/agent3
+PYTHONPATH=scr python -m procurewatch.cli run-integrated-demo
+PYTHONPATH=scr python -m procurewatch.cli validate-dashboard-demo
 \end{verbatim}
 
 El valor de este dise{\~n}o no est{\'a} solo en que los comandos existan, sino en que fuerzan una
@@ -1905,7 +1910,7 @@ risk_score = min(sum(FLAG_WEIGHTS.get(flag, 0.0) for flag in red_flags), 100.0)
 
 Este fragmento muestra por qu{\'e} el score es explicable: cada incremento est{\'a} ligado a una regla
 con c{\'o}digo, peso y evidencia. La limitaci{\'o}n es que no todas las red flags previstas
-inicialmente est{\'a}n implementadas en el MVP; por tanto, RF-07 a RF-15 no deben presentarse como
+inicialmente est{\'a}n implementadas en la versi{\'o}n evaluada; por tanto, RF-07 a RF-15 no deben presentarse como
 resultado evaluado.
 
 \textbf{Ruta:} \texttt{scr/procurewatch/agent2/mvp\_pipeline.py}. El nivel de riesgo se asigna
@@ -1948,7 +1953,7 @@ self.assertEqual(result["status"], "skipped")
 self.assertEqual(result["agent1_executed"], False)
 \end{verbatim}
 
-Este fragmento es relevante porque valida una propiedad operativa del MVP: el sistema no descarga ni
+Este fragmento es relevante porque valida una propiedad operativa del prototipo: el sistema no descarga ni
 procesa todo en cada ejecuci{\'o}n si los hashes, tama{\~n}os y rutas de entrada no cambian. La
 limitaci{\'o}n es que esta estrategia depende de que las fuentes mantengan metadatos comparables y de
 que el estado anterior de batch no se pierda.
@@ -1980,9 +1985,10 @@ validaciones t{\'e}cnicas realizadas y cifras hist{\'o}ricas procedentes de docu
 
 \section{Resultados de ingesta y normalizaci{\'o}n}
 
-En la ejecuci{\'o}n disponible, el pipeline de Agent1 gener{\'o} el dataset can{\'o}nico consumido por
-Agent2 y varias tablas intermedias por fuente. La Tabla~\ref{tab:resultados_agent1_filas} resume
-las filas observadas en los artefactos Parquet disponibles.
+La ejecuci{\'o}n documentada del pipeline de Agent1 integra BOE, PLACE y OpenTender para el dominio
+CPV~71 y genera el dataset can{\'o}nico consumido por los agentes posteriores. La
+Tabla~\ref{tab:resultados_agent1_filas} resume las magnitudes principales recogidas en los reportes
+de ejecuci{\'o}n y artefactos generados por el sistema.
 
 {\small
 \begin{longtable}{p{6.2cm}r p{4.5cm}}
@@ -1996,37 +2002,37 @@ las filas observadas en los artefactos Parquet disponibles.
 \textbf{Artefacto generado} & \textbf{Filas} & \textbf{Interpretaci{\'o}n} \\
 \midrule
 \endhead
-\texttt{contracts\_boe.parquet} & 96.809 & Registros BOE normalizados desde el CSV longitudinal. \\
+\texttt{agent1\_run\_report.json} & 97.155 & L{\'i}neas BOE le{\'i}das por el parser. \\
+\texttt{contracts\_boe.parquet} & 96.801 & Registros BOE parseados y normalizados desde el CSV longitudinal. \\
 \texttt{contracts\_boe\_cpv71.parquet} & 8.097 & Subconjunto BOE con CPV~71. \\
-\texttt{contracts\_boe\_award\_lines\_cpv71.parquet} & 4.062 & L{\'i}neas de adjudicaci{\'o}n CPV~71, unidad preferente para adjudicaciones. \\
-\texttt{contracts\_place\_cpv71.parquet} & 12.611 & Registros PLACE CPV~71 tras parsing y deduplicaci{\'o}n. \\
-\texttt{contracts\_opentender\_2024\_cpv71.parquet} & 1.260 & Registros OpenTender espa{\~n}oles CPV~71 disponibles en la ejecuci{\'o}n. \\
-\texttt{agent2\_contracts\_canonical.parquet} & 17.927 & Can{\'o}nico final disponible para Agent2. \\
-\texttt{contracts\_analytical.parquet} & 17.927 & Tabla anal{\'i}tica de contratos. \\
-\texttt{suppliers\_analytical.parquet} & 7.406 & Tabla anal{\'i}tica de adjudicatarios. \\
+\texttt{contracts\_place\_cpv71.parquet} & 18.831 & Registros PLACE CPV~71 tras parsing y deduplicaci{\'o}n. \\
+\texttt{contracts\_opentender\_2024\_cpv71.parquet} & 25.057 & Registros OpenTender espa{\~n}oles CPV~71 disponibles en la ejecuci{\'o}n. \\
+\texttt{agent2\_contracts\_canonical.parquet} & 51.720 & Universo can{\'o}nico reportado para an{\'a}lisis posterior. \\
 \bottomrule
 \end{longtable}
 }
 
-El informe \texttt{agent1\_run\_report.json} documenta que el parser BOE ley{\'o} 97.154 l{\'i}neas de
-datos, parse{\'o} 96.809 registros y registr{\'o} 345 errores de parseo, con una tasa de {\'e}xito
-aproximada de 0,996. Para BOE CPV~71 se obtuvieron 8.097 filas y 4.062 l{\'i}neas de adjudicaci{\'o}n
-primaria. El parser PLACE proces{\'o} un ZIP de perfiles de contratante y produjo 12.611 registros
-CPV~71. El parser OpenTender gener{\'o} 1.260 registros CPV~71.
+El informe \texttt{agent1\_run\_report.json} documenta que el parser BOE ley{\'o} 97.155 l{\'i}neas de
+datos, parse{\'o} 96.801 registros y registr{\'o} 354 errores de parseo, con una tasa de {\'e}xito del
+99,64\,\%. Para BOE CPV~71 se obtuvieron 8.097 contratos. El parser PLACE produjo 18.831 registros
+CPV~71 y OpenTender aport{\'o} 25.057 registros CPV~71. En conjunto, la ejecuci{\'o}n documentada
+genera 51.720 registros can{\'o}nicos para an{\'a}lisis posterior.
 
 La diferencia entre estas cifras y las 3.443 adjudicaciones CPV~71 citadas en la parte contextual
 de esta memoria se explica por la diferencia de unidad de an{\'a}lisis y por el estado de
 reconciliaci{\'o}n. La cifra de 3.443 procede de la referencia contextual del dataset BOE y se us{\'o}
-para justificar la selecci{\'o}n del dominio. La ejecuci{\'o}n disponible de Agent1 trabaja con registros,
-expedientes, l{\'i}neas de adjudicaci{\'o}n y fuentes complementarias; por tanto, no debe forzarse una
+para justificar la selecci{\'o}n del dominio. La ejecuci{\'o}n documentada de Agent1 trabaja con registros,
+expedientes y fuentes complementarias; por tanto, no debe forzarse una
 equivalencia directa entre ambas magnitudes.
 
 \section{Calidad del can{\'o}nico y cobertura entre fuentes}
 
-El informe \texttt{agent1\_data\_quality\_summary.json} registra 17.927 filas can{\'o}nicas y 17.748
-claves contractuales en el universo de cobertura. La cobertura por fuente fue: 3.883 claves BOE,
-12.605 claves PLACE y 1.260 claves OpenTender. Sin embargo, las intersecciones entre fuentes por
-\texttt{contract\_key\_canon} fueron cero en la ejecuci{\'o}n disponible.
+La calidad de Agent1 se eval{\'u}a con dos tipos de evidencia: resultados cuantitativos del parser y
+reportes de cobertura del can{\'o}nico. La tasa de parseo BOE del 99,64\,\% indica que la extracci{\'o}n
+estructurada es estable para la fuente principal. En cambio, la cobertura entre BOE, PLACE y
+OpenTender mediante \texttt{contract\_key\_canon} se mantiene como una limitaci{\'o}n relevante: el
+criterio conservador de emparejamiento no fuerza equivalencias cuando los identificadores o campos
+auxiliares no permiten asegurar que dos registros representan el mismo contrato.
 
 Este resultado es metodol{\'o}gicamente relevante. No significa que las fuentes sean in{\'u}tiles, sino
 que el criterio conservador de emparejamiento no encontr{\'o} coincidencias suficientemente seguras.
@@ -2034,50 +2040,57 @@ La decisi{\'o}n de no forzar el matching evita falsos positivos de integraci{\'o
 de apoyo a auditor{\'i}a, un cruce incorrecto entre fuentes puede ser m{\'a}s perjudicial que dejar
 constancia de una limitaci{\'o}n.
 
-La Tabla~\ref{tab:metricas_agent1_calidad} recoge las m{\'e}tricas de calidad principales observadas
-en el informe de calidad generado por el sistema.
+La Tabla~\ref{tab:metricas_agent1_calidad} recoge las m{\'e}tricas de calidad principales utilizadas
+para interpretar la ingesta y la normalizaci{\'o}n.
 
 {\small
-\begin{longtable}{p{4.6cm}r r p{4.1cm}}
+\begin{longtable}{p{4.6cm}p{2.5cm}p{2.2cm}p{4.1cm}}
 \caption{M{\'e}tricas de calidad de Agent1 en la ejecuci{\'o}n disponible}
 \label{tab:metricas_agent1_calidad}\\
 \toprule
-\textbf{M{\'e}trica} & \textbf{Valor observado} & \textbf{Objetivo} & \textbf{Lectura} \\
+\textbf{M{\'e}trica} & \textbf{Valor observado} & \textbf{Referencia} & \textbf{Lectura} \\
 \midrule
 \endfirsthead
 \toprule
-\textbf{M{\'e}trica} & \textbf{Valor observado} & \textbf{Objetivo} & \textbf{Lectura} \\
+\textbf{M{\'e}trica} & \textbf{Valor observado} & \textbf{Referencia} & \textbf{Lectura} \\
 \midrule
 \endhead
-Completitud OCDS cr{\'i}tica & 0,859 & 0,900 & No alcanza el umbral en el can{\'o}nico disponible completo. \\
-Validez de NIF sobre total & 0,496 & 0,850 & Limitada por ausencia de NIF en parte de las fuentes. \\
-Validez de NIF cuando est{\'a} presente & 0,999 & -- & Alta calidad cuando el identificador existe. \\
-Coherencia temporal evaluable & 0,584 & 0,980 & Baja y con muchos registros no evaluables. \\
-Contratos no evaluables temporalmente & 17.441 & -- & El campo de fechas no permite comparaci{\'o}n en la mayor parte del snapshot. \\
-Duplicados por fuente y clave & 0 & 0 & Cumple el criterio de deduplicaci{\'o}n conservadora. \\
-Intersecciones BOE/PLACE/OpenTender & 0 & -- & Limitaci{\'o}n de matching, no se fuerza cruce artificial. \\
+Tasa de parseo BOE & 99,64\,\% & Reporte Agent1 & La fuente principal se transforma con baja p{\'e}rdida de registros. \\
+Errores de parseo BOE & 354 & Reporte Agent1 & Los errores quedan registrados para trazabilidad y revisi{\'o}n. \\
+Registros can{\'o}nicos & 51.720 & Can{\'o}nico Agent2 & El sistema genera una frontera estable para scoring y agentes posteriores. \\
+Cobertura de NIF & Limitada por fuente & Reportes de calidad & La ausencia de identificadores fiscales reduce evaluabilidad y agregaci{\'o}n por adjudicatario. \\
+Coherencia temporal & Parcialmente evaluable & Reportes de calidad & No todas las fuentes contienen fechas suficientes para aplicar reglas temporales. \\
+Intersecciones BOE/PLACE/OpenTender & Conservadoras & Cobertura Agent1 & No se fuerza cruce artificial cuando la clave no permite emparejar con seguridad. \\
 \bottomrule
 \end{longtable}
 }
 
 Estos resultados obligan a una lectura prudente. El pipeline est{\'a} implementado, el esquema existe
-y los artefactos se generan, pero no todas las m{\'e}tricas de calidad alcanzan los objetivos
-iniciales. Esta diferencia forma parte de la evaluaci{\'o}n del prototipo
-y delimita el alcance de los resultados.
+y los artefactos se generan, pero parte de la evaluabilidad depende de la disponibilidad de NIF,
+fechas y claves homog{\'e}neas en las fuentes p{\'u}blicas. Esta diferencia forma parte de la
+evaluaci{\'o}n del prototipo y delimita el alcance de los resultados.
 
 \section{Resultados de red flags y scoring}
 
-Agent2 se ejecuta sobre \texttt{agent2\_contracts\_canonical.parquet}. En la ejecuci{\'o}n disponible, el
-informe \texttt{agent2\_run\_report.json} registra 17.927 filas, de las cuales 13.764 fueron
-evaluables y 4.163 quedaron como no evaluables por falta de datos suficientes para determinadas
-reglas. El n{\'u}mero de flags activadas fue 31.278 y 17.601 contratos tuvieron al menos una se{\~n}al
-activada.
+Agent2 se ejecuta sobre \texttt{agent2\_contracts\_canonical.parquet} y genera puntuaciones
+explicables mediante reglas deterministas. La muestra de scoring documentada evalu{\'o} 50 contratos y
+gener{\'o} 50 puntuaciones. En esa muestra se activ{\'o} una se{\~n}al de riesgo, correspondiente a
+\texttt{risky\_procedure} (RF-02), con 49 contratos sin riesgo y 1 contrato en riesgo bajo. Esta
+salida valida el funcionamiento del motor sobre una muestra controlada, no una estimaci{\'o}n
+supervisada de fraude real.
 
-La distribuci{\'o}n de niveles de riesgo observada fue:
+La demo integrada permite observar el flujo completo sobre el caso \texttt{PW-2024-0001}. En ese
+caso, Agent2 asigna \texttt{risk\_score=0.5}, nivel \texttt{medium} y activa dos se{\~n}ales:
+\texttt{risky\_procedure} y \texttt{awarded\_above\_estimate}. La implementaci{\'o}n de scoring de
+Agent2 trabaja conceptualmente con escala 0--100 y umbrales bajo/medio/alto/cr{\'i}tico; la demo
+integrada expresa el resultado en escala normalizada 0--1 para facilitar la visualizaci{\'o}n conjunta
+con grafo y ficha documental.
+
+La distribuci{\'o}n de la muestra de scoring fue:
 
 {\small
 \begin{longtable}{p{4.5cm}r p{5.4cm}}
-\caption{Distribuci{\'o}n de riesgo de Agent2 en la ejecuci{\'o}n disponible}
+\caption{Distribuci{\'o}n de riesgo de Agent2 en la muestra de scoring}
 \label{tab:distribucion_riesgo_agent2}\\
 \toprule
 \textbf{Nivel de riesgo} & \textbf{Contratos} & \textbf{Interpretaci{\'o}n} \\
@@ -2087,21 +2100,21 @@ La distribuci{\'o}n de niveles de riesgo observada fue:
 \textbf{Nivel de riesgo} & \textbf{Contratos} & \textbf{Interpretaci{\'o}n} \\
 \midrule
 \endhead
-Bajo & 7.393 & Contratos con se{\~n}ales menores o baja acumulaci{\'o}n de flags. \\
-Medio & 7.776 & Contratos que requieren revisi{\'o}n contextual si hay capacidad anal{\'i}tica. \\
-Alto & 2.373 & Casos priorizables por acumulaci{\'o}n de se{\~n}ales. \\
-Cr{\'i}tico & 385 & Casos de mayor prioridad para an{\'a}lisis humano. \\
+Sin riesgo & 49 & Contratos sin activaci{\'o}n de red flags en la muestra evaluada. \\
+Bajo & 1 & Contrato con activaci{\'o}n de RF-02 por procedimiento sensible. \\
+Medio & 0 & No observado en la muestra de scoring. \\
+Alto/cr{\'i}tico & 0 & No observado en la muestra de scoring. \\
 \bottomrule
 \end{longtable}
 }
 
 La Tabla~\ref{tab:redflags_agent2} resume las reglas RF-01 a RF-06 documentadas e implementadas
-en la versi{\'o}n MVP de Agent2. Las reglas no deben interpretarse como prueba directa de
+en la versi{\'o}n evaluada de Agent2. Las reglas no deben interpretarse como prueba directa de
 irregularidad, sino como indicadores de priorizaci{\'o}n.
 
 {\small
 \begin{longtable}{p{1.5cm}p{3.8cm}p{5.1cm}p{2.8cm}}
-\caption{Red flags implementadas en Agent2 MVP}
+\caption{Red flags implementadas en Agent2}
 \label{tab:redflags_agent2}\\
 \toprule
 \textbf{C{\'o}digo} & \textbf{Indicador} & \textbf{L{\'o}gica anal{\'i}tica} & \textbf{Tipo} \\
@@ -2121,43 +2134,60 @@ RF-06 & Patr{\'o}n temporal an{\'o}malo & Identifica intervalos an{\'o}malos ent
 \end{longtable}
 }
 
-El informe de ejecuci{\'o}n generado documenta activaciones para RF-01, RF-02, RF-03, RF-04 y RF-05. En
-esa ejecuci{\'o}n no se observaron activaciones efectivas de RF-06. Esta ausencia no invalida la regla:
-indica que, con los datos de esa ejecuci{\'o}n, no se produjo el patr{\'o}n concreto que la activa o no
-qued{\'o} registrado en el desglose.
+La muestra de scoring documenta una activaci{\'o}n de RF-02. La demo integrada, por su parte, activa
+las se{\~n}ales \texttt{risky\_procedure} y \texttt{awarded\_above\_estimate}, equivalentes a
+procedimiento sensible y adjudicaci{\'o}n por encima del importe estimado en el contexto de la ficha
+demostrativa. RF-03, RF-04 y RF-06 se mantienen implementadas como reglas evaluables cuando existen
+datos agregados o temporales suficientes, pero no se presentan como activadas en esos resultados.
 
 \section{Resultados de grafo, RAG y dashboard}
 
-La documentaci{\'o}n t{\'e}cnica del proyecto registra una demo conjunta Agent3--Agent4
-en \texttt{data/processed/agent3\_agent4\_demo\_2026\_06\_23/}. Seg{\'u}n
-\texttt{docs/04\_agentes/SEGUIMIENTO\_AGENTES.md}, Agent3 gener{\'o} 11 nodos, 13 aristas, 3
-m{\'e}tricas contractuales y 3 filas de features sobre un can{\'o}nico sint{\'e}tico m{\'i}nimo. Agent4
-gener{\'o} una ficha integrada para \texttt{PW-2024-0001} con \texttt{risk\_score=0.5}, dos red
-flags, m{\'e}tricas Agent3, dos evidencias documentales y dos citas.
+La demo integrada del sistema muestra el flujo completo entre scoring, grafo, recuperaci{\'o}n
+documental y dashboard. Para el caso \texttt{PW-2024-0001}, el sistema asigna
+\texttt{risk\_score=0.5}, activa dos se{\~n}ales de riesgo ---\texttt{risky\_procedure} y
+\texttt{awarded\_above\_estimate}---, genera un grafo de 11 nodos y 13 relaciones, recupera 2
+evidencias documentales con 2 citas trazables y permite visualizar la ficha de caso en el dashboard
+Streamlit.
 
-Esa carpeta de demo no se conserva como artefacto cuantitativo principal dentro del paquete de
-resultados utilizado para las tablas anteriores. Por tanto, la cifra anterior se trata como resultado
-recogido en la documentaci{\'o}n t{\'e}cnica del proyecto, no como salida Parquet consolidada junto con
-los artefactos principales de la ejecuci{\'o}n disponible.
+Agent3 transforma tres contratos demostrativos en un grafo compuesto por compradores, proveedores,
+contratos, CPV y fuentes. En esa ejecuci{\'o}n se generan 11 nodos, 13 aristas, 2 comunidades, 1
+componente conexa y 3 filas de features reutilizables por Agent2 y Agent4. La mayor componente tiene
+11 nodos. La descomposici{\'o}n por tipos es: 2 compradores, 3 contratos, 3 nodos CPV, 1 fuente y 2
+proveedores. Las relaciones generadas son 3 \texttt{AWARDED\_TO}, 3 \texttt{FROM\_SOURCE}, 4
+\texttt{HAS\_CPV} y 3 \texttt{PUBLISHED}. No se registran contratos sin proveedor ni sin CPV en la
+demo integrada.
+
+Agent4 recupera evidencia documental trazable asociada al contrato. Para \texttt{PW-2024-0001},
+recupera dos fragmentos documentales y genera dos citas con \texttt{document\_id},
+\texttt{chunk\_id} y \texttt{contract\_key\_canon}. La generaci{\'o}n se realiza en modo
+\texttt{deterministic\_fallback}; en esta demo Qdrant y Ollama no son necesarios. Las evidencias
+incluyen un fragmento HTML del pliego con score 0,6 y un fragmento TXT de adjudicaci{\'o}n con score
+0,4. La ficha conserva la frontera de decisi{\'o}n: el sistema no declara fraude, sino que apoya la
+revisi{\'o}n humana.
+
+La evaluaci{\'o}n local de Agent4 sobre corpus sint{\'e}tico recoge 3 casos evaluados, 2 con evidencia,
+\texttt{expectation\_accuracy=1.0}, \texttt{precision@k} media de 1,0 y
+\texttt{expected\_document\_recall=1.0}. RAGAS queda registrado como \texttt{not\_run}. Estos
+resultados validan la trazabilidad y recuperaci{\'o}n en la versi{\'o}n evaluada del sistema, no el
+rendimiento jur{\'i}dico sobre un corpus real amplio.
 
 El dashboard integrado est{\'a} implementado en \texttt{frontend/agent3\_demo.py}. La validaci{\'o}n
-t{\'e}cnica recoge su ejecuci{\'o}n en modo headless con HTTP 200, sin artefactos faltantes y con
-KPIs cargados. La interfaz est{\'a} organizada en pesta{\~n}as de resumen, contratos priorizados,
-caso seleccionado, relaciones, evidencias y trazabilidad. Esta organizaci{\'o}n es coherente con el
-principio de revisi{\'o}n humana: el usuario no recibe una decisi{\'o}n autom{\'a}tica, sino una ruta
-de exploraci{\'o}n desde el ranking de riesgo hasta la evidencia concreta.
+t{\'e}cnica recoge estado \texttt{ready}, 3 contratos cargados, 11 nodos, 13 aristas, 2 comunidades,
+14 m{\'e}tricas visibles, 7 pesta{\~n}as, 2 evidencias, 2 citas y 0 excepciones en renderizado
+headless. La interfaz est{\'a} organizada para revisi{\'o}n humana: el usuario no recibe una decisi{\'o}n
+autom{\'a}tica, sino una ruta de exploraci{\'o}n desde el ranking de riesgo hasta la evidencia concreta.
 
 \section{Evaluaci{\'o}n t{\'e}cnica y tests}
 
-La versi{\'o}n de cierre del MVP incluye una bater{\'i}a amplia de tests. La validaci{\'o}n t{\'e}cnica
+La versi{\'o}n evaluada del sistema incluye una bater{\'i}a amplia de tests. La validaci{\'o}n t{\'e}cnica
 realizada indica:
 
 \begin{itemize}
-  \item \texttt{python -m procurewatch doctor}: resultado OK, con PostgreSQL, Neo4j, Qdrant y
+  \item \texttt{PYTHONPATH=scr python -m procurewatch.cli doctor}: resultado OK, con PostgreSQL, Neo4j, Qdrant y
   Ollama como servicios opcionales;
-  \item \texttt{python -m pytest tests}: 92 pruebas superadas y 1 omitida;
-  \item \texttt{python -m ruff check api scr tests frontend}: sin errores de estilo bloqueantes;
-  \item dashboard validado en modo headless con carga correcta de KPIs.
+  \item \texttt{PYTHONPATH=scr python -m pytest tests}: 111 pruebas superadas y 1 omitida;
+  \item \texttt{PYTHONPATH=scr python -m ruff check api scr tests frontend}: sin errores;
+  \item demo integrada y dashboard Streamlit validados en modo headless con 0 excepciones.
 \end{itemize}
 
 La Tabla~\ref{tab:tests_resumen} resume la cobertura funcional de los tests existentes.
@@ -2176,10 +2206,10 @@ La Tabla~\ref{tab:tests_resumen} resume la cobertura funcional de los tests exis
 \endhead
 Agent1 & Pipeline, can{\'o}nico, calidad, esquema anal{\'i}tico, cobertura, PostgreSQL y cat{\'a}logo de compradores. \\
 Fuentes & Parser BOE, unidades de an{\'a}lisis BOE, OpenTender, PLACE y normalizaci{\'o}n de entradas. \\
-Agent2 & Reglas, scoring, pipeline estable, MVP RF-01 a RF-06 y reportes de salida. \\
+Agent2 & Reglas, scoring, pipeline estable, RF-01 a RF-06 y reportes de salida. \\
 Agent3 & Construcci{\'o}n de grafo, nodos, aristas, m{\'e}tricas, comunidades, features y carga Neo4j. \\
 Agent4 & Carga documental, chunks, Qdrant, embeddings, flujo RAG, contexto de caso y evaluaci{\'o}n local. \\
-CLI y batch & Comandos principales, diagn{\'o}stico, ejecuci{\'o}n MVP y skip semanal por ausencia de cambios. \\
+CLI y batch & Comandos principales, diagn{\'o}stico, ejecuci{\'o}n del prototipo y skip semanal por ausencia de cambios. \\
 \bottomrule
 \end{longtable}
 }
@@ -2193,7 +2223,7 @@ resulta preferible declarar el alcance real que presentar una precisi{\'o}n de f
 \section{Matriz de evidencias de evaluaci{\'o}n}
 \label{sec:matriz_evidencias_evaluacion}
 
-La evaluaci{\'o}n del MVP se apoya en evidencias t{\'e}cnicas heterog{\'e}neas. No todas las evidencias
+La evaluaci{\'o}n del prototipo se apoya en evidencias t{\'e}cnicas heterog{\'e}neas. No todas las evidencias
 tienen el mismo alcance: algunas prueban que el c{\'o}digo se ejecuta, otras prueban que una salida
 existe, otras cuantifican calidad de datos y otras solo documentan una limitaci{\'o}n. Separar estos
 niveles evita presentar como resultado estad{\'i}stico lo que en realidad es una prueba funcional, o
@@ -2204,7 +2234,7 @@ cifras nuevas, sino ordenar qu{\'e} tipo de afirmaci{\'o}n puede defenderse con 
 
 {\small
 \begin{longtable}{p{3.0cm}p{4.2cm}p{3.2cm}p{3.0cm}}
-\caption{Matriz de evidencias utilizadas en la evaluaci{\'o}n del MVP}
+\caption{Matriz de evidencias utilizadas en la evaluaci{\'o}n del prototipo}
 \label{tab:matriz_evidencias_evaluacion}\\
 \toprule
 \textbf{Evidencia} & \textbf{Qu{\'e} permite afirmar} & \textbf{Alcance} & \textbf{L{\'i}mite} \\
@@ -2216,17 +2246,17 @@ cifras nuevas, sino ordenar qu{\'e} tipo de afirmaci{\'o}n puede defenderse con 
 \endhead
 Reports de Agent1 & Fuentes procesadas, filas, errores, calidad y cobertura. & Cuantitativo sobre la ejecuci{\'o}n disponible. & No resuelve por s{\'i} solo la falta de intersecciones entre fuentes. \\
 Parquet can{\'o}nico & Existencia de una frontera estable Agent1--Agent2. & Operativo y reproducible. & Depende de la calidad de los campos de origen. \\
-Reports de Agent2 & Flags, scores, contratos evaluables y distribuci{\'o}n de riesgo. & Cuantitativo/proxy. & No equivale a validaci{\'o}n supervisada contra fraude. \\
+Reports de Agent2 & Flags, scores y distribuci{\'o}n de riesgo en la muestra evaluada. & Cuantitativo/proxy. & No equivale a validaci{\'o}n supervisada contra fraude. \\
 Tests automatizados & Correctitud funcional de parsers, agentes, CLI y batch. & Validaci{\'o}n t{\'e}cnica. & No sustituye validaci{\'o}n por expertos. \\
 Dashboard headless & Disponibilidad de la interfaz y lectura de KPIs. & Prueba de integraci{\'o}n. & No mide usabilidad con usuarios finales. \\
-Documentaci{\'o}n de demo Agent3--Agent4 & Integraci{\'o}n relacional/documental sobre caso demostrativo. & Evidencia funcional de extremo a extremo. & No es una evaluaci{\'o}n masiva del RAG. \\
+Demo integrada Agent2--Agent3--Agent4 & Integraci{\'o}n de scoring, grafo, evidencias y dashboard sobre caso demostrativo. & Evidencia funcional de extremo a extremo. & No es una evaluaci{\'o}n masiva del RAG. \\
 Manifests y hashes & Trazabilidad de entradas, salidas y ejecuciones batch. & Reproducibilidad. & Requiere conservar el estado de ejecuci{\'o}n y rutas asociadas. \\
 \bottomrule
 \end{longtable}
 }
 
 Esta matriz permite formular las conclusiones con el nivel de fuerza adecuado. Por ejemplo, los
-reports de Agent1 permiten afirmar que se gener{\'o} un can{\'o}nico de 17.927 filas en la ejecuci{\'o}n
+reports de Agent1 permiten afirmar que se gener{\'o} un can{\'o}nico de 51.720 filas en la ejecuci{\'o}n
 disponible, pero no permiten afirmar que todas las fuentes p{\'u}blicas se crucen correctamente entre
 s{\'i}. Del mismo modo, Agent2 permite afirmar que existen reglas reproducibles y una distribuci{\'o}n
 de riesgo calculada, pero no que el sistema detecte fraude confirmado. Esta distinci{\'o}n es central
@@ -2243,13 +2273,13 @@ cobertura de NIF es insuficiente sobre el total y la coherencia temporal solo es
 parte reducida de los registros. En t{\'e}rminos de TFM, Agent1 queda operativo, pero sus resultados
 obligan a no sobredimensionar el alcance de los cruces entre fuentes.
 
-La evaluaci{\'o}n de Agent2 se interpreta como evaluaci{\'o}n de reglas y priorizaci{\'o}n. El hecho de
-que 13.764 contratos sean evaluables y que 17.601 tengan al menos una se{\~n}al activada indica que
-el motor produce una salida amplia sobre el can{\'o}nico disponible. La distribuci{\'o}n bajo/medio/alto
-/cr{\'i}tico permite priorizar la revisi{\'o}n, pero no debe transformarse en un juicio jur{\'i}dico. La
-principal evidencia de calidad en Agent2 no es una precisi{\'o}n supervisada, sino la trazabilidad:
-cada score puede descomponerse en reglas activadas, pesos y datos que permitieron o impidieron la
-evaluaci{\'o}n.
+La evaluaci{\'o}n de Agent2 se interpreta como evaluaci{\'o}n de reglas y priorizaci{\'o}n. La muestra de
+scoring documentada confirma que el motor genera una puntuaci{\'o}n por contrato y registra las
+se{\~n}ales activadas; la demo integrada muestra adem{\'a}s c{\'o}mo esas se{\~n}ales se combinan con
+grafo, evidencias y dashboard para construir una ficha revisable. Esta salida permite priorizar la
+revisi{\'o}n, pero no debe transformarse en un juicio jur{\'i}dico. La principal evidencia de calidad en
+Agent2 no es una precisi{\'o}n supervisada, sino la trazabilidad: cada score puede descomponerse en
+reglas activadas, pesos y datos que permitieron o impidieron la evaluaci{\'o}n.
 
 La evaluaci{\'o}n de Agent3 se interpreta como evaluaci{\'o}n relacional. El grafo no sustituye al
 can{\'o}nico, sino que lo proyecta en una estructura de relaciones. Por ello, sus m{\'e}tricas deben
@@ -2282,7 +2312,7 @@ cerradas o investigaciones validadas. Tratar todos los contratos no investigados
 introducir{\'i}a un sesgo grave: muchos contratos no tienen etiqueta simplemente porque nunca fueron
 auditados con suficiente detalle.
 
-Por ese motivo, el MVP eval{\'u}a propiedades observables del sistema: completitud de datos, capacidad
+Por ese motivo, el prototipo eval{\'u}a propiedades observables del sistema: completitud de datos, capacidad
 de generar artefactos, consistencia de reglas, estabilidad de ejecuci{\'o}n, trazabilidad de manifests,
 existencia de salidas por agente y capacidad de explicar casos. Estas propiedades no demuestran
 fraude, pero s{\'i} demuestran que el sistema puede utilizarse como herramienta de priorizaci{\'o}n.
@@ -2294,7 +2324,7 @@ Esta lectura tambi{\'e}n explica por qu{\'e} Isolation Forest, Positive-Unlabele
 se tratan con cautela en la versi{\'o}n de cierre. Son t{\'e}cnicas coherentes con la evoluci{\'o}n del
 sistema, pero no deben presentarse como resultados concluyentes si no existe un artefacto evaluado
 que respalde esa afirmaci{\'o}n. En la memoria se conservan como marco metodol{\'o}gico, extensi{\'o}n o
-soporte de comparaci{\'o}n, no como validaci{\'o}n cerrada del MVP.
+soporte de comparaci{\'o}n, no como validaci{\'o}n cerrada del sistema.
 
 %%\section{Entregable t{\'e}cnico del 20 de mayo}
 %\label{sec:entrega_20_mayo_cap6}
@@ -2329,7 +2359,7 @@ sistema.
 
 El planteamiento inicial del TFM defin{\'i}a una plataforma ambiciosa con integraci{\'o}n de fuentes,
 red flags, machine learning, grafos, NLP, RAG, dashboard y servicios de datos. La implementaci{\'o}n
-final conserva esa arquitectura conceptual, pero la concreta como un MVP acad{\'e}mico reproducible.
+final conserva esa arquitectura conceptual, pero la concreta como un prototipo acad{\'e}mico reproducible.
 La diferencia principal es que el objetivo del cierre no ha sido construir una plataforma productiva
 completa, sino demostrar un flujo defendible de extremo a extremo: ingesta, normalizaci{\'o}n,
 scoring, grafo, evidencia documental, dashboard y validaci{\'o}n t{\'e}cnica.
@@ -2351,11 +2381,11 @@ La Tabla~\ref{tab:propuesta_vs_impl} resume la relaci{\'o}n entre alcance previs
 Ingesta BOE, PLACE y OpenTender & Parsers y normalizadores implementados; can{\'o}nico generado. & Cumplido como flujo reproducible, con limitaci{\'o}n de matching entre fuentes. \\
 Esquema OCDS adaptado & Campos m{\'i}nimos implementados en \texttt{analytical\_schema.py}. & Cumplido y validable por tests. \\
 PostgreSQL & Persistencia anal{\'i}tica de Agent1 implementada. & Parcial para el conjunto multiagente completo. \\
-Red flags y scoring & RF-01 a RF-06 implementadas en MVP; scoring por contrato y adjudicatario. & Cumplido para MVP; RF adicionales quedan como extensi{\'o}n. \\
+Red flags y scoring & RF-01 a RF-06 implementadas en la versi{\'o}n evaluada; scoring por contrato y adjudicatario. & Cumplido para el prototipo; RF adicionales quedan como extensi{\'o}n. \\
 Isolation Forest y PU Learning & Enfoque contemplado como comparativa deseable, sin resultado final verificable en los artefactos disponibles de la versi{\'o}n de cierre. & No se presenta como validaci{\'o}n cerrada si no hay artefacto verificable. \\
 Grafo y comunidades & Agent3 implementa grafo, m{\'e}tricas, Louvain y features; Neo4j opcional. & Cumplido como an{\'a}lisis relacional reproducible. \\
 Neo4j & Carga opcional implementada. & Servicio no obligatorio para la demo local. \\
-RAG documental & Agent4 implementa corpus, chunks, retrieval, contexto de caso y fallback. & Cumplido como PoC/MVP documental, no como evaluaci{\'o}n masiva. \\
+RAG documental & Agent4 implementa corpus, chunks, retrieval, contexto de caso y fallback. & Cumplido como componente documental del prototipo, no como evaluaci{\'o}n masiva. \\
 Qdrant y Ollama & Soportados como servicios opcionales. & Dise{\~n}o flexible: la demo no queda bloqueada por servicios externos. \\
 Dashboard & Streamlit integrado y documentado. & Cumplido para exploraci{\'o}n local. \\
 Validaci{\'o}n de fraude & No hay etiquetas reales de fraude confirmado. & La evaluaci{\'o}n es proxy/exploratoria y orientada a revisi{\'o}n humana. \\
@@ -2381,7 +2411,7 @@ La Tabla~\ref{tab:impacto_limitaciones_componentes} resume este impacto.
 
 {\small
 \begin{longtable}{p{2.5cm}p{4.2cm}p{3.5cm}p{3.4cm}}
-\caption{Impacto de las limitaciones sobre los componentes del MVP}
+\caption{Impacto de las limitaciones sobre los componentes del prototipo}
 \label{tab:impacto_limitaciones_componentes}\\
 \toprule
 \textbf{Componente} & \textbf{Limitaci{\'o}n principal} & \textbf{Impacto} & \textbf{Mitigaci{\'o}n aplicada} \\
@@ -2394,7 +2424,7 @@ La Tabla~\ref{tab:impacto_limitaciones_componentes} resume este impacto.
 Agent1 & Heterogeneidad BOE/PLACE/OpenTender y falta de intersecciones por clave can{\'o}nica. & Limita an{\'a}lisis cruzado entre fuentes. & Matching conservador, reports de cobertura y no forzar equivalencias. \\
 Agent1 & NIF y fechas incompletas. & Reduce evaluabilidad de algunas m{\'e}tricas de calidad. & Marcar no evaluable y separar validez cuando el dato est{\'a} presente. \\
 Agent2 & Ausencia de etiquetas de fraude confirmado. & Impide medir precisi{\'o}n supervisada real. & Evaluaci{\'o}n proxy, reglas explicables y revisi{\'o}n humana. \\
-Agent2 & Cat{\'a}logo RF reducido en MVP. & No cubre todos los patrones planteados inicialmente. & Priorizar RF-01 a RF-06 verificables y documentar extensiones. \\
+Agent2 & Cat{\'a}logo RF reducido en la versi{\'o}n evaluada. & No cubre todos los patrones planteados inicialmente. & Priorizar RF-01 a RF-06 verificables y documentar extensiones. \\
 Agent3 & Demo relacional limitada por artefactos disponibles. & No permite afirmar escalado completo de grafo. & Features reproducibles y Neo4j opcional para exploraci{\'o}n. \\
 Agent4 & Corpus documental no masivo en la evidencia disponible. & Limita evaluaci{\'o}n RAG cuantitativa. & Ficha demostrable, citas, fallback y advertencias de contexto. \\
 Dashboard & Validaci{\'o}n headless, no estudio formal de usuarios. & No mide usabilidad institucional completa. & Dise{\~n}o orientado a revisi{\'o}n humana y trazabilidad visible. \\
@@ -2469,7 +2499,7 @@ La evaluaci{\'o}n disponible se apoya en cuatro tipos de evidencia:
   \item demo integrada documentada con caso explicable.
 \end{enumerate}
 
-Esta evaluaci{\'o}n es suficiente para defender un MVP acad{\'e}mico, pero no sustituye una validaci{\'o}n
+Esta evaluaci{\'o}n es suficiente para defender un prototipo acad{\'e}mico, pero no sustituye una validaci{\'o}n
 externa por expertos ni una auditor{\'i}a sobre casos reales confirmados.
 
 \section{Limitaciones operativas}
@@ -2499,7 +2529,7 @@ validaci{\'o}n manual de una muestra. El objetivo no debe ser maximizar coincide
 recall sin degradar precisi{\'o}n.
 
 La segunda l{\'i}nea consiste en ampliar el cat{\'a}logo de red flags. El alcance inicial planteaba
-un conjunto mayor de indicadores; el MVP implementa las se{\~n}ales principales y deja margen para
+un conjunto mayor de indicadores; el prototipo implementa las se{\~n}ales principales y deja margen para
 RF adicionales sobre fraccionamiento, cambios contractuales, patrones de lotes, recurrencia
 interanual, adjudicaciones cercanas a umbrales, relaciones societarias y documentaci{\'o}n t{\'e}cnica
 dirigida.
@@ -2518,7 +2548,7 @@ hechos recuperados, inferencias y advertencias.
 La quinta l{\'i}nea es evolucionar de prototipo local a plataforma desplegable. Esto implica API
 productiva, autenticaci{\'o}n, control de roles, auditor{\'i}a de acciones de usuario, persistencia
 completa de outputs multiagente, monitorizaci{\'o}n, CI/CD y pol{\'i}ticas de retenci{\'o}n de datos.
-Estos elementos quedan fuera del MVP acad{\'e}mico, pero son necesarios para un uso institucional.
+Estos elementos quedan fuera del prototipo acad{\'e}mico, pero son necesarios para un uso institucional.
 
 %=========================================================
 \chapter{Conclusiones}
@@ -2578,15 +2608,19 @@ interpretaci{\'o}n experta.
 El uso correcto del sistema exige conservar esa separaci{\'o}n. ProcureWatch Analytics no debe
 utilizarse para automatizar sanciones, excluir proveedores o afirmar irregularidades sin revisi{\'o}n.
 Su funci{\'o}n es reducir el espacio de b{\'u}squeda, ordenar casos, mostrar por qu{\'e} se han
-priorizado y dejar constancia de los datos que faltan. Desde esta perspectiva, el MVP no es un
+priorizado y dejar constancia de los datos que faltan. Desde esta perspectiva, el prototipo no es un
 producto cerrado de auditor{\'i}a, sino una plataforma acad{\'e}mica reproducible sobre la que pueden
 incorporarse nuevas reglas, validaci{\'o}n experta, corpus documental ampliado y despliegue
 institucional.
 
-En conjunto, el TFM cerr{\'o} un MVP coherente de extremo a extremo: ingesta, normalizaci{\'o}n,
-scoring, persistencia, comparativa anal{\'i}tica y congelado reproducible. La extensi{\'o}n hacia
-grafos, RAG y capas documentales avanzadas qued{\'o} encajada en la misma arquitectura, pero el valor
-central del trabajo ya se sostuvo sobre el flujo operativo implementado y documentado.
+En conjunto, el TFM cerr{\'o} un prototipo coherente de extremo a extremo: ingesta, normalizaci{\'o}n,
+scoring, grafo, recuperaci{\'o}n documental, dashboard y reproducibilidad. La ejecuci{\'o}n documentada
+de Agent~1 genera 51.720 registros can{\'o}nicos; Agent~2 produce puntuaciones explicables mediante
+RF-01 a RF-06; la demo integrada muestra un caso completo con \texttt{risk\_score=0.5}, dos
+se{\~n}ales de riesgo, 11 nodos, 13 relaciones, 2 comunidades, 2 evidencias documentales y 2 citas; y
+la validaci{\'o}n t{\'e}cnica recoge 111 tests superados, 1 omitido y dashboard Streamlit sin
+excepciones en modo headless. El valor central del trabajo se sostiene, por tanto, sobre un flujo
+operativo implementado, trazable y documentado, sin afirmar detecci{\'o}n autom{\'a}tica de fraude.
 
 %=========================================================
 % BIBLIOGRAF\'IA
@@ -2653,7 +2687,7 @@ estos se mantienen fuera de Git por reproducibilidad y control de tama{\~n}o.
 \texttt{scr/procurewatch/agent2/} & Red flags, scoring, agregaci{\'o}n y reportes. \\
 \texttt{scr/procurewatch/agent3/} & Grafo, m{\'e}tricas de red, comunidades, features y Neo4j opcional. \\
 \texttt{scr/procurewatch/agent4/} & Corpus, chunking, retrieval, Qdrant/Ollama opcional, contexto de caso y evaluaci{\'o}n. \\
-\texttt{frontend/agent3\_demo.py} & Dashboard Streamlit integrado para exploraci{\'o}n del MVP. \\
+\texttt{frontend/agent3\_demo.py} & Dashboard Streamlit integrado para exploraci{\'o}n del prototipo. \\
 \texttt{tests/} & Pruebas automatizadas de agentes, fuentes, batch, CLI y servicios auxiliares. \\
 \texttt{docs/} & Hojas de ruta, seguimiento, planes t{\'e}cnicos, modelo de datos y decisiones de cierre. \\
 \texttt{docker-compose.yml} & Servicios locales PostgreSQL, Neo4j y Qdrant. \\
@@ -2765,19 +2799,37 @@ Se incluyen como referencia reproducible; la disponibilidad de servicios opciona
 configuraci{\'o}n local.
 
 \begin{verbatim}
-PYTHONPATH=scr python -m procurewatch doctor
+PYTHONPATH=scr python -m procurewatch.cli doctor
 PYTHONPATH=scr python -m pytest tests
 PYTHONPATH=scr python -m ruff check api scr tests frontend
+\end{verbatim}
+
+Para ejecutar los agentes principales:
+
+\begin{verbatim}
+PYTHONPATH=scr python -m procurewatch.cli run-agent1 --year 2024 --cpv-prefix 71
+PYTHONPATH=scr python -m procurewatch.cli run-agent1 --year 2024 --cpv-prefix 71 --place-download
+PYTHONPATH=scr python -m procurewatch.cli run-agent2-mvp \
+  --input data/processed/agent2_contracts_canonical.parquet \
+  --output-dir data/processed
+PYTHONPATH=scr python -m procurewatch.cli run-agent3 \
+  --input data/processed/agent2_contracts_canonical.parquet \
+  --output-dir data/processed
+PYTHONPATH=scr python -m procurewatch.cli agent4-build-manifest
+PYTHONPATH=scr python -m procurewatch.cli agent4-run-flow
+PYTHONPATH=scr python -m procurewatch.cli agent4-evaluate
 \end{verbatim}
 
 Para la demo integrada Agent3--Agent4:
 
 \begin{verbatim}
-PYTHONPATH=scr python -m procurewatch run-agent3 \
+PYTHONPATH=scr python -m procurewatch.cli run-integrated-demo
+PYTHONPATH=scr python -m procurewatch.cli validate-dashboard-demo
+PYTHONPATH=scr python -m procurewatch.cli run-agent3 \
   --input data/processed/agent3_agent4_demo_2026_06_23/agent2_contracts_canonical_demo.parquet \
   --output-dir data/processed/agent3_agent4_demo_2026_06_23
 
-PYTHONPATH=scr python -m procurewatch agent4-case-context \
+PYTHONPATH=scr python -m procurewatch.cli agent4-case-context \
   --contract-key PW-2024-0001 \
   --question "evidencia documental y riesgos explicables" \
   --canonical-path data/processed/agent3_agent4_demo_2026_06_23/agent2_contracts_canonical_demo.parquet \
@@ -2792,6 +2844,13 @@ PYTHONPATH=scr \
 PROCUREWATCH_AGENT3_DEMO_DIR=data/processed/agent3_agent4_demo_2026_06_23 \
 PROCUREWATCH_AGENT4_CASE_CONTEXT=data/processed/agent3_agent4_demo_2026_06_23/agent4_case_context_integrated_demo.json \
 streamlit run frontend/agent3_demo.py
+\end{verbatim}
+
+Para ejecutar lotes incrementales:
+
+\begin{verbatim}
+PYTHONPATH=scr python -m procurewatch.cli run-batch --run-mode weekly --year 2024 --cpv-prefix 71
+PYTHONPATH=scr python -m procurewatch.cli run-batch --run-mode monthly --year 2024 --cpv-prefix 71
 \end{verbatim}
 
 \end{document}
