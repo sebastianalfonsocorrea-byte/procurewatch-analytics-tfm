@@ -906,7 +906,7 @@ Cada afirmaci{\'o}n generada por Qwen3-8B debe poder enlazarse con una regla, un
 \section{Interfaz anal{\'i}tica}
 \label{sec:interfaz_cap6}
 
-El dashboard se dise{\~n}a para una tarea concreta: localizar contratos de mayor riesgo, entender por qu{\'e} han sido priorizados y revisar la evidencia asociada. La primera versi{\'o}n incluir{\'a}:
+El dashboard se dise{\~n}a para una tarea concreta: localizar contratos de mayor riesgo, entender por qu{\'e} han sido priorizados y revisar la evidencia asociada. La versi{\'o}n de cierre organiza la informaci{\'o}n en torno a:
 
 \begin{itemize}
   \item KPIs generales: n{\'u}mero de contratos, importe total, organismos, adjudicatarios y distribuci{\'o}n de riesgo;
@@ -918,6 +918,85 @@ El dashboard se dise{\~n}a para una tarea concreta: localizar contratos de mayor
 \end{itemize}
 
 La interfaz no debe mostrar el score como una verdad absoluta. Debe presentarlo como una prioridad de revisi{\'o}n, acompa{\~n}ada de factores explicativos y limitaciones de datos.
+
+\section{Protocolo de revisi{\'o}n humana asistida}
+\label{sec:protocolo_revision_humana}
+
+El dashboard no se concibe como un sistema de decisi{\'o}n autom{\'a}tica, sino como una herramienta
+para ordenar el trabajo de revisi{\'o}n. Por ello, el flujo de uso previsto se estructura en cinco
+pasos. Primero, el usuario observa KPIs agregados y distribuci{\'o}n de niveles de riesgo. Segundo,
+filtra por dominio, organismo, adjudicatario, procedimiento o nivel. Tercero, selecciona un contrato
+o proveedor priorizado. Cuarto, revisa las se{\~n}ales activadas, las relaciones de grafo y las
+evidencias documentales. Quinto, decide si procede abrir una revisi{\'o}n manual, solicitar m{\'a}s
+informaci{\'o}n o descartar el caso por justificaci{\'o}n suficiente.
+
+Esta secuencia es relevante desde el punto de vista normativo y metodol{\'o}gico. Si el sistema
+mostrara solo un score, el usuario podr{\'i}a interpretar la puntuaci{\'o}n como una conclusi{\'o}n. Al
+mostrar tambi{\'e}n flags, evidencias, campos no evaluables y advertencias, el dashboard obliga a leer
+el riesgo como una hip{\'o}tesis de trabajo. La decisi{\'o}n final permanece fuera del sistema.
+
+La Tabla~\ref{tab:protocolo_revision_humana} resume el protocolo de revisi{\'o}n.
+
+{\small
+\begin{longtable}{p{2.4cm}p{5.1cm}p{5.3cm}}
+\caption{Protocolo de revisi{\'o}n humana asistida}
+\label{tab:protocolo_revision_humana}\\
+\toprule
+\textbf{Paso} & \textbf{Acci{\'o}n del usuario} & \textbf{Soporte del sistema} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Paso} & \textbf{Acci{\'o}n del usuario} & \textbf{Soporte del sistema} \\
+\midrule
+\endhead
+1. Panorama & Revisa volumen, importes y distribuci{\'o}n de riesgo. & KPIs agregados y filtros iniciales. \\
+2. Priorizaci{\'o}n & Ordena contratos o adjudicatarios por riesgo. & Ranking, score y nivel bajo/medio/alto/cr{\'i}tico. \\
+3. Diagn{\'o}stico & Comprueba por qu{\'e} se prioriza el caso. & Red flags activadas, pesos, campos usados y no evaluables. \\
+4. Contexto & Analiza relaciones y evidencias documentales. & Grafo, comunidades, fragmentos recuperados y citas. \\
+5. Decisi{\'o}n humana & Decide si abre revisi{\'o}n, pide informaci{\'o}n o descarta. & Ficha explicativa con limitaciones y trazabilidad. \\
+\bottomrule
+\end{longtable}
+}
+
+El sistema debe hacer visibles tambi{\'e}n los motivos de cautela. Un contrato con riesgo alto puede
+estar justificado por urgencia, especializaci{\'o}n t{\'e}cnica o ausencia de competencia real en el
+mercado. Un contrato con riesgo bajo puede contener problemas que no se detectan por falta de datos
+o porque la irregularidad no se expresa en los campos analizados. Por ello, el dashboard no responde
+a la pregunta ``¿hay fraude?'', sino a una pregunta m{\'a}s adecuada: ``¿qu{\'e} casos merecen revisi{\'o}n
+prioritaria y con qu{\'e} evidencias disponibles?''.
+
+La ficha de caso act{\'u}a como puente entre el an{\'a}lisis autom{\'a}tico y la revisi{\'o}n experta. Debe
+contener identificadores del contrato, fuente, organismo, adjudicatario, CPV, importe, procedimiento,
+score, red flags, relaciones relevantes, fragmentos documentales y limitaciones. La presencia de
+limitaciones no degrada la utilidad de la ficha; al contrario, permite al revisor saber qu{\'e} no
+puede concluirse con los datos disponibles.
+
+\section{Dise{\~n}o de visualizaci{\'o}n y explicabilidad}
+\label{sec:visualizacion_explicabilidad_dashboard}
+
+La visualizaci{\'o}n del MVP sigue un principio de progresividad. El usuario no debe comenzar por una
+tabla extensa de contratos, sino por una s{\'i}ntesis que indique d{\'o}nde concentrar la atenci{\'o}n.
+Desde esa visi{\'o}n general se desciende al ranking, despu{\'e}s al detalle de contrato y finalmente a
+evidencias concretas. Esta progresividad reduce carga cognitiva y evita que la interfaz se convierta
+en una copia gr{\'a}fica de los Parquet.
+
+La explicabilidad se organiza en tres niveles. El primer nivel es \textbf{tabular}: reglas activadas,
+valores observados, pesos y score. El segundo nivel es \textbf{relacional}: comprador, adjudicatario,
+contratos conectados, comunidad y m{\'e}tricas de red. El tercer nivel es \textbf{documental}: fragmentos,
+citas y ficha generada. Esta separaci{\'o}n permite que un revisor identifique si el riesgo procede de
+datos estructurados, de posici{\'o}n en la red o de evidencias textuales.
+
+La interfaz tambi{\'e}n debe evitar dise{\~n}os que induzcan conclusiones indebidas. Por ejemplo, no se
+emplean colores o textos que etiqueten un contrato como fraudulento; se utilizan niveles de riesgo y
+prioridad. Tampoco se ocultan los contratos no evaluables: si una regla no pudo calcularse, esa
+informaci{\'o}n aparece como parte del diagn{\'o}stico. En un sistema de apoyo a auditor{\'i}a, la
+ausencia de dato es una se{\~n}al de calidad, no un detalle secundario.
+
+En la versi{\'o}n de cierre, Streamlit cubre esta necesidad de forma suficiente para una defensa
+acad{\'e}mica y una demo local. Tecnolog{\'i}as como Sigma.js o una API FastAPI pueden mejorar una
+versi{\'o}n productiva, pero no son necesarias para demostrar el flujo de revisi{\'o}n humana asistida.
+Esta decisi{\'o}n mantiene el MVP ejecutable y reduce dependencias, sin cerrar la puerta a una
+evoluci{\'o}n posterior.
 
 \section{Trazabilidad, calidad y reproducibilidad}
 \label{sec:trazabilidad_cap6}
