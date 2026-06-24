@@ -434,12 +434,12 @@ Construir y analizar el grafo bipartito empresa-organismo-contrato para detectar
 \textbf{M{\'e}trica:} Grafo con m{\'i}nimo 2.031 nodos empresa y 394 organismos CPV~71; modularidad $Q\,>\,0.30$; m{\'i}nimo 5 patrones de concentraci{\'o}n at{\'i}pica; correlaci{\'o}n red-flags vs centralidad $\geq$\,0.45.
 
 \subsection*{OE6 --- M{\'o}dulo NLP y enriquecimiento Documental}
-Implementar un sistema de extracci{\'o}n de informaci{\'o}n estructurada sobre anuncios de licitaci{\'o}n del BOE y pliegos alojados en PLACE para el dominio CPV 71, mediante web scraping (BeautifulSoup), NER en español (spaCy) y generaci{\'o}n de fichas explicativas con LLM local (Qwen3-7B).
+Implementar un sistema de extracci{\'o}n de informaci{\'o}n estructurada sobre anuncios de licitaci{\'o}n del BOE y pliegos alojados en PLACE para el dominio CPV 71, mediante web scraping (BeautifulSoup), NER en español (spaCy) y generaci{\'o}n de fichas explicativas con LLM local. El planteamiento inicial consideraba Qwen3-7B; la versi{\'o}n de cierre adopta Qwen3-8B por disponibilidad y capacidad local.
 \textbf{M{\'e}trica:} Corpus procesado de m{\'i}nimo 500 anuncios del BOE correspondientes a contratos adjudicados del CPV 71; extracci{\'o}n exitosa de criterios de adjudicaci{\'o}n y certificaciones en > 70\% de los casos; ficha explicativa generada con claridad $\geq$\,3.5/5 (Likert).
 
 
 \subsection*{OE7 --- Desarrollo del \textit{front-end} anal{\'i}tico}
-Construir una interfaz web interactiva (Streamlit\,+\,Sigma.js\,+\,Plotly) con grafo de relaciones, panel de indicadores de riesgo, \textit{timeline} de evoluci{\'o}n temporal y ficha explicativa de caso generada con LLM local (Qwen3-7B).
+Construir una interfaz web interactiva, basada en Streamlit y visualizaciones complementarias, con grafo de relaciones, panel de indicadores de riesgo, \textit{timeline} de evoluci{\'o}n temporal y ficha explicativa de caso generada con LLM local. Sigma.js queda como opci{\'o}n de extensi{\'o}n para grafos web de mayor escala.
 
 \textbf{M{\'e}trica:} SUS $>$\,68; tiempo medio para documentar un caso de riesgo $<$\,5\,min; ficha explicativa con claridad $\geq$\,3.5/5 (Likert).
 
@@ -495,7 +495,7 @@ Los datos de contratación incluyen información sobre personas físicas: nombre
 
 \item \textbf{Principio de limitación de la finalidad} (artículo 5.1.b): Los \textit{scores} de riesgo solo se utilizan para priorizar casos ante organismos de control, no para decisiones automáticas que afecten a derechos de las empresas. Se prohíbe explícitamente el uso del sistema para crear listas negras o denegar contratación.
 
-\item \textbf{Derecho de oposición y transparencia} (artículos 21 y 13-15): Las empresas señaladas con alto riesgo deben poder conocer los indicadores que motivaron esa puntuación. Por eso el sistema incluye fichas explicativas generadas con LLM local (Qwen3-7B) y métodos SHAP, que permiten desglosar el \textit{score}.
+\item \textbf{Derecho de oposición y transparencia} (artículos 21 y 13-15): Las empresas señaladas con alto riesgo deben poder conocer los indicadores que motivaron esa puntuación. Por eso el sistema incluye fichas explicativas generadas con LLM local y desgloses por reglas activadas. SHAP se mantiene como técnica de referencia para extensiones con modelos predictivos, pero no se presenta como componente evaluado del MVP.
 \end{itemize}
 
 El uso de un \textbf{LLM local} en lugar de APIs externas (por ejemplo, OpenAI) elimina el riesgo de transferencia internacional de datos (artículo 44 RGPD) \cite{RGPD2016}. Todos los datos permanecen en la infraestructura local del organismo de control, cumpliendo con las garantías de privacidad desde el diseño («\textit{by design and by default}», artículo 25 RGPD). Adicionalmente, la LOPDGDD \cite{LOPDGDD2018} refuerza estos principios en el ordenamiento español.
@@ -509,7 +509,7 @@ El AI Act \cite{AIAct2024} es el marco jurídico más relevante para ProcureWatc
 El artículo 6 del AI Act define los sistemas de IA de \textbf{alto riesgo} como aquellos que pueden afectar negativamente a derechos fundamentales o la seguridad. El anexo III incluye, entre otros, los sistemas utilizados para «evaluar la solvencia o la fiabilidad crediticia de personas físicas» (punto 5b). Aunque no menciona explícitamente la auditoría de contratación pública, la generación de puntuaciones de riesgo sobre empresas que podrían influir en decisiones de organismos de control (investigaciones, inspecciones) ha sido interpretada por la literatura como sistema de alto riesgo por analogía \cite{Wachs2025ML, SHAPLIMEWiley2025}. Por tanto, ProcureWatch Analytics se diseña bajo los siguientes principios preventivos, exigibles a los sistemas de alto riesgo:
 
 \begin{itemize}
-\item \textbf{Trazabilidad completa} (artículo 13): Cada \textit{score} de riesgo debe poder descomponerse en los indicadores de \textit{red flags} y métricas de red que lo componen. El sistema implementa SHAP para el modelo de \textit{scoring} (Positive-Unlabeled Learning e Isolation Forest) y almacena el historial de cálculos.
+\item \textbf{Trazabilidad completa} (artículo 13): Cada \textit{score} de riesgo debe poder descomponerse en los indicadores de \textit{red flags} y métricas de red que lo componen. En el MVP esta descomposición se consigue mediante reglas versionadas, evidencias y reportes; SHAP, Positive-Unlabeled Learning e Isolation Forest quedan como técnicas de ampliación o contraste cuando existan artefactos y etiquetas suficientes.
 
 \item \textbf{Supervisión humana obligatoria} (artículo 14): Ninguna señal de riesgo se considera definitiva sin revisión por parte de un auditor o técnico. La interfaz de Streamlit está diseñada para apoyar la decisión humana, no para reemplazarla. El LLM local solo genera explicaciones, no recomendaciones de acción.
 
@@ -520,24 +520,24 @@ El artículo 6 del AI Act define los sistemas de IA de \textbf{alto riesgo} como
 
 \subsection{Implicaciones específicas para el motor de \textit{red flags} y \textit{scoring}}
 
-El motor de \textit{red flags} (OE4) combina tres enfoques: (i) reglas explícitas basadas en la literatura (RF-01 a RF-15), (ii) Isolation Forest (no supervisado) y (iii) Positive-Unlabeled Learning (semisupervisado). El AI Act no prohíbe estos métodos, pero exige que:
+El motor de \textit{red flags} (OE4) se diseña inicialmente con tres posibles enfoques: (i) reglas explícitas basadas en la literatura, (ii) Isolation Forest no supervisado y (iii) Positive-Unlabeled Learning semisupervisado. La versi{\'o}n evaluada del MVP prioriza reglas explicables; los enfoques estad{\'i}sticos se documentan como comparativa o ampliación cuando existan datos suficientes. El AI Act no prohíbe estos métodos, pero exige que:
 
 \begin{itemize}
 \item El usuario sea informado de que está interactuando con un sistema de IA (artículo 52). La interfaz de ProcureWatch Analytics indicará claramente que el \textit{score} de riesgo es una recomendación estadística, no una prueba de irregularidad.
 
-\item Los conjuntos de datos de entrenamiento sean representativos (artículo 10.2). Para PUL, las etiquetas positivas procederán de casos documentados (por ejemplo, la trama de Cantabria, informes de la OIReScon) y se verificará su distribucionalidad.
+\item Los conjuntos de datos de entrenamiento sean representativos (artículo 10.2). Para una eventual ampliación con PUL, las etiquetas positivas deberían proceder de casos documentados y verificarse su distribución, sin asumir que la ausencia de etiqueta equivale a ausencia de fraude.
 
 \item Se realice una evaluación de la conformidad antes del despliegue (artículo 43). En el ámbito del TFM, se simulará esta evaluación mediante la validación con métricas (precisión \textgreater70 \%, modularidad Q \textgreater0,30, etc.) y un análisis de riesgos documentado.
 \end{itemize}
 
 \subsection{Consecuencias del uso de un LLM local}
 
-El AI Act exime de ciertos requisitos a los sistemas de IA de «uso libre» (artículo 2.6), pero no a los de alto riesgo. Sin embargo, el empleo de un \textbf{LLM local (Qwen3-7B)} con funciones estrictamente auxiliares (extraer entidades, estructurar fichas, no tomar decisiones) reduce la superficie de riesgo. Se siguen las siguientes buenas prácticas:
+El AI Act exime de ciertos requisitos a los sistemas de IA de «uso libre» (artículo 2.6), pero no a los de alto riesgo. Sin embargo, el empleo de un \textbf{LLM local} con funciones estrictamente auxiliares (extraer entidades, estructurar fichas, no tomar decisiones) reduce la superficie de riesgo. En la versión de cierre se adopta Qwen3-8B vía Ollama. Se siguen las siguientes buenas prácticas:
 
 \begin{itemize}
 \item El LLM no se \textit{fine-tune} con datos de contratación sensibles; se usa con \textit{prompting few-shot} controlado.
 \item No se almacenan las interacciones del LLM más allá de la sesión de análisis.
-\item Se auditan las salidas del LLM mediante el framework RAGAS (\textit{faithfulness}, \textit{answer relevancy}) para evitar alucinaciones que afecten la ficha explicativa.
+\item Se prevé auditar las salidas del LLM mediante métricas de fidelidad, relevancia y cobertura de contexto. RAGAS queda como marco de referencia para una evaluación más amplia, pero no se presenta como resultado masivo validado si no existe artefacto suficiente.
 \end{itemize}
 
 \section{Otras normativas de referencia}
@@ -570,7 +570,7 @@ Trazabilidad y explicabilidad (AI Act) & Reglas versionadas, registros de ejecuc
 \hline
 Evaluación de riesgos y conformidad (AI Act) & Métricas de precisión (\textgreater70 \%), modularidad de grafos (Q\textgreater0,30), calidad RAG (Faithfulness\textgreater0,80) y usabilidad (SUS\textgreater68). \\
 \hline
-Datos locales y privacidad (RGPD + AI Act) & LLM local (Qwen3-7B) vía Ollama; ninguna API externa; todo el procesamiento en infraestructura local. \\
+Datos locales y privacidad (RGPD + AI Act) & LLM local v{\'i}a Ollama; ninguna API externa; todo el procesamiento en infraestructura local. \\
 \hline
 \end{tabular}
 \end{table}
@@ -632,16 +632,16 @@ Lenguaje principal & Python & Ecosistema maduro para ciencia de datos, NLP, apre
 Procesamiento tabular & pandas, DuckDB y Polars \cite{DuckDBOfficial,PolarsOfficial} & pandas garantiza compatibilidad con el ecosistema; DuckDB permite SQL anal{\'i}tico sobre Parquet sin servidor; Polars acelera transformaciones sobre datasets de mayor volumen. \\
 Persistencia relacional & PostgreSQL \cite{PostgreSQLOfficial} & Base relacional robusta para contratos, adjudicatarios, organismos, indicadores, scores y trazabilidad de ejecuciones. \\
 Grafo anal{\'i}tico & Neo4j Community y NetworkX \cite{Neo4jOfficial,NetworkXPython} & Neo4j facilita consulta y exploraci{\'o}n del grafo; NetworkX permite reproducir m{\'e}tricas y experimentos en scripts Python. \\
-Motor de red flags & Python, scikit-learn, Isolation Forest y reglas OCDS \cite{IsolationForestSklearn,OCP2024RedFlags} & Permite combinar reglas expl{\'i}citas, variables de red y detecci{\'o}n no supervisada de anomal{\'i}as. \\
+Motor de red flags & Python, reglas OCDS y soporte de comparativa con scikit-learn \cite{IsolationForestSklearn,OCP2024RedFlags} & El MVP prioriza reglas expl{\'i}citas y trazables; Isolation Forest se conserva como comparativa o extensi{\'o}n no supervisada. \\
 Web scraping y parsing documental & BeautifulSoup y spaCy \cite{Richardson2024BeautifulSoup,SpaCyOfficial} & Extraen informaci{\'o}n desde anuncios HTML, p{\'a}ginas p{\'u}blicas y contenido textual estructurado, con menor complejidad operativa que el tratamiento de documentos escaneados. \\
 NLP cl{\'a}sico & spaCy \cite{SpaCyOfficial} & Adecuado para tokenizaci{\'o}n, NER, normalizaci{\'o}n ling{\"u}{\'i}stica y reglas de extracci{\'o}n en espa{\~n}ol. \\
 Embeddings & BGE-M3 \cite{BGEAM3Embeddings} & Modelo multiling{\"u}e adecuado para recuperaci{\'o}n sem{\'a}ntica sobre documentos en espa{\~n}ol y terminolog{\'i}a t{\'e}cnica. \\
 Vector store & Qdrant \cite{QdrantOfficial} & Base vectorial local para indexar fragmentos documentales y recuperar contexto por contrato o adjudicatario. \\
 LLM local & \textbf{Qwen3-8B v{\'i}a Ollama} \cite{AlibabaQwen3,Qwen3TechnicalReport,OllamaOfficial} & Modelo de 8.2B par{\'a}metros, licencia Apache-2.0, soporte multiling{\"u}e, contexto amplio y capacidades de razonamiento/uso de herramientas. Se adopta para generaci{\'o}n de fichas explicables, no para decidir fraude. \\
-Orquestaci{\'o}n multiagente & LangGraph y LangChain \cite{LangChain2024LangGraph,LangChainOfficial} & LangGraph modela agentes como nodos de un grafo de estados; LangChain integra Ollama, Qdrant, recuperaci{\'o}n documental, prompts versionados y cadenas RAG. \\
-API de servicio & FastAPI \cite{FastAPIOfficial} & Expone consultas anal{\'i}ticas, rankings y fichas de caso mediante endpoints reproducibles y documentaci{\'o}n OpenAPI. \\
-Evaluaci{\'o}n RAG & RAGAS \cite{RAGASOfficial} & Permite medir fidelidad, relevancia de contexto y calidad de respuestas generadas sobre evidencias recuperadas. \\
-Dashboard & Streamlit, Plotly, Sigma.js y PyVis \cite{StreamlitOfficial,PlotlyOfficial,SigmaJSOfficial,PyVisOfficial} & Streamlit acelera el prototipo; Plotly cubre visualizaciones temporales y tabulares; Sigma.js/PyVis permiten grafos interactivos. \\
+Orquestaci{\'o}n multiagente & CLI, batch y dise{\~n}o compatible con LangGraph/LangChain \cite{LangChain2024LangGraph,LangChainOfficial} & La versi{\'o}n evaluada se reproduce mediante comandos y batch; LangGraph/LangChain se documentan como soporte de orquestaci{\'o}n ampliable. \\
+API de servicio & FastAPI como extensi{\'o}n prevista \cite{FastAPIOfficial} & No es requisito de ejecuci{\'o}n del MVP evaluado; se reserva para exponer consultas y fichas en una versi{\'o}n de servicio. \\
+Evaluaci{\'o}n RAG & RAGAS como marco de referencia \cite{RAGASOfficial} & La evaluaci{\'o}n disponible es local/proxy; RAGAS queda para evaluaciones documentales con corpus mayor y artefactos suficientes. \\
+Dashboard & Streamlit, Plotly y soporte de extensiones con Sigma.js/PyVis \cite{StreamlitOfficial,PlotlyOfficial,SigmaJSOfficial,PyVisOfficial} & Streamlit cubre la demo local; Sigma.js/PyVis no son obligatorios para el MVP evaluado. \\
 Reproducibilidad & Docker Compose, Git y scripts parametrizados \cite{DockerComposeOfficial} & Facilitan ejecuci{\'o}n local, versionado, trazabilidad de resultados y defensa t{\'e}cnica del prototipo. \\
 \bottomrule
 \end{longtable}
@@ -716,11 +716,9 @@ La primera versi{\'o}n prioriza indicadores implementables con los campos BOE/OC
   \item \textbf{RF-04 Plazo an{\'o}malo:} intervalo inusualmente corto entre publicaci{\'o}n, adjudicaci{\'o}n y formalizaci{\'o}n.
   \item \textbf{RF-05 Concentraci{\'o}n proveedor-organismo:} porcentaje elevado de contratos o importe adjudicado a un mismo proveedor por un organismo.
   \item \textbf{RF-06 Recurrencia temporal:} adjudicaciones repetidas al mismo proveedor en ventanas temporales cercanas.
-  \item \textbf{RF-07 Fragmentaci{\'o}n potencial:} contratos similares, importes cercanos a umbrales y proximidad temporal dentro del mismo organismo.
-  \item \textbf{RF-08 Riesgo de red:} centralidad, pertenencia a comunidades densas o rol de puente en el grafo empresa-organismo.
 \end{enumerate}
 
-El \textit{score} compuesto se plantea como \textbf{h{\'i}brido}, pero no opaco. La base de la puntuaci{\'o}n procede de reglas expl{\'i}citas y ponderadas; las variables de red enriquecen el contexto; los modelos no supervisados, como Isolation Forest, se usan para comparar anomal{\'i}as cuando no existen etiquetas fiables; y el LLM genera explicaciones a partir de evidencias ya calculadas o recuperadas. La puntuaci{\'o}n final se expresa en una escala 0--100 y se traduce en niveles bajo, medio, alto o cr{\'i}tico, siempre acompa{\~n}ada de los factores que la han producido.
+RF-07 a RF-15, incluyendo fragmentaci{\'o}n avanzada y riesgo de red como indicador directo, forman parte del cat{\'a}logo de ampliaci{\'o}n, pero no se presentan como reglas evaluadas del MVP si no existe artefacto verificable. El \textit{score} compuesto se plantea como \textbf{h{\'i}brido}, pero no opaco. La base de la puntuaci{\'o}n procede de reglas expl{\'i}citas y ponderadas; las variables de red enriquecen el contexto; los modelos no supervisados, como Isolation Forest, se reservan para comparar anomal{\'i}as cuando existan datos suficientes; y el LLM genera explicaciones a partir de evidencias ya calculadas o recuperadas. La puntuaci{\'o}n final se expresa en una escala 0--100 y se traduce en niveles bajo, medio, alto o cr{\'i}tico, siempre acompa{\~n}ada de los factores que la han producido.
 
 \begin{equation}
 Score = w_r R + w_g G + w_d D + w_a A
@@ -798,7 +796,7 @@ La arquitectura multiagente se plantea como un flujo de responsabilidades expl{\
 \end{longtable}
 }
 
-El estado compartido de LangGraph contiene, como m{\'i}nimo, identificador de ejecuci{\'o}n, versi{\'o}n del dataset, contratos seleccionados, variables normalizadas, red flags, m{\'e}tricas de red, fragmentos documentales, prompts versionados, salida JSON de cada agente y errores detectados. Las transiciones se definen de forma secuencial y auditable: el Agente~1 prepara datos; los Agentes~2 y~3 calculan riesgo tabular y relacional; el Agente~4 recupera evidencias y genera explicaciones; finalmente, el sistema consolida la ficha de caso para el dashboard.
+El dise{\~n}o de orquestaci{\'o}n es compatible con un estado compartido de tipo LangGraph que contenga, como m{\'i}nimo, identificador de ejecuci{\'o}n, versi{\'o}n del dataset, contratos seleccionados, variables normalizadas, red flags, m{\'e}tricas de red, fragmentos documentales, prompts versionados, salida JSON de cada agente y errores detectados. En la versi{\'o}n evaluada, esa coordinaci{\'o}n se materializa mediante CLI, batch y artefactos intermedios. Las transiciones se definen de forma secuencial y auditable: el Agente~1 prepara datos; los Agentes~2 y~3 calculan riesgo tabular y relacional; el Agente~4 recupera evidencias y genera explicaciones; finalmente, el sistema consolida la ficha de caso para el dashboard.
 
 \begin{figure}[ht]
 \centering
