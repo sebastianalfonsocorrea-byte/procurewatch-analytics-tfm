@@ -1941,6 +1941,112 @@ m{\'e}tricas de Agent2 deben describirse como evaluaci{\'o}n exploratoria, de es
 consistencia de reglas y de priorizaci{\'o}n proxy. Este enfoque es metodol{\'o}gicamente correcto:
 resulta preferible declarar el alcance real que presentar una precisi{\'o}n de fraude no verificable.
 
+\section{Matriz de evidencias de evaluaci{\'o}n}
+\label{sec:matriz_evidencias_evaluacion}
+
+La evaluaci{\'o}n del MVP se apoya en evidencias t{\'e}cnicas heterog{\'e}neas. No todas las evidencias
+tienen el mismo alcance: algunas prueban que el c{\'o}digo se ejecuta, otras prueban que una salida
+existe, otras cuantifican calidad de datos y otras solo documentan una limitaci{\'o}n. Separar estos
+niveles evita presentar como resultado estad{\'i}stico lo que en realidad es una prueba funcional, o
+presentar como validaci{\'o}n de fraude lo que es una evaluaci{\'o}n proxy.
+
+La Tabla~\ref{tab:matriz_evidencias_evaluacion} resume esta distinci{\'o}n. Su funci{\'o}n no es a{\~n}adir
+cifras nuevas, sino ordenar qu{\'e} tipo de afirmaci{\'o}n puede defenderse con cada artefacto.
+
+{\small
+\begin{longtable}{p{3.0cm}p{4.2cm}p{3.2cm}p{3.0cm}}
+\caption{Matriz de evidencias utilizadas en la evaluaci{\'o}n del MVP}
+\label{tab:matriz_evidencias_evaluacion}\\
+\toprule
+\textbf{Evidencia} & \textbf{Qu{\'e} permite afirmar} & \textbf{Alcance} & \textbf{L{\'i}mite} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Evidencia} & \textbf{Qu{\'e} permite afirmar} & \textbf{Alcance} & \textbf{L{\'i}mite} \\
+\midrule
+\endhead
+Reports de Agent1 & Fuentes procesadas, filas, errores, calidad y cobertura. & Cuantitativo sobre la ejecuci{\'o}n disponible. & No resuelve por s{\'i} solo la falta de intersecciones entre fuentes. \\
+Parquet can{\'o}nico & Existencia de una frontera estable Agent1--Agent2. & Operativo y reproducible. & Depende de la calidad de los campos de origen. \\
+Reports de Agent2 & Flags, scores, contratos evaluables y distribuci{\'o}n de riesgo. & Cuantitativo/proxy. & No equivale a validaci{\'o}n supervisada contra fraude. \\
+Tests automatizados & Correctitud funcional de parsers, agentes, CLI y batch. & Validaci{\'o}n t{\'e}cnica. & No sustituye validaci{\'o}n por expertos. \\
+Dashboard headless & Disponibilidad de la interfaz y lectura de KPIs. & Prueba de integraci{\'o}n. & No mide usabilidad con usuarios finales. \\
+Documentaci{\'o}n de demo Agent3--Agent4 & Integraci{\'o}n relacional/documental sobre caso demostrativo. & Evidencia funcional de extremo a extremo. & No es una evaluaci{\'o}n masiva del RAG. \\
+Manifests y hashes & Trazabilidad de entradas, salidas y ejecuciones batch. & Reproducibilidad. & Requiere conservar el estado de ejecuci{\'o}n y rutas asociadas. \\
+\bottomrule
+\end{longtable}
+}
+
+Esta matriz permite formular las conclusiones con el nivel de fuerza adecuado. Por ejemplo, los
+reports de Agent1 permiten afirmar que se gener{\'o} un can{\'o}nico de 17.927 filas en la ejecuci{\'o}n
+disponible, pero no permiten afirmar que todas las fuentes p{\'u}blicas se crucen correctamente entre
+s{\'i}. Del mismo modo, Agent2 permite afirmar que existen reglas reproducibles y una distribuci{\'o}n
+de riesgo calculada, pero no que el sistema detecte fraude confirmado. Esta distinci{\'o}n es central
+para que la memoria sea defendible.
+
+\section{Lectura de evaluaci{\'o}n por agente}
+\label{sec:lectura_evaluacion_agente}
+
+La evaluaci{\'o}n de Agent1 se interpreta principalmente como evaluaci{\'o}n de datos. Sus resultados
+son positivos en tres aspectos: el parser BOE presenta una tasa de parseo alta, las fuentes se
+normalizan en artefactos Parquet y el sistema genera reports de calidad. Sin embargo, tambi{\'e}n
+muestra limitaciones relevantes: la completitud OCDS cr{\'i}tica no alcanza el umbral inicial, la
+cobertura de NIF es insuficiente sobre el total y la coherencia temporal solo es evaluable en una
+parte reducida de los registros. En t{\'e}rminos de TFM, Agent1 queda operativo, pero sus resultados
+obligan a no sobredimensionar el alcance de los cruces entre fuentes.
+
+La evaluaci{\'o}n de Agent2 se interpreta como evaluaci{\'o}n de reglas y priorizaci{\'o}n. El hecho de
+que 13.764 contratos sean evaluables y que 17.601 tengan al menos una se{\~n}al activada indica que
+el motor produce una salida amplia sobre el can{\'o}nico disponible. La distribuci{\'o}n bajo/medio/alto
+/cr{\'i}tico permite priorizar la revisi{\'o}n, pero no debe transformarse en un juicio jur{\'i}dico. La
+principal evidencia de calidad en Agent2 no es una precisi{\'o}n supervisada, sino la trazabilidad:
+cada score puede descomponerse en reglas activadas, pesos y datos que permitieron o impidieron la
+evaluaci{\'o}n.
+
+La evaluaci{\'o}n de Agent3 se interpreta como evaluaci{\'o}n relacional. El grafo no sustituye al
+can{\'o}nico, sino que lo proyecta en una estructura de relaciones. Por ello, sus m{\'e}tricas deben
+leerse como contexto: grado, comunidad o recurrencia ayudan a explicar patrones, pero no son
+evidencia aut{\'o}noma de irregularidad. Esta precauci{\'o}n es importante porque, en contrataci{\'o}n
+p{\'u}blica, la centralidad puede deberse a especializaci{\'o}n t{\'e}cnica, tama{\~n}o empresarial o
+presencia territorial leg{\'i}tima.
+
+La evaluaci{\'o}n de Agent4 se interpreta como evaluaci{\'o}n documental y de explicabilidad. El
+resultado esperado no es que el LLM descubra fraude, sino que ayude a transformar una combinaci{\'o}n
+de datos tabulares, red flags y relaciones en una ficha revisable con evidencias y advertencias. La
+calidad de Agent4 depende de tres condiciones: que el corpus contenga fragmentos relevantes, que la
+recuperaci{\'o}n devuelva contexto suficiente y que la generaci{\'o}n no a{\~n}ada afirmaciones sin
+soporte. Cuando estas condiciones no se cumplen, el sistema debe mostrar la limitaci{\'o}n.
+
+El dashboard se eval{\'u}a como capa de consumo. Su aportaci{\'o}n principal es ordenar la revisi{\'o}n:
+primero muestra una visi{\'o}n agregada, despu{\'e}s permite seleccionar contratos priorizados y
+finalmente conecta cada caso con flags, relaciones, evidencias y trazabilidad. La validaci{\'o}n
+headless prueba que la interfaz carga, pero no sustituye una evaluaci{\'o}n de usabilidad con auditores.
+Por tanto, la memoria presenta el dashboard como una interfaz funcional de demostraci{\'o}n, no como
+un producto final validado con usuarios.
+
+\section{Interpretaci{\'o}n de la evaluaci{\'o}n proxy}
+\label{sec:evaluacion_proxy}
+
+La ausencia de \textit{ground truth} obliga a usar una evaluaci{\'o}n proxy. Esta decisi{\'o}n no reduce
+el valor acad{\'e}mico del trabajo si se declara correctamente. En un problema como la contrataci{\'o}n
+p{\'u}blica, disponer de etiquetas fiables de fraude confirmado exige resoluciones firmes, auditor{\'i}as
+cerradas o investigaciones validadas. Tratar todos los contratos no investigados como negativos
+introducir{\'i}a un sesgo grave: muchos contratos no tienen etiqueta simplemente porque nunca fueron
+auditados con suficiente detalle.
+
+Por ese motivo, el MVP eval{\'u}a propiedades observables del sistema: completitud de datos, capacidad
+de generar artefactos, consistencia de reglas, estabilidad de ejecuci{\'o}n, trazabilidad de manifests,
+existencia de salidas por agente y capacidad de explicar casos. Estas propiedades no demuestran
+fraude, pero s{\'i} demuestran que el sistema puede utilizarse como herramienta de priorizaci{\'o}n.
+La afirmaci{\'o}n defendible es, por tanto, m{\'a}s limitada y m{\'a}s rigurosa: ProcureWatch reduce el
+espacio de revisi{\'o}n manual mediante se{\~n}ales trazables, pero la validaci{\'o}n sustantiva de cada
+caso corresponde a una persona experta.
+
+Esta lectura tambi{\'e}n explica por qu{\'e} Isolation Forest, Positive-Unlabeled Learning, SHAP o RAGAS
+se tratan con cautela en la versi{\'o}n de cierre. Son t{\'e}cnicas coherentes con la evoluci{\'o}n del
+sistema, pero no deben presentarse como resultados concluyentes si no existe un artefacto evaluado
+que respalde esa afirmaci{\'o}n. En la memoria se conservan como marco metodol{\'o}gico, extensi{\'o}n o
+soporte de comparaci{\'o}n, no como validaci{\'o}n cerrada del MVP.
+
 %%\section{Entregable t{\'e}cnico del 20 de mayo}
 %\label{sec:entrega_20_mayo_cap6}
 
