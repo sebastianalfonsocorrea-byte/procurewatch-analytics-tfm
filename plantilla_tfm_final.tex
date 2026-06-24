@@ -6,6 +6,8 @@
 \usepackage{longtable}
 \usepackage{booktabs}
 \usepackage{array}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,fit,backgrounds}
 \numberwithin{equation}{chapter}
 \numberwithin{figure}{chapter}
 
@@ -604,61 +606,10 @@ Estas responsabilidades se articulan mediante agentes especializados y component
 
 \begin{figure}[h]
 \centering
-\caption{Arquitectura multiagente de ProcureWatch Analytics}
+\caption{Arquitectura del MVP reproducible de ProcureWatch Analytics}
 \label{fig:arquitectura_mermaid}
-\includegraphics[width=0.9\textwidth]{figuras/diagrama_arquitectura.png}
-% El diagrama se ha generado con el siguiente código Mermaid:
-% flowchart TB
-%     subgraph Frontend["FRONT-END (Streamlit)"]
-%         F1["Grafo"]; F2["Panel riesgo"]; F3["Ficha caso"]; F4["Timeline"]
-%     end
-%     subgraph Orquestador["ORQUESTADOR (LangGraph)"]
-%         A1["Agente 1<br/>Pipeline datos OCDS"]
-%         A2["Agente 2<br/>Red flags + scoring"]
-%         A3["Agente 3<br/>Análisis redes (Neo4j)"]
-%         A4["Agente 4<br/>NLP + web scraping + RAG"]
-%     end
-%     subgraph Datos["CAPA DE DATOS"]
-%         D1[("PostgreSQL")]; D2[("Neo4j")]; D3[("Qdrant")]; D4[("DuckDB")]
-%     end
-%     subgraph Infra["INFRAESTRUCTURA LOCAL (Ollama)"]
-%         I1["LLM Qwen3-7B"]; I2["Embeddings BGE-M3"]
-%     end
-%     A1 --> D1; A1 --> D2; A2 --> D1; A2 --> D2; A3 --> D2; A4 --> D3; A4 --> I1; A4 --> I2
-%     D1 --> A2; D2 --> A2; D2 --> A3; D3 --> A4
-%     Frontend --> Orquestador
-%     D1 -.-> Frontend; D2 -.-> Frontend; D3 -.-> Frontend
+\resizebox{0.98\textwidth}{!}{\input{figuras/arquitectura_mvp.tex}}
 \end{figure}
-
-%\begin{figure}[ht]
-%\centering
-%\fbox{
-%\begin{minipage}{0.96\textwidth}
-%\centering
-%\footnotesize
-%\textbf{Fuentes abiertas}\\
-%BOE 2014--2024/OCDS \quad PLACE \quad OpenTender \quad TED \quad documentos p{\'u}blicos\\[0.1cm]
-%\(\downarrow\)\\[-0.05cm]
-%\textbf{API y orquestaci{\'o}n}\\
-%FastAPI \quad + \quad LangGraph/LangChain \quad + \quad Ollama con Qwen3-8B\\[0.1cm]
-%\(\downarrow\)\\[-0.05cm]
-%\begin{tabular}{>{\centering\arraybackslash}p{0.22\textwidth}>{\centering\arraybackslash}p{0.22\textwidth}>{\centering\arraybackslash}p{0.22\textwidth}>{\centering\arraybackslash}p{0.22\textwidth}}
-%\textbf{Agente 1}\\Pipeline + OCDS &
-%\textbf{Agente 2}\\Red flags + scoring &
-%\textbf{Agente 3}\\Redes + comunidades &
-%\textbf{Agente 4}\\Scraping/NLP/RAG \tabularnewline
-%\end{tabular}\\[0.2cm]
-%\(\downarrow\)\\[-0.05cm]
-%\textbf{Capa de datos}\\
-%PostgreSQL/OCDS \quad DuckDB/Parquet \quad Neo4j/NetworkX \quad Qdrant\\[0.1cm]
-%\(\downarrow\)\\[-0.05cm]
-%\textbf{Interfaz y evidencia}\\
-%Streamlit \quad Plotly \quad Sigma.js/PyVis \quad fichas explicables con trazabilidad completa
-%\end{minipage}
-%}
-%\caption{Arquitectura funcional avanzada de ProcureWatch Analytics para la entrega del 20 de mayo de 2026.}
-%\label{fig:arquitectura_multiagente}
-%\end{figure}
 
 \section{Stack tecnol{\'o}gico definitivo}
 \label{sec:stack_definitivo}
