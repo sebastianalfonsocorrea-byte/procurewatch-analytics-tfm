@@ -611,6 +611,91 @@ Estas responsabilidades se articulan mediante agentes especializados y component
 \resizebox{0.98\textwidth}{!}{\input{figuras/arquitectura_mvp.tex}}
 \end{figure}
 
+\section{Criterios metodol{\'o}gicos del MVP}
+\label{sec:criterios_metodologicos_mvp}
+
+El dise{\~n}o del MVP no se limita a reducir alcance para facilitar la implementaci{\'o}n. Se construye
+como una versi{\'o}n m{\'i}nima pero defendible del sistema completo: debe cubrir el flujo de extremo a
+extremo, generar artefactos verificables y dejar claras sus limitaciones. Esto exige priorizar
+profundidad operativa sobre amplitud superficial. En otras palabras, resulta preferible implementar
+menos indicadores con trazabilidad completa que declarar un cat{\'a}logo amplio de reglas no
+verificadas.
+
+Los criterios metodol{\'o}gicos aplicados fueron los siguientes:
+
+\begin{enumerate}
+  \item \textbf{Ejecuci{\'o}n local y reproducible.} El sistema debe poder ejecutarse sin depender de
+  servicios externos no controlados. Los servicios como PostgreSQL, Neo4j, Qdrant u Ollama enriquecen
+  el flujo, pero el MVP mantiene rutas de ejecuci{\'o}n y prueba que no bloquean la validaci{\'o}n si no
+  est{\'a}n disponibles.
+  \item \textbf{Fronteras claras entre agentes.} Cada agente produce artefactos que pueden revisarse
+  de forma independiente. Esta frontera evita que un error de visualizaci{\'o}n o una dependencia de
+  infraestructura oculte problemas de datos, reglas o recuperaci{\'o}n documental.
+  \item \textbf{Trazabilidad antes que automatizaci{\'o}n opaca.} El sistema prioriza reglas,
+  manifests, hashes, reports y evidencias sobre modelos no explicables. La automatizaci{\'o}n sirve
+  para ordenar revisiones, no para sustituir la decisi{\'o}n experta.
+  \item \textbf{No imputaci{\'o}n agresiva.} Cuando faltan datos cr{\'i}ticos, el resultado debe
+  registrarse como no evaluable. Esta pol{\'i}tica reduce falsos positivos derivados de completar
+  informaci{\'o}n ausente con supuestos no verificables.
+  \item \textbf{Evaluaci{\'o}n honesta.} Las m{\'e}tricas disponibles se presentan como calidad de datos,
+  validaci{\'o}n t{\'e}cnica o evaluaci{\'o}n proxy. No se declara rendimiento supervisado contra fraude
+  si no existen etiquetas confirmadas.
+\end{enumerate}
+
+Estos criterios se aplican de manera transversal. En Agent1 justifican una pol{\'i}tica conservadora
+de \texttt{contract\_key\_canon}; en Agent2 justifican reglas trazables RF-01 a RF-06; en Agent3
+justifican que el grafo sea una proyecci{\'o}n derivada del can{\'o}nico; en Agent4 justifican que el
+LLM no decida riesgo y que toda ficha de caso deba apoyarse en evidencias recuperadas. La coherencia
+del MVP depende precisamente de mantener estas restricciones en todos los componentes.
+
+\section{Alcance evaluable y alcance extensible}
+\label{sec:alcance_evaluable_extensible}
+
+Una distinci{\'o}n clave del trabajo es separar \textbf{alcance evaluable} y \textbf{alcance extensible}.
+El alcance evaluable corresponde a lo que se ejecuta, genera salidas y puede defenderse con tests,
+reports o artefactos. El alcance extensible corresponde a componentes dise{\~n}ados o compatibles con
+la arquitectura, pero que no deben presentarse como resultado cuantitativo cerrado si no existe
+evidencia suficiente.
+
+Esta separaci{\'o}n afecta especialmente a tres grupos de elementos. El primero es el cat{\'a}logo de
+red flags. El planteamiento inicial contemplaba un conjunto m{\'a}s amplio de indicadores; la versi{\'o}n
+evaluable del MVP se concentra en RF-01 a RF-06 porque son las reglas respaldadas por el can{\'o}nico
+disponible y por el flujo de scoring documentado. El segundo grupo son las t{\'e}cnicas comparativas
+de aprendizaje autom{\'a}tico, como Isolation Forest y Positive-Unlabeled Learning. Son coherentes con
+el problema, pero requieren datasets y etiquetas o estrategias de validaci{\'o}n que no deben
+suponerse. El tercer grupo son los servicios de despliegue y visualizaci{\'o}n avanzada, como API
+productiva o visualizaci{\'o}n web de grafos a gran escala, que quedan como extensiones naturales.
+
+La Tabla~\ref{tab:alcance_evaluable_extensible} resume esta distinci{\'o}n.
+
+{\small
+\begin{longtable}{p{3.7cm}p{4.8cm}p{4.5cm}}
+\caption{Separaci{\'o}n entre alcance evaluable y alcance extensible}
+\label{tab:alcance_evaluable_extensible}\\
+\toprule
+\textbf{Bloque} & \textbf{Alcance evaluable en el MVP} & \textbf{Alcance extensible} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Bloque} & \textbf{Alcance evaluable en el MVP} & \textbf{Alcance extensible} \\
+\midrule
+\endhead
+Ingesta & BOE, PLACE y OpenTender con can{\'o}nico, reports y calidad. & Nuevas fuentes, matching probabil{\'i}stico y validaci{\'o}n manual asistida. \\
+Red flags & RF-01 a RF-06 y score 0--100 explicable. & RF-07 a RF-15, fraccionamiento avanzado y reglas documentales. \\
+Modelado estad{\'i}stico & Evaluaci{\'o}n proxy y consistencia de reglas. & Isolation Forest, PU Learning y calibraci{\'o}n con etiquetas confirmadas. \\
+Grafo & Nodos, aristas, Louvain, features y Neo4j opcional. & Leiden, escalado completo y visualizaci{\'o}n web avanzada. \\
+RAG & Corpus, chunks, recuperaci{\'o}n, contexto y ficha de caso demostrable. & Evaluaci{\'o}n RAGAS masiva, corpus ampliado y control de citas m{\'a}s estricto. \\
+Interfaz & Dashboard Streamlit para revisi{\'o}n humana local. & API productiva, roles, auditor{\'i}a de usuario y paneles institucionales. \\
+\bottomrule
+\end{longtable}
+}
+
+Esta tabla evita dos errores de redacci{\'o}n. El primero ser{\'i}a ocultar trabajo dise{\~n}ado porque
+no todo se ejecuta en la misma profundidad; el segundo ser{\'i}a presentar extensiones como si ya
+fueran resultados cerrados. La memoria adopta una posici{\'o}n intermedia: reconoce la arquitectura
+ampliable, pero defiende como resultado principal aquello que la versi{\'o}n de cierre permite
+ejecutar, verificar y explicar.
+
 \section{Stack tecnol{\'o}gico definitivo}
 \label{sec:stack_definitivo}
 
