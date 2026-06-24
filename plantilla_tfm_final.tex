@@ -889,6 +889,29 @@ Los criterios m{\'i}nimos de calidad son:
   \item separaci{\'o}n entre hechos observados, inferencias anal{\'i}ticas y limitaciones.
 \end{itemize}
 
+\section{Orquestaci{\'o}n batch, congelado reproducible y evidencia operativa}
+\label{sec:batch_freeze_cap6}
+
+El prototipo qued{\'o} respaldado por una orquestaci{\'o}n batch semanal y mensual que evit{\'o} el
+procesamiento completo cuando las fuentes no cambiaron y mantuvo trazabilidad completa de las
+entradas y salidas relevantes. El lote semanal compar{\'o} manifiestos, tama{\~n}os y hashes de las
+fuentes para decidir si exist{\'i}an cambios reales; cuando no los hubo, la ejecuci{\'o}n se registr{\'o}
+como \texttt{skipped}. Cuando el can{\'o}nico de Agent~1 cambi{\'o}, el batch reejecut{\'o} Agent~2 sobre
+\texttt{agent2\_contracts\_canonical.parquet} y consolid{\'o} los artefactos anal{\'i}ticos resultantes
+sin duplicar datos pesados.
+
+En los lotes mensuales y forzados se gener{\'o} un \texttt{freeze\_manifest.json} con hashes, rutas,
+versi{\'o}n del lote y referencia a los reportes de Agent~1 y Agent~2. Ese manifiesto qued{\'o}
+como artefacto de cierre reproducible del TFM, mientras que \texttt{data/tmp/} se reserv{\'o} como
+espacio temporal de trabajo para descargas y descompresiones intermedias, eliminado al finalizar
+cada ejecuci{\'o}n correcta.
+
+La persistencia de estado de lote en \texttt{run\_batch\_state.json} y el manifiesto por batch en
+\texttt{data/manifest/batches/<run\_mode>/<batch\_id>/manifest.json} permitieron reconstruir cada corrida
+sin depender de la memoria operativa del sistema. Esta capa de orquestaci{\'o}n cerr{\'o} la parte de
+reproducibilidad exigida por la propuesta t{\'e}cnica y dej{\'o} la memoria de ejecuci{\'o}n alineada
+con los artefactos generados.
+
 %%\section{Entregable t{\'e}cnico del 20 de mayo}
 %\label{sec:entrega_20_mayo_cap6}
 
@@ -909,7 +932,47 @@ Los criterios m{\'i}nimos de calidad son:
 \chapter{Conclusiones y Trabajo Futuro}
 %=========================================================
 
-[A desarrollar en la fase final del TFM]
+ProcureWatch Analytics qued{\'o} definido como una plataforma multiagente reproducible para
+integrar, normalizar y analizar datos de contrataci{\'o}n p{\'u}blica espa{\~n}ola y europea con un
+enfoque explicable y trazable. El desarrollo materializ{\'o} la propuesta t{\'e}cnica en una cadena
+coherente de datos, reglas, persistencia y evidencia, sin presentar el score como una afirmaci{\'o}n
+de fraude ni como una decisi{\'o}n autom{\'a}tica.
+
+La primera conclusi{\'o}n es que el modelo de datos can{\'o}nico funcion{\'o} como eje de integraci{\'o}n.
+Agent~1 consolid{\'o} BOE, PLACE y OpenTender en un esquema OCDS adaptado, con una pol{\'i}tica
+documentada para \texttt{contract\_key\_canon}, perfiles de calidad y trazabilidad por hash. La
+cobertura entre fuentes se registr{\'o} de forma expl{\'i}cita, y las limitaciones de cruce se
+mantuvieron visibles en lugar de forzar coincidencias artificiales.
+
+La segunda conclusi{\'o}n es que Agent~2 qued{\'o} operativo como motor determinista de red flags y
+scoring explicable. El sistema calcul{\'o} se{\~n}ales por contrato, agreg{\'o} riesgo por adjudicatario,
+compar{\'o} el enfoque de reglas con Isolation Forest y Positive-Unlabeled Learning, y almacen{\'o} la
+evidencia necesaria para justificar cada activaci{\'o}n. La evaluaci{\'o}n comparativa se present{\'o}
+como contraste proxy cuando no existieron etiquetas confirmadas de fraude, lo que preserv{\'o} la
+coherencia metodol{\'o}gica del TFM.
+
+La tercera conclusi{\'o}n es que la orquestaci{\'o}n batch reforz{\'o} la reproducibilidad del prototipo.
+La ejecuci{\'o}n por lotes semanal y mensual, junto con los manifiestos de entrada y salida, el
+estado de batch y el freeze reproducible, permiti{\'o} separar trabajo temporal de evidencia final.
+Ese dise{\~n}o hizo posible conservar la trazabilidad sin versionar artefactos pesados ni depender de
+reprocesamientos completos cuando no hubo cambios en las fuentes.
+
+La cuarta conclusi{\'o}n es que la propuesta t{\'e}cnica se tradujo en un sistema capaz de sostener la
+redacci{\'o}n de la memoria y la defensa del proyecto con soporte documental real. La arquitectura,
+las limitaciones, las m{\'e}tricas y los manifiestos de lote quedaron alineados con el estado del
+repositorio, de forma que cada afirmaci{\'o}n relevante puede rastrearse a un artefacto del proyecto.
+
+Entre las limitaciones cerradas, la m{\'a}s relevante fue la ausencia de intersecciones {\'u}tiles entre
+fuentes para afirmar un cruce contractual fuerte por \texttt{contract\_key\_canon}. Tambi{\'e}n qued{\'o}
+documentado que parte de las m{\'e}tricas de Agent~1 no alcanzaron el objetivo planteado y que la
+evaluaci{\'o}n de Agent~2 se apoy{\'o} en una referencia proxy por la ausencia de etiquetas reales de
+fraude. Lejos de ser un defecto narrativo, estas limitaciones delimitan con precisi{\'o}n el alcance
+real del prototipo y evitan sobredimensionar sus resultados.
+
+En conjunto, el TFM cerr{\'o} un MVP coherente de extremo a extremo: ingesta, normalizaci{\'o}n,
+scoring, persistencia, comparativa anal{\'i}tica y congelado reproducible. La extensi{\'o}n hacia
+grafos, RAG y capas documentales avanzadas qued{\'o} encajada en la misma arquitectura, pero el valor
+central del trabajo ya se sostuvo sobre el flujo operativo implementado y documentado.
 
 %=========================================================
 % BIBLIOGRAF\'IA
