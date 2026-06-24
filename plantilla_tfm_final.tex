@@ -1435,6 +1435,81 @@ manifiestos ligeros. Para una entrega final consolidada, el elemento adecuado no
 los datos al control de versiones, sino acompa{\~n}ar el TFM de un snapshot controlado o de instrucciones de
 regeneraci{\'o}n con hashes verificables.
 
+\section{Estrategia batch de la versi{\'o}n de cierre}
+\label{sec:estrategia_batch_cierre}
+
+El sistema no se plantea como streaming. La contrataci{\'o}n p{\'u}blica no requiere procesar eventos
+segundo a segundo para el objetivo de este TFM; requiere reproducibilidad, trazabilidad y capacidad
+de actualizar datos sin repetir trabajo innecesario. Por ello, la estrategia final se basa en batch
+incremental. Esta decisi{\'o}n reduce complejidad operativa, facilita la defensa del prototipo y
+permite congelar resultados de forma controlada.
+
+La estrategia se organiza en cuatro modos de ejecuci{\'o}n. El primero es la \textbf{carga inicial
+completa}, que construye el can{\'o}nico desde las fuentes disponibles y genera los reports base. El
+segundo es el \textbf{batch semanal ligero}, que comprueba si las fuentes han cambiado mediante
+metadatos, tama{\~n}o, URL, fecha y hash, y registra la ejecuci{\'o}n como \texttt{skipped} cuando no
+hay cambios relevantes. El tercero es el \textbf{batch mensual de consolidaci{\'o}n}, orientado a
+resolver duplicados, modificaciones y periodos afectados. El cuarto es el \textbf{snapshot final},
+que congela artefactos, manifests, versiones y hashes para que los resultados del TFM puedan
+reproducirse.
+
+La Tabla~\ref{tab:modos_batch} resume la finalidad de cada modo.
+
+{\small
+\begin{longtable}{p{3.2cm}p{4.4cm}p{3.4cm}p{2.6cm}}
+\caption{Modos de ejecuci{\'o}n batch del MVP}
+\label{tab:modos_batch}\\
+\toprule
+\textbf{Modo} & \textbf{Objetivo} & \textbf{Salida principal} & \textbf{Criterio de Agent2} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Modo} & \textbf{Objetivo} & \textbf{Salida principal} & \textbf{Criterio de Agent2} \\
+\midrule
+\endhead
+Inicial & Construir can{\'o}nico desde cero y perfilar calidad. & Parquet can{\'o}nico, reports y manifest. & Ejecutar si el can{\'o}nico se genera. \\
+Semanal & Detectar cambios ligeros en fuentes sin reprocesar todo. & Manifest con estado \texttt{completed} o \texttt{skipped}. & Ejecutar solo si cambia el can{\'o}nico o se fuerza. \\
+Mensual & Consolidar periodo, resolver duplicados y recalcular salidas. & Can{\'o}nico consolidado y reports actualizados. & Ejecutar para recalcular flags y scores. \\
+Final & Congelar resultados usados en memoria y defensa. & Snapshot/freeze con hashes, esquemas y versiones. & Ejecutar o conservar salidas cerradas. \\
+\bottomrule
+\end{longtable}
+}
+
+El estado \texttt{skipped} es importante porque tambi{\'e}n es un resultado. Si una fuente no cambia,
+la ejecuci{\'o}n semanal no debe regenerar outputs por rutina, ya que podr{\'i}a introducir diferencias
+no explicadas por el dato. Registrar una ejecuci{\'o}n omitida permite demostrar que el sistema revis{\'o}
+las fuentes y decidi{\'o}, con criterios trazables, no recalcular. Esta propiedad es especialmente
+{\'u}til para un TFM con datasets grandes, porque evita descargas repetidas y reduce uso de disco.
+
+\section{Manifiestos, hashes y limpieza de temporales}
+\label{sec:manifests_hashes_temporales}
+
+Cada ejecuci{\'o}n batch debe dejar evidencia suficiente para responder a cuatro preguntas: qu{\'e}
+fuentes se revisaron, cu{\'a}les cambiaron, qu{\'e} artefactos se generaron y con qu{\'e} versi{\'o}n del
+sistema. Para ello, el manifest de batch incluye identificador de ejecuci{\'o}n, modo, rutas o URLs de
+entrada, tama{\~n}os, hashes, salidas, estado y versiones relevantes. No es necesario guardar todos
+los datos brutos en el repositorio para tener trazabilidad; basta con conservar el manifest y el
+snapshot correspondiente cuando se cierre una ejecuci{\'o}n final.
+
+La pol{\'i}tica de hashes cumple dos funciones. Primero, permite detectar cambios sin depender solo
+del nombre del fichero, que puede permanecer constante aunque el contenido cambie. Segundo, permite
+verificar que un Parquet usado en resultados corresponde al mismo contenido que se document{\'o} en el
+manifest. Esta verificaci{\'o}n es especialmente importante cuando el equipo trabaja con datasets de
+distinto tama{\~n}o o cuando una parte de las fuentes se descarga bajo demanda.
+
+Los temporales se tratan de forma separada. \texttt{data/tmp} se reserva para descargas, extracciones
+intermedias y ficheros de trabajo que no forman parte de la evidencia final. Al terminar una
+ejecuci{\'o}n correcta, esos temporales deben eliminarse o quedar fuera del control de versiones. Esta
+pol{\'i}tica evita que el repositorio crezca con ZIPs, XMLs o Parquet intermedios, y permite repetir
+la ejecuci{\'o}n sin mezclar resultados antiguos con resultados nuevos.
+
+El snapshot final se interpreta como el punto de cierre de la evaluaci{\'o}n. Debe incluir, como
+m{\'i}nimo, el can{\'o}nico consumido por Agent2, las salidas de red flags, scores por contrato, scores
+por adjudicatario, reports de Agent1 y Agent2, manifests, hashes, versi{\'o}n de dependencias y
+esquemas. Si posteriormente se incorpora una ejecuci{\'o}n m{\'a}s completa con datos adicionales, el
+snapshot debe regenerarse y las cifras de resultados deben actualizarse, en lugar de mezclar
+artefactos de ejecuciones distintas.
+
 \section{Comandos de ejecuci{\'o}n y reproducci{\'o}n}
 \label{sec:comandos_reproduccion}
 
