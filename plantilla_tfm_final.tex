@@ -931,6 +931,479 @@ La validaci{\'o}n t{\'e}cnica del cierre se realiz{\'o} con pruebas unitarias y 
 los m{\'o}dulos de Agent~3 y Agent~4, y dej{\'o} alineado el bloque de relaciones y el bloque
 documental con el contrato can{\'o}nico y con el resto del MVP del sistema.
 
+\section{Implementaci{\'o}n real inspeccionada en la rama de integraci{\'o}n}
+\label{sec:implementacion_real_integracion}
+
+La implementaci{\'o}n final analizada corresponde a la rama t{\'e}cnica
+\texttt{integration/multiagent}, commit \texttt{19919bd}, del repositorio de c{\'o}digo
+\texttt{tfm-procurewatch}. Esta rama integra el trabajo realizado en las ramas de desarrollo de
+los dos autores y constituye la referencia t{\'e}cnica utilizada para actualizar esta memoria. La
+inspecci{\'o}n del repositorio muestra que el prototipo no se limita a cuatro scripts aislados, sino
+que se organiza como un paquete Python con CLI, parsers de fuentes, agentes, servicios opcionales,
+tests, documentaci{\'o}n operativa y una interfaz local de demostraci{\'o}n.
+
+El proyecto se estructura bajo el paquete \texttt{scr/procurewatch}. La CLI central se implementa
+en \texttt{scr/procurewatch/cli.py}; los conectores de fuentes se ubican en
+\texttt{scr/procurewatch/data\_sources}; los agentes se separan en
+\texttt{agent1}, \texttt{agent2}, \texttt{agent3} y \texttt{agent4}; la ejecuci{\'o}n batch reside en
+\texttt{batch.py}; y la configuraci{\'o}n de servicios se centraliza en \texttt{settings.py}. En la
+ra{\'i}z del repositorio se incluyen \texttt{pyproject.toml}, \texttt{docker-compose.yml},
+\texttt{README.md}, \texttt{ARCHITECTURE.md}, \texttt{SETUP.md}, \texttt{AGENTS.md} y una carpeta
+\texttt{docs/} con hojas de ruta, seguimiento de agentes, planes t{\'e}cnicos y documentos de
+cierre. La interfaz de demostraci{\'o}n se encuentra en \texttt{frontend/agent3\_demo.py}.
+
+La Tabla~\ref{tab:componentes_reales} resume los componentes reales identificados y su funci{\'o}n
+en el sistema. Esta tabla distingue entre tecnolog{\'i}as obligatorias para el flujo reproducible y
+servicios opcionales utilizados cuando el entorno local dispone de ellos.
+
+{\small
+\begin{longtable}{p{3.0cm}p{4.0cm}p{6.2cm}}
+\caption{Componentes reales identificados en la rama \texttt{integration/multiagent}}
+\label{tab:componentes_reales}\\
+\toprule
+\textbf{Componente} & \textbf{Ruta principal} & \textbf{Funci{\'o}n verificada} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Componente} & \textbf{Ruta principal} & \textbf{Funci{\'o}n verificada} \\
+\midrule
+\endhead
+CLI & \texttt{scr/procurewatch/cli.py} & Expone comandos de diagn{\'o}stico, normalizaci{\'o}n, ejecuci{\'o}n de agentes, batch, RAG, evaluaci{\'o}n y carga Neo4j. \\
+Fuentes BOE & \texttt{data\_sources/boe.py} & Normaliza el CSV BOE 2014--2024, extrae contratos y l{\'i}neas de adjudicaci{\'o}n CPV~71 y genera reportes de calidad. \\
+Fuentes PLACE & \texttt{data\_sources/place.py}, \texttt{place\_normalize.py} & Gestiona descarga/inspecci{\'o}n de fuentes PLACE, parsing de ZIP/Atom/XML, filtrado CPV y deduplicaci{\'o}n. \\
+Fuentes OpenTender & \texttt{data\_sources/opentender.py} & Descubre y procesa ficheros JSONL/GZ/ZIP de OpenTender, normalizando registros CPV~71 para el can{\'o}nico. \\
+Agent1 & \texttt{agent1/pipeline.py} & Construye el can{\'o}nico de contratos, cobertura entre fuentes, datasets anal{\'i}ticos y reportes de calidad. \\
+Esquema anal{\'i}tico & \texttt{agent1/analytical\_schema.py} & Define los campos m{\'i}nimos de \texttt{CONTRATO} y \texttt{ADJUDICATARIO} exigidos por la propuesta. \\
+Persistencia relacional & \texttt{db.py} & Inserta tablas anal{\'i}ticas de Agent1 en PostgreSQL cuando el servicio est{\'a} disponible. \\
+Agent2 estable & \texttt{agent2/pipeline.py} & Calcula red flags y scores sobre el can{\'o}nico de Agent1 con reglas versionadas. \\
+Agent2 MVP & \texttt{agent2/mvp\_pipeline.py} & Ejecuta RF-01 a RF-06, genera flags, scores por contrato y adjudicatario, y reporte JSON. \\
+Agent3 & \texttt{agent3/} & Construye grafo, nodos, aristas, m{\'e}tricas, comunidades Louvain, resumen de red y features para otros agentes. \\
+Neo4j opcional & \texttt{agent3/neo4j\_store.py} & Define constraints, carga nodos/aristas y ejecuta consultas de control cuando Neo4j est{\'a} activo. \\
+Agent4 & \texttt{agent4/} & Carga corpus, fragmenta documentos, recupera evidencias, genera contexto de caso y eval{\'u}a la calidad local del RAG. \\
+Qdrant/Ollama opcionales & \texttt{agent4/qdrant\_store.py}, \texttt{embeddings.py}, \texttt{generation.py} & Indexaci{\'o}n vectorial y generaci{\'o}n local si los servicios existen; fallback determinista en tests. \\
+Batch & \texttt{batch.py} & Orquesta ejecuciones por lote con manifests, hashes y estado \texttt{skipped} cuando no hay cambios. \\
+Dashboard & \texttt{frontend/agent3\_demo.py} & Interfaz Streamlit con pesta{\~n}as de resumen, contratos priorizados, caso, relaciones, evidencias y trazabilidad. \\
+Tests & \texttt{tests/} & Pruebas automatizadas de agentes, fuentes, batch, CLI, PostgreSQL, Neo4j, RAG y configuraci{\'o}n. \\
+\bottomrule
+\end{longtable}
+}
+
+\section{Comandos de ejecuci{\'o}n y reproducci{\'o}n}
+\label{sec:comandos_reproduccion}
+
+El prototipo se ejecuta mediante una CLI Python. Esta decisi{\'o}n reduce la ambig{\"u}edad en la
+defensa t{\'e}cnica: cada parte relevante del sistema puede reproducirse con un comando versionado.
+La Tabla~\ref{tab:comandos_cli} recoge los comandos identificados en la implementaci{\'o}n. Algunos
+comandos procesan datos reales y otros generan muestras o validan componentes de forma aislada.
+
+{\small
+\begin{longtable}{p{4.0cm}p{9.1cm}}
+\caption{Comandos disponibles en la CLI de ProcureWatch}
+\label{tab:comandos_cli}\\
+\toprule
+\textbf{Comando} & \textbf{Uso principal} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Comando} & \textbf{Uso principal} \\
+\midrule
+\endhead
+\texttt{doctor} & Comprueba configuraci{\'o}n del entorno y disponibilidad de servicios opcionales. \\
+\texttt{make-agent1-sample} & Genera una muestra peque{\~n}a para pruebas de Agent1. \\
+\texttt{normalize-boe} & Normaliza la fuente BOE. \\
+\texttt{place-sources} & Inspecciona o descarga fuentes PLACE configuradas. \\
+\texttt{normalize-place} & Normaliza ficheros PLACE. \\
+\texttt{normalize-opentender} & Normaliza registros OpenTender. \\
+\texttt{run-agent1} & Ejecuta la ingesta integrada y construye el can{\'o}nico de Agent1. \\
+\texttt{report-agent1-coverage} & Genera informe de cobertura y calidad de Agent1. \\
+\texttt{run-mvp} & Ejecuta el flujo m{\'i}nimo viable de Agent1 con persistencia opcional. \\
+\texttt{run-agent2} & Calcula red flags y scores con el pipeline estable de Agent2. \\
+\texttt{run-agent2-mvp} & Ejecuta la versi{\'o}n MVP de Agent2 con RF-01 a RF-06. \\
+\texttt{run-agent3} & Genera grafo, m{\'e}tricas, comunidades y features relacionales. \\
+\texttt{agent3-load-neo4j} & Carga outputs de Agent3 en Neo4j si el servicio est{\'a} disponible. \\
+\texttt{agent4-smoke} & Comprueba disponibilidad b{\'a}sica de Qdrant/Ollama y fallback. \\
+\texttt{agent4-build-manifest} & Construye manifiesto de corpus documental. \\
+\texttt{agent4-index-corpus} & Indexa corpus documental para recuperaci{\'o}n. \\
+\texttt{agent4-run-flow} & Ejecuta el flujo RAG de Agent4. \\
+\texttt{agent4-case-context} & Genera contexto integrado de un caso combinando contrato, score, grafo y evidencias. \\
+\texttt{agent4-evaluate} & Eval{\'u}a localmente casos RAG con m{\'e}tricas proxy. \\
+\texttt{run-batch} & Ejecuta lotes incrementales con manifiestos, hashes y estado de ejecuci{\'o}n. \\
+\bottomrule
+\end{longtable}
+}
+
+Un ejemplo representativo de reproducci{\'o}n de la demo integrada es:
+
+\begin{verbatim}
+PYTHONPATH=scr python -m procurewatch doctor
+PYTHONPATH=scr python -m procurewatch run-agent2 \
+  --input data/processed/agent2_contracts_canonical.parquet \
+  --output-dir data/processed
+PYTHONPATH=scr python -m procurewatch run-agent3 \
+  --input data/processed/agent2_contracts_canonical.parquet \
+  --output-dir data/processed/agent3
+\end{verbatim}
+
+El valor de este dise{\~n}o no est{\'a} solo en que los comandos existan, sino en que fuerzan una
+separaci{\'o}n clara entre entradas, salidas y par{\'a}metros. En una herramienta de auditor{\'i}a
+anal{\'i}tica, esta separaci{\'o}n es esencial: permite repetir una ejecuci{\'o}n, comparar dos
+versiones de reglas y saber qu{\'e} artefacto se utiliz{\'o} para calcular cada resultado.
+
+\section{Artefactos generados por el sistema}
+\label{sec:artefactos_generados}
+
+La salida del sistema se materializa en ficheros Parquet y JSON. El uso de Parquet permite manejar
+tablas anal{\'i}ticas con tipos de datos estables y bajo coste de lectura; los JSON se reservan para
+manifiestos, reportes de calidad, informes de ejecuci{\'o}n y fichas explicativas. La
+Tabla~\ref{tab:artefactos_sistema} agrupa los artefactos principales.
+
+{\small
+\begin{longtable}{p{4.4cm}p{4.0cm}p{4.8cm}}
+\caption{Artefactos principales producidos por ProcureWatch}
+\label{tab:artefactos_sistema}\\
+\toprule
+\textbf{Artefacto} & \textbf{Productor} & \textbf{Funci{\'o}n} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Artefacto} & \textbf{Productor} & \textbf{Funci{\'o}n} \\
+\midrule
+\endhead
+\texttt{contracts\_boe.parquet} & BOE parser & Contratos normalizados desde BOE. \\
+\texttt{contracts\_boe\_cpv71.parquet} & BOE parser & Subconjunto CPV~71. \\
+\texttt{contracts\_boe\_award\_lines\_cpv71.parquet} & BOE parser & L{\'i}neas de adjudicaci{\'o}n CPV~71, unidad preferida para an{\'a}lisis adjudicado. \\
+\texttt{contracts\_place\_cpv71.parquet} & PLACE parser & Contratos PLACE filtrados por CPV~71. \\
+\texttt{contracts\_opentender\_2024\_cpv71.parquet} & OpenTender parser & Registros OpenTender espa{\~n}oles CPV~71. \\
+\texttt{agent2\_contracts\_canonical.parquet} & Agent1 & Dataset can{\'o}nico consumido por Agent2. \\
+\texttt{contracts\_analytical.parquet} & Agent1 & Tabla anal{\'i}tica de contratos alineada con el esquema de la propuesta. \\
+\texttt{suppliers\_analytical.parquet} & Agent1 & Tabla anal{\'i}tica de adjudicatarios. \\
+\texttt{agent1\_run\_report.json} & Agent1 & Informe de fuentes, versiones de parsers, filas procesadas y errores. \\
+\texttt{agent1\_data\_quality\_summary.json} & Agent1 & Resumen de calidad, cobertura, completitud y coherencia. \\
+\texttt{agent1\_contract\_key\_coverage.parquet} & Agent1 & Cobertura y cruce por \texttt{contract\_key\_canon}. \\
+\texttt{agent2\_risk\_flags.parquet} & Agent2 & Red flags activadas por contrato. \\
+\texttt{agent2\_risk\_scores.parquet} & Agent2 & Score y nivel de riesgo por contrato. \\
+\texttt{agent2\_run\_report.json} & Agent2 & Informe de reglas, filas evaluables, distribuci{\'o}n de riesgo y versi{\'o}n de scoring. \\
+\texttt{agent3\_nodes.parquet} & Agent3 & Nodos del grafo. \\
+\texttt{agent3\_edges.parquet} & Agent3 & Aristas del grafo. \\
+\texttt{agent3\_contract\_metrics.parquet} & Agent3 & M{\'e}tricas relacionales por contrato. \\
+\texttt{agent3\_agent2\_features.parquet} & Agent3 & Variables relacionales consumibles por scoring o explicaci{\'o}n. \\
+\texttt{agent4\_case\_context\_integrated\_demo.json} & Agent4 & Ficha/contexto integrado de caso con evidencias y citas. \\
+\texttt{manifest.json} & Batch & Fuentes revisadas, hashes, entradas, salidas, estado y versi{\'o}n de ejecuci{\'o}n. \\
+\bottomrule
+\end{longtable}
+}
+
+Esta organizaci{\'o}n tambi{\'e}n permite separar resultados pesados de evidencia ligera. Los
+datasets completos no deben versionarse en Git; en cambio, los manifiestos, esquemas y reportes
+peque{\~n}os s{\'i} son adecuados para documentar reproducibilidad.
+
+\section{Fragmentos de implementaci{\'o}n relevantes}
+\label{sec:fragmentos_codigo_relevantes}
+
+El objetivo de esta secci{\'o}n no es reproducir listados completos, sino mostrar decisiones de
+implementaci{\'o}n que explican el comportamiento del prototipo. El primer fragmento corresponde al
+esquema anal{\'i}tico m{\'i}nimo. La implementaci{\'o}n no deja el modelo de datos como una tabla
+informal de la memoria, sino como una estructura ejecutable que los tests pueden comprobar.
+
+\begin{verbatim}
+CONTRACT_REQUIRED_FIELDS = (
+    "id_contrato",
+    "id_licitacion",
+    "organismo_contratante",
+    "codigo_organismo",
+    "nivel_administracion",
+    "tipo_contrato",
+    "procedimiento",
+    "cpv_codigo",
+    "importe_estimado",
+    "importe_adjudicado",
+    "fecha_publicacion",
+    "fecha_adjudicacion",
+    "numero_ofertas_recibidas",
+    "nif_adjudicatario",
+    "nombre_adjudicatario",
+    "score_red_flags_total",
+    "red_flags_activados",
+    "nivel_riesgo",
+    "score_centralidad_red",
+    "comunidad_red",
+    "fragmentos_documentales_recuperados",
+    "fuentes_cruzadas",
+    "estado_revision",
+)
+\end{verbatim}
+
+Este fragmento es importante porque vincula directamente la propuesta t{\'e}cnica con el c{\'o}digo:
+los campos de \texttt{CONTRATO} no son una aspiraci{\'o}n documental, sino una lista de requisitos
+que el pipeline puede validar. Adem{\'a}s, cada campo queda asociado a un agente responsable:
+Agent1 cubre identificadores, fuentes, organismos, fechas e importes; Agent2 completa red flags y
+riesgo; Agent3 aporta centralidad y comunidad; Agent4 aporta fragmentos documentales; y la interfaz
+gestiona el estado de revisi{\'o}n.
+
+El segundo fragmento resume la idea de manifiesto de batch. La implementaci{\'o}n mantiene hash,
+tama{\~n}o, URL y estado de cada fuente para evitar reprocesamientos innecesarios.
+
+\begin{verbatim}
+{
+  "batch_id": "weekly-2026-06-24",
+  "run_mode": "weekly",
+  "status": "skipped",
+  "sources_checked": ["boe", "place", "opentender"],
+  "sources_changed": [],
+  "input_hashes": {
+    "boe": "sha256:...",
+    "place": "sha256:...",
+    "opentender": "sha256:..."
+  },
+  "outputs": {
+    "canonical": "data/processed/agent2_contracts_canonical.parquet",
+    "agent2_scores": "data/processed/agent2_risk_scores.parquet"
+  }
+}
+\end{verbatim}
+
+La utilidad de este manifiesto es doble. En primer lugar, permite justificar por qu{\'e} una ejecuci{\'o}n
+no reley{\'o} todas las fuentes si no hab{\'i}a cambios; en segundo lugar, convierte cada resultado en
+un producto reproducible, asociado a entradas concretas y a versiones de c{\'o}digo.
+
+El tercer fragmento muestra una consulta Cypher representativa del an{\'a}lisis de grafo. En la
+implementaci{\'o}n real, Neo4j es opcional, pero el modelo de nodos y relaciones s{\'i} est{\'a}
+preparado para cargar contratos y recuperar su entorno relacional.
+
+\begin{verbatim}
+MATCH (contract:Contract {contract_key_canon: $contract_key_canon})-[rel]-(neighbor)
+RETURN contract, rel, neighbor
+\end{verbatim}
+
+Esta consulta permite explicar un contrato desde su vecindario: comprador, adjudicatario, CPV,
+fuente y entidades relacionadas. Para la defensa del TFM, esta capacidad es m{\'a}s relevante que la
+mera visualizaci{\'o}n del grafo, porque conecta las m{\'e}tricas de red con la ficha explicativa de
+caso.
+
+\section{Resultados y evaluaci{\'o}n}
+\label{cap:resultados_evaluacion}
+
+Los resultados cuantitativos incluidos en esta memoria proceden de los artefactos disponibles en el
+entorno local inspeccionado del repositorio \texttt{tfm-procurewatch}, rama
+\texttt{integration/multiagent}, commit \texttt{19919bd}. No se presentan como cifras definitivas
+absolutas de todo el proyecto si existe una ejecuci{\'o}n m{\'a}s completa en otro entorno de trabajo.
+La prioridad metodol{\'o}gica ha sido no inventar resultados y distinguir entre: artefactos locales
+inspeccionados, validaciones documentadas en la rama de integraci{\'o}n y cifras hist{\'o}ricas
+procedentes de planes o documentos anteriores.
+
+\subsection{Resultados de ingesta y normalizaci{\'o}n}
+
+En el snapshot local analizado, el pipeline de Agent1 gener{\'o} el dataset can{\'o}nico consumido por
+Agent2 y varias tablas intermedias por fuente. La Tabla~\ref{tab:resultados_agent1_filas} resume
+las filas observadas en los artefactos Parquet disponibles.
+
+{\small
+\begin{longtable}{p{6.2cm}r p{4.5cm}}
+\caption{Filas observadas en artefactos locales de Agent1}
+\label{tab:resultados_agent1_filas}\\
+\toprule
+\textbf{Artefacto local inspeccionado} & \textbf{Filas} & \textbf{Interpretaci{\'o}n} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Artefacto local inspeccionado} & \textbf{Filas} & \textbf{Interpretaci{\'o}n} \\
+\midrule
+\endhead
+\texttt{contracts\_boe.parquet} & 96.809 & Registros BOE normalizados desde el CSV longitudinal. \\
+\texttt{contracts\_boe\_cpv71.parquet} & 8.097 & Subconjunto BOE con CPV~71. \\
+\texttt{contracts\_boe\_award\_lines\_cpv71.parquet} & 4.062 & L{\'i}neas de adjudicaci{\'o}n CPV~71, unidad preferente para adjudicaciones. \\
+\texttt{contracts\_place\_cpv71.parquet} & 12.611 & Registros PLACE CPV~71 tras parsing y deduplicaci{\'o}n. \\
+\texttt{contracts\_opentender\_2024\_cpv71.parquet} & 1.260 & Registros OpenTender espa{\~n}oles CPV~71 disponibles en la ejecuci{\'o}n. \\
+\texttt{agent2\_contracts\_canonical.parquet} & 17.927 & Can{\'o}nico final disponible para Agent2. \\
+\texttt{contracts\_analytical.parquet} & 17.927 & Tabla anal{\'i}tica de contratos. \\
+\texttt{suppliers\_analytical.parquet} & 7.406 & Tabla anal{\'i}tica de adjudicatarios. \\
+\bottomrule
+\end{longtable}
+}
+
+El informe \texttt{agent1\_run\_report.json} documenta que el parser BOE ley{\'o} 97.154 l{\'i}neas de
+datos, parse{\'o} 96.809 registros y registr{\'o} 345 errores de parseo, con una tasa de {\'e}xito
+aproximada de 0,996. Para BOE CPV~71 se obtuvieron 8.097 filas y 4.062 l{\'i}neas de adjudicaci{\'o}n
+primaria. El parser PLACE proces{\'o} un ZIP de perfiles de contratante y produjo 12.611 registros
+CPV~71. El parser OpenTender gener{\'o} 1.260 registros CPV~71.
+
+La diferencia entre estas cifras y las 3.443 adjudicaciones CPV~71 citadas en la parte contextual
+de esta memoria se explica por la diferencia de unidad de an{\'a}lisis y por el estado de
+reconciliaci{\'o}n. La cifra de 3.443 procede de la referencia contextual del dataset BOE y se us{\'o}
+para justificar la selecci{\'o}n del dominio. La ejecuci{\'o}n local de Agent1 trabaja con registros,
+expedientes, l{\'i}neas de adjudicaci{\'o}n y fuentes complementarias; por tanto, no debe forzarse una
+equivalencia directa entre ambas magnitudes.
+
+\subsection{Calidad del can{\'o}nico y cobertura entre fuentes}
+
+El informe \texttt{agent1\_data\_quality\_summary.json} registra 17.927 filas can{\'o}nicas y 17.748
+claves contractuales en el universo de cobertura. La cobertura por fuente fue: 3.883 claves BOE,
+12.605 claves PLACE y 1.260 claves OpenTender. Sin embargo, las intersecciones entre fuentes por
+\texttt{contract\_key\_canon} fueron cero en el snapshot local.
+
+Este resultado es metodol{\'o}gicamente relevante. No significa que las fuentes sean in{\'u}tiles, sino
+que el criterio conservador de emparejamiento no encontr{\'o} coincidencias suficientemente seguras.
+La decisi{\'o}n de no forzar el matching evita falsos positivos de integraci{\'o}n. En una plataforma
+de apoyo a auditor{\'i}a, un cruce incorrecto entre fuentes puede ser m{\'a}s perjudicial que dejar
+constancia de una limitaci{\'o}n.
+
+La Tabla~\ref{tab:metricas_agent1_calidad} recoge las m{\'e}tricas de calidad principales observadas
+en el informe local.
+
+{\small
+\begin{longtable}{p{4.6cm}r r p{4.1cm}}
+\caption{M{\'e}tricas de calidad de Agent1 en el snapshot local}
+\label{tab:metricas_agent1_calidad}\\
+\toprule
+\textbf{M{\'e}trica} & \textbf{Valor observado} & \textbf{Objetivo} & \textbf{Lectura} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{M{\'e}trica} & \textbf{Valor observado} & \textbf{Objetivo} & \textbf{Lectura} \\
+\midrule
+\endhead
+Completitud OCDS cr{\'i}tica & 0,859 & 0,900 & No alcanza el umbral en el can{\'o}nico local completo. \\
+Validez de NIF sobre total & 0,496 & 0,850 & Limitada por ausencia de NIF en parte de las fuentes. \\
+Validez de NIF cuando est{\'a} presente & 0,999 & -- & Alta calidad cuando el identificador existe. \\
+Coherencia temporal evaluable & 0,584 & 0,980 & Baja y con muchos registros no evaluables. \\
+Contratos no evaluables temporalmente & 17.441 & -- & El campo de fechas no permite comparaci{\'o}n en la mayor parte del snapshot. \\
+Duplicados por fuente y clave & 0 & 0 & Cumple el criterio de deduplicaci{\'o}n conservadora. \\
+Intersecciones BOE/PLACE/OpenTender & 0 & -- & Limitaci{\'o}n de matching, no se fuerza cruce artificial. \\
+\bottomrule
+\end{longtable}
+}
+
+Estos resultados obligan a una lectura prudente. El pipeline est{\'a} implementado, el esquema existe
+y los artefactos se generan, pero no todas las m{\'e}tricas de calidad alcanzan los objetivos
+iniciales. La memoria no debe ocultar esta diferencia: forma parte de la evaluaci{\'o}n del prototipo
+y delimita el alcance de los resultados.
+
+\subsection{Resultados de red flags y scoring}
+
+Agent2 se ejecuta sobre \texttt{agent2\_contracts\_canonical.parquet}. En el snapshot local, el
+informe \texttt{agent2\_run\_report.json} registra 17.927 filas, de las cuales 13.764 fueron
+evaluables y 4.163 quedaron como no evaluables por falta de datos suficientes para determinadas
+reglas. El n{\'u}mero de flags activadas fue 31.278 y 17.601 contratos tuvieron al menos una se{\~n}al
+activada.
+
+La distribuci{\'o}n de niveles de riesgo observada fue:
+
+{\small
+\begin{longtable}{p{4.5cm}r p{5.4cm}}
+\caption{Distribuci{\'o}n de riesgo de Agent2 en el snapshot local}
+\label{tab:distribucion_riesgo_agent2}\\
+\toprule
+\textbf{Nivel de riesgo} & \textbf{Contratos} & \textbf{Interpretaci{\'o}n} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Nivel de riesgo} & \textbf{Contratos} & \textbf{Interpretaci{\'o}n} \\
+\midrule
+\endhead
+Bajo & 7.393 & Contratos con se{\~n}ales menores o baja acumulaci{\'o}n de flags. \\
+Medio & 7.776 & Contratos que requieren revisi{\'o}n contextual si hay capacidad anal{\'i}tica. \\
+Alto & 2.373 & Casos priorizables por acumulaci{\'o}n de se{\~n}ales. \\
+Cr{\'i}tico & 385 & Casos de mayor prioridad para an{\'a}lisis humano. \\
+\bottomrule
+\end{longtable}
+}
+
+La Tabla~\ref{tab:redflags_agent2} resume las reglas RF-01 a RF-06 documentadas e implementadas
+en la versi{\'o}n MVP de Agent2. Las reglas no deben interpretarse como prueba directa de
+irregularidad, sino como indicadores de priorizaci{\'o}n.
+
+{\small
+\begin{longtable}{p{1.5cm}p{3.8cm}p{5.1cm}p{2.8cm}}
+\caption{Red flags implementadas en Agent2 MVP}
+\label{tab:redflags_agent2}\\
+\toprule
+\textbf{C{\'o}digo} & \textbf{Indicador} & \textbf{L{\'o}gica anal{\'i}tica} & \textbf{Tipo} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{C{\'o}digo} & \textbf{Indicador} & \textbf{L{\'o}gica anal{\'i}tica} & \textbf{Tipo} \\
+\midrule
+\endhead
+RF-01 & Baja concurrencia o se{\~n}al equivalente & Activa riesgo cuando la informaci{\'o}n disponible apunta a competencia reducida o no evaluable de forma segura. & Competencia \\
+RF-02 & Procedimiento de riesgo & Penaliza procedimientos restrictivos, excepcionales o menos competitivos seg{\'u}n normalizaci{\'o}n disponible. & Procedimiento \\
+RF-03 & Recurrencia proveedor-organismo & Detecta adjudicaciones repetidas entre el mismo comprador y adjudicatario. & Concentraci{\'o}n \\
+RF-04 & Concentraci{\'o}n de adjudicatario & Eval{\'u}a concentraci{\'o}n de contratos o importe alrededor de un adjudicatario. & Proveedor \\
+RF-05 & Desviaci{\'o}n de importe & Analiza adjudicaciones por encima de valores esperados o relaciones estimado/adjudicado at{\'i}picas. & Importe \\
+RF-06 & Calidad/evaluabilidad de datos & Identifica situaciones en las que la falta de datos impide una evaluaci{\'o}n robusta. & Calidad \\
+\bottomrule
+\end{longtable}
+}
+
+El informe de ejecuci{\'o}n local documenta activaciones para RF-01, RF-02, RF-03, RF-04 y RF-05. En
+ese snapshot no se observaron activaciones efectivas de RF-06. Esta ausencia no invalida la regla:
+indica que, con los datos de esa ejecuci{\'o}n, no se produjo el patr{\'o}n concreto que la activa o no
+qued{\'o} registrado en el desglose.
+
+\subsection{Resultados de grafo, RAG y dashboard}
+
+La documentaci{\'o}n de cierre de la rama de integraci{\'o}n registra una demo conjunta Agent3--Agent4
+en \texttt{data/processed/agent3\_agent4\_demo\_2026\_06\_23/}. Seg{\'u}n
+\texttt{docs/04\_agentes/SEGUIMIENTO\_AGENTES.md}, Agent3 gener{\'o} 11 nodos, 13 aristas, 3
+m{\'e}tricas contractuales y 3 filas de features sobre un can{\'o}nico sint{\'e}tico m{\'i}nimo. Agent4
+gener{\'o} una ficha integrada para \texttt{PW-2024-0001} con \texttt{risk\_score=0.5}, dos red
+flags, m{\'e}tricas Agent3, dos evidencias documentales y dos citas.
+
+Durante la inspecci{\'o}n local de esta memoria no se encontr{\'o} f{\'i}sicamente esa carpeta de demo
+en \texttt{data/processed/}. Por tanto, la cifra anterior se trata como resultado documentado en la
+hoja de seguimiento, no como artefacto local reabierto en este entorno. Esta distinci{\'o}n es
+importante para evitar presentar como inspeccionado un fichero que no estaba disponible en la copia
+local.
+
+El dashboard integrado est{\'a} implementado en \texttt{frontend/agent3\_demo.py}. La hoja de
+seguimiento documenta su validaci{\'o}n en modo headless con HTTP 200, sin artefactos faltantes y con
+KPIs cargados. La interfaz est{\'a} organizada en pesta{\~n}as de resumen, contratos priorizados,
+caso seleccionado, relaciones, evidencias y trazabilidad. Esta organizaci{\'o}n es coherente con el
+principio de revisi{\'o}n humana: el usuario no recibe una decisi{\'o}n autom{\'a}tica, sino una ruta
+de exploraci{\'o}n desde el ranking de riesgo hasta la evidencia concreta.
+
+\subsection{Evaluaci{\'o}n t{\'e}cnica y tests}
+
+La rama de integraci{\'o}n contiene una bater{\'i}a amplia de tests. La validaci{\'o}n final documentada
+en \texttt{SEGUIMIENTO\_AGENTES.md} indica:
+
+\begin{itemize}
+  \item \texttt{python -m procurewatch doctor}: resultado OK, con PostgreSQL, Neo4j, Qdrant y
+  Ollama como servicios opcionales;
+  \item \texttt{python -m pytest tests}: 92 pruebas superadas y 1 omitida;
+  \item \texttt{python -m ruff check api scr tests frontend}: sin errores de estilo bloqueantes;
+  \item dashboard validado en modo headless con carga correcta de KPIs.
+\end{itemize}
+
+La Tabla~\ref{tab:tests_resumen} resume la cobertura funcional de los tests existentes.
+
+{\small
+\begin{longtable}{p{4.0cm}p{9.2cm}}
+\caption{Resumen de pruebas automatizadas existentes}
+\label{tab:tests_resumen}\\
+\toprule
+\textbf{Bloque de test} & \textbf{Cobertura principal} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Bloque de test} & \textbf{Cobertura principal} \\
+\midrule
+\endhead
+Agent1 & Pipeline, can{\'o}nico, calidad, esquema anal{\'i}tico, cobertura, PostgreSQL y cat{\'a}logo de compradores. \\
+Fuentes & Parser BOE, unidades de an{\'a}lisis BOE, OpenTender, PLACE y normalizaci{\'o}n de entradas. \\
+Agent2 & Reglas, scoring, pipeline estable, MVP RF-01 a RF-06 y reportes de salida. \\
+Agent3 & Construcci{\'o}n de grafo, nodos, aristas, m{\'e}tricas, comunidades, features y carga Neo4j. \\
+Agent4 & Carga documental, chunks, Qdrant, embeddings, flujo RAG, contexto de caso y evaluaci{\'o}n local. \\
+CLI y batch & Comandos principales, diagn{\'o}stico, ejecuci{\'o}n MVP y skip semanal por ausencia de cambios. \\
+\bottomrule
+\end{longtable}
+}
+
+La evaluaci{\'o}n no equivale a una validaci{\'o}n supervisada contra fraude real, porque el proyecto
+no dispone de etiquetas fiables de fraude confirmado para el conjunto analizado. Por ello, las
+m{\'e}tricas de Agent2 deben describirse como evaluaci{\'o}n exploratoria, de estabilidad, de
+consistencia de reglas y de priorizaci{\'o}n proxy. Este enfoque es metodol{\'o}gicamente correcto:
+resulta preferible declarar el alcance real que presentar una precisi{\'o}n de fraude no verificable.
+
 %%\section{Entregable t{\'e}cnico del 20 de mayo}
 %\label{sec:entrega_20_mayo_cap6}
 
