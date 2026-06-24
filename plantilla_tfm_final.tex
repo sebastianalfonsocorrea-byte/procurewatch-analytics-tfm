@@ -912,6 +912,25 @@ sin depender de la memoria operativa del sistema. Esta capa de orquestaci{\'o}n 
 reproducibilidad exigida por la propuesta t{\'e}cnica y dej{\'o} la memoria de ejecuci{\'o}n alineada
 con los artefactos generados.
 
+\section{Cierre integrado de Agent3 y Agent4}
+\label{sec:cierre_agent3_agent4_cap6}
+
+El bloque de grafos y documental qued{\'o} cerrado como una demo integrada reproducible. Agent~3
+gener{\'o} el grafo de relaciones, las m{\'e}tricas de red y las \textit{features} por
+\texttt{contract\_key\_canon}; Agent~4 combin{\'o} el contrato can{\'o}nico, el \textit{score} de
+Agent~2, las m{\'e}tricas de Agent~3 y las evidencias documentales recuperadas para construir una
+ficha de caso trazable.
+
+La integraci{\'o}n se apoy{\'o} en una muestra sint{\'e}tica m{\'i}nima, suficiente para demostrar el
+flujo extremo a extremo sin introducir ruido adicional en la defensa t{\'e}cnica. El resultado
+documentado mostr{\'o} 11 nodos, 13 aristas, 3 m{\'e}tricas contractuales y 3 filas de \textit{features}
+en Agent~3, junto con una ficha integrada en Agent~4 para \texttt{PW-2024-0001} con dos evidencias
+documentales y dos citas.
+
+La validaci{\'o}n t{\'e}cnica del cierre se realiz{\'o} con pruebas unitarias y reglas de estilo sobre
+los m{\'o}dulos de Agent~3 y Agent~4, y dej{\'o} alineado el bloque de relaciones y el bloque
+documental con el contrato can{\'o}nico y con el resto del MVP del sistema.
+
 %%\section{Entregable t{\'e}cnico del 20 de mayo}
 %\label{sec:entrega_20_mayo_cap6}
 
@@ -961,6 +980,12 @@ La cuarta conclusi{\'o}n es que la propuesta t{\'e}cnica se tradujo en un sistem
 redacci{\'o}n de la memoria y la defensa del proyecto con soporte documental real. La arquitectura,
 las limitaciones, las m{\'e}tricas y los manifiestos de lote quedaron alineados con el estado del
 repositorio, de forma que cada afirmaci{\'o}n relevante puede rastrearse a un artefacto del proyecto.
+
+La quinta conclusi{\'o}n es que el bloque de extensi{\'o}n relacional y documental no qued{\'o} como una
+idea pendiente, sino como una integraci{\'o}n demostrable. Agent~3 y Agent~4 dejaron una demo
+conjunta cerrada, compatible con el contrato can{\'o}nico, la evidencia textual y el \textit{score}
+procedente de Agent~2. Eso permiti{\'o} explicar en la memoria un flujo completo de priorizaci{\'o}n,
+an{\'a}lisis relacional y justificaci{\'o}n documental sin recurrir a formulaciones de futuro.
 
 Entre las limitaciones cerradas, la m{\'a}s relevante fue la ausencia de intersecciones {\'u}tiles entre
 fuentes para afirmar un cruce contractual fuerte por \texttt{contract\_key\_canon}. Tambi{\'e}n qued{\'o}
