@@ -1713,6 +1713,7 @@ disponible en el repositorio del proyecto:
 \texttt{normalize-opentender} & Normaliza registros OpenTender. \\
 \texttt{run-agent1} & Ejecuta la ingesta integrada y construye el can{\'o}nico de Agent1. \\
 \texttt{report-agent1-coverage} & Genera informe de cobertura y calidad de Agent1. \\
+\texttt{report-agent1-source-diagnostics} & Genera diagn{\'o}stico de intersecciones y candidatos de matching entre fuentes. \\
 \texttt{run-mvp} & Ejecuta un flujo compacto de Agent1 con persistencia opcional. \\
 \texttt{run-agent2} & Calcula red flags y scores con el pipeline estable de Agent2. \\
 \texttt{run-agent2-mvp} & Ejecuta la versi{\'o}n evaluada de Agent2 con RF-01 a RF-06. \\
@@ -1724,6 +1725,7 @@ disponible en el repositorio del proyecto:
 \texttt{agent4-run-flow} & Ejecuta el flujo RAG de Agent4. \\
 \texttt{agent4-case-context} & Genera contexto integrado de un caso combinando contrato, score, grafo y evidencias. \\
 \texttt{agent4-evaluate} & Eval{\'u}a localmente casos RAG con m{\'e}tricas proxy. \\
+\texttt{run-benchmark} & Ejecuta el benchmark global de Agent1, Agent2, Agent3, Agent4 e integraci{\'o}n. \\
 \texttt{run-batch} & Ejecuta lotes incrementales con manifiestos, hashes y estado de ejecuci{\'o}n. \\
 \bottomrule
 \end{longtable}
@@ -1779,6 +1781,8 @@ Tabla~\ref{tab:artefactos_sistema} agrupa los artefactos principales.
 \texttt{agent1\_run\_report.json} & Agent1 & Informe de fuentes, versiones de parsers, filas procesadas y errores. \\
 \texttt{agent1\_data\_quality\_summary.json} & Agent1 & Resumen de calidad, cobertura, completitud y coherencia. \\
 \texttt{agent1\_contract\_key\_coverage.parquet} & Agent1 & Cobertura y cruce por \texttt{contract\_key\_canon}. \\
+\texttt{agent1\_source\_coverage\_analysis.md} & Agent1 & Interpretaci{\'o}n de cobertura aditiva, intersecciones y readiness institucional. \\
+\texttt{agent1\_matching\_diagnostics.json} & Agent1 & Intersecciones exactas y candidatos aproximados de matching entre fuentes. \\
 \texttt{agent2\_risk\_flags.parquet} & Agent2 & Red flags activadas por contrato. \\
 \texttt{agent2\_risk\_scores.parquet} & Agent2 & Score y nivel de riesgo por contrato. \\
 \texttt{agent2\_run\_report.json} & Agent2 & Informe de reglas, filas evaluables, distribuci{\'o}n de riesgo y versi{\'o}n de scoring. \\
@@ -1787,6 +1791,8 @@ Tabla~\ref{tab:artefactos_sistema} agrupa los artefactos principales.
 \texttt{agent3\_contract\_metrics.parquet} & Agent3 & M{\'e}tricas relacionales por contrato. \\
 \texttt{agent3\_agent2\_features.parquet} & Agent3 & Variables relacionales consumibles por scoring o explicaci{\'o}n. \\
 \texttt{agent4\_case\_context\_integrated\_demo.json} & Agent4 & Ficha/contexto integrado de caso con evidencias y citas. \\
+\texttt{agent4\_evaluation\_report.md} & Agent4 & Evaluaci{\'o}n de fidelidad, cobertura, trazabilidad y consistencia de citas. \\
+\texttt{benchmark\_report.md} & Benchmark & Evaluaci{\'o}n global por agentes, matriz de alcance y conclusiones acad{\'e}micas. \\
 \texttt{manifest.json} & Batch & Fuentes revisadas, hashes, entradas, salidas, estado y versi{\'o}n de ejecuci{\'o}n. \\
 \bottomrule
 \end{longtable}
@@ -1983,6 +1989,37 @@ proyecto si existe una ejecuci{\'o}n consolidada con datasets adicionales del eq
 metodol{\'o}gica ha sido no inventar resultados y distinguir entre salidas generadas por el sistema,
 validaciones t{\'e}cnicas realizadas y cifras hist{\'o}ricas procedentes de documentos anteriores.
 
+Para reforzar esa delimitaci{\'o}n, la versi{\'o}n final incorpora un benchmark reproducible del
+prototipo. El informe \texttt{benchmark\_report.md} eval{\'u}a 31 m{\'e}tricas distribuidas entre Agent1,
+Agent2, Agent3, Agent4 e integraci{\'o}n. El resultado global fue \texttt{warning}: 28 m{\'e}tricas en
+\texttt{pass}, 1 en \texttt{warning}, 0 en \texttt{fail} y 2 como \texttt{not\_applicable}. La
+advertencia no corresponde a un fallo de ejecuci{\'o}n, sino a la ausencia de intersecciones exactas
+entre fuentes. La Tabla~\ref{tab:alcance_benchmark_tfm} resume qu{\'e} partes quedan implementadas,
+qu{\'e} partes quedan evaluadas y qu{\'e} elementos se mantienen como extensi{\'o}n futura.
+
+{\small
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{2.6cm}>{\raggedright\arraybackslash}p{3.2cm}>{\raggedright\arraybackslash}p{3.5cm}>{\raggedright\arraybackslash}p{3.7cm}@{}}
+\caption{Matriz de alcance evaluado en el benchmark final del TFM}
+\label{tab:alcance_benchmark_tfm}\\
+\toprule
+\textbf{Componente} & \textbf{Estado evaluado} & \textbf{Evidencia} & \textbf{L{\'i}mite o extensi{\'o}n} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Componente} & \textbf{Estado evaluado} & \textbf{Evidencia} & \textbf{L{\'i}mite o extensi{\'o}n} \\
+\midrule
+\endhead
+Agent1 & Implementado y evaluado. & Calidad de campos, duplicados y cobertura interfuente. & Sin matching exacto transversal validado. \\
+Agent2 & Implementado; evaluaci{\'o}n parcial en demo integrada. & Score y red flags trazables. & Falta benchmark estad{\'i}stico amplio con referencia externa. \\
+Agent3 & Implementado y evaluado. & Nodos, aristas, comunidades y cobertura de features. & Validado en demo local; falta escala institucional. \\
+Agent4 & Implementado y evaluado. & Retrieval, citas, trazabilidad y prudencia del lenguaje. & Corpus local/sint{\'e}tico; RAGAS queda futuro. \\
+Integraci{\'o}n y dashboard & Demo integrada evaluada. & Flujo Agent2--Agent3--Agent4 y validaciones internas. & No equivale a despliegue productivo institucional. \\
+\bottomrule
+\end{longtable}
+}
+
 \section{Resultados de ingesta y normalizaci{\'o}n}
 
 La ejecuci{\'o}n documentada del pipeline de Agent1 integra BOE, PLACE y OpenTender para el dominio
@@ -1991,7 +2028,8 @@ Tabla~\ref{tab:resultados_agent1_filas} resume las magnitudes principales recogi
 de ejecuci{\'o}n y artefactos generados por el sistema.
 
 {\small
-\begin{longtable}{p{6.2cm}r p{4.5cm}}
+\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{6.1cm}r >{\raggedright\arraybackslash}p{4.6cm}@{}}
 \caption{Filas observadas en artefactos generados por Agent1}
 \label{tab:resultados_agent1_filas}\\
 \toprule
@@ -2006,8 +2044,8 @@ de ejecuci{\'o}n y artefactos generados por el sistema.
 \texttt{contracts\_boe.parquet} & 96.801 & Registros BOE parseados y normalizados desde el CSV longitudinal. \\
 \texttt{contracts\_boe\_cpv71.parquet} & 8.097 & Subconjunto BOE con CPV~71. \\
 \texttt{contracts\_place\_cpv71.parquet} & 18.831 & Registros PLACE CPV~71 tras parsing y deduplicaci{\'o}n. \\
-\texttt{contracts\_opentender\_2024\_cpv71.parquet} & 25.057 & Registros OpenTender espa{\~n}oles CPV~71 disponibles en la ejecuci{\'o}n. \\
-\texttt{agent2\_contracts\_canonical.parquet} & 51.720 & Universo can{\'o}nico reportado para an{\'a}lisis posterior. \\
+\begin{tabular}[t]{@{}l@{}}\texttt{contracts\_opentender\_2024\_}\\\texttt{cpv71.parquet}\end{tabular} & 25.057 & Registros OpenTender espa{\~n}oles CPV~71 disponibles en la ejecuci{\'o}n. \\
+\begin{tabular}[t]{@{}l@{}}\texttt{agent2\_contracts\_}\\\texttt{canonical.parquet}\end{tabular} & 51.720 & Universo can{\'o}nico reportado para an{\'a}lisis posterior. \\
 \bottomrule
 \end{longtable}
 }
@@ -2040,6 +2078,21 @@ La decisi{\'o}n de no forzar el matching evita falsos positivos de integraci{\'o
 de apoyo a auditor{\'i}a, un cruce incorrecto entre fuentes puede ser m{\'a}s perjudicial que dejar
 constancia de una limitaci{\'o}n.
 
+El diagn{\'o}stico espec{\'i}fico de cobertura entre fuentes generado para el benchmark final trabaja
+con un universo de 3.437 claves can{\'o}nicas: 976 procedentes de BOE, 1.587 de PLACE y 874 de
+OpenTender. Las intersecciones exactas BOE--PLACE, BOE--OpenTender y PLACE--OpenTender son 0. Por
+tanto, la cobertura observada debe interpretarse como \textbf{aditiva por fuente}, no como cobertura
+transversal. Este matiz es central para la robustez del sistema: Agent1 es reproducible y trazable
+por fuente, pero no permite todav{\'i}a afirmar que una misma licitaci{\'o}n haya sido contrastada entre
+plataformas distintas.
+
+Esta ausencia de intersecciones {\'u}tiles se incorpora como resultado metodol{\'o}gico del TFM. La
+integraci{\'o}n de datos abiertos no queda resuelta por llevar distintas fuentes a un esquema com{\'u}n:
+requiere una pol{\'i}tica auditable de identificadores, normalizaci{\'o}n de organismos, comparaci{\'o}n de
+expedientes, ventanas temporales, importes y validaci{\'o}n manual de pares candidato/no-match. En una
+eventual versi{\'o}n institucional, las m{\'e}tricas transversales deber{\'i}an mantenerse como
+exploratorias hasta disponer de esa capa de matching validada.
+
 La Tabla~\ref{tab:metricas_agent1_calidad} recoge las m{\'e}tricas de calidad principales utilizadas
 para interpretar la ingesta y la normalizaci{\'o}n.
 
@@ -2060,7 +2113,7 @@ Errores de parseo BOE & 354 & Reporte Agent1 & Los errores quedan registrados pa
 Registros can{\'o}nicos & 51.720 & Can{\'o}nico Agent2 & El sistema genera una frontera estable para scoring y agentes posteriores. \\
 Cobertura de NIF & Limitada por fuente & Reportes de calidad & La ausencia de identificadores fiscales reduce evaluabilidad y agregaci{\'o}n por adjudicatario. \\
 Coherencia temporal & Parcialmente evaluable & Reportes de calidad & No todas las fuentes contienen fechas suficientes para aplicar reglas temporales. \\
-Intersecciones BOE/PLACE/OpenTender & Conservadoras & Cobertura Agent1 & No se fuerza cruce artificial cuando la clave no permite emparejar con seguridad. \\
+Intersecciones BOE/PLACE/OpenTender & 0 exactas & Diagn{\'o}stico Agent1 & La cobertura es aditiva por fuente; no se acredita triangulaci{\'o}n transversal. \\
 \bottomrule
 \end{longtable}
 }
@@ -2166,10 +2219,40 @@ incluyen un fragmento HTML del pliego con score 0,6 y un fragmento TXT de adjudi
 revisi{\'o}n humana.
 
 La evaluaci{\'o}n local de Agent4 sobre corpus sint{\'e}tico recoge 3 casos evaluados, 2 con evidencia,
-\texttt{expectation\_accuracy=1.0}, \texttt{precision@k} media de 1,0 y
-\texttt{expected\_document\_recall=1.0}. RAGAS queda registrado como \texttt{not\_run}. Estos
-resultados validan la trazabilidad y recuperaci{\'o}n en la versi{\'o}n evaluada del sistema, no el
-rendimiento jur{\'i}dico sobre un corpus real amplio.
+\texttt{expectation\_accuracy=1.0}, \texttt{precision@k} media de 1,0,
+\texttt{expected\_document\_recall=1.0}, trazabilidad media de citas de 1,0, consistencia media de
+contrato de 1,0 y validaci{\'o}n pr{\'a}ctica de 1,0. RAGAS queda registrado como \texttt{not\_run}.
+Estos resultados validan la trazabilidad y recuperaci{\'o}n en la versi{\'o}n evaluada del sistema, no
+el rendimiento jur{\'i}dico sobre un corpus real amplio.
+
+{\small
+\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{3.1cm}>{\raggedright\arraybackslash}p{3.5cm}>{\raggedright\arraybackslash}p{1.8cm}>{\raggedright\arraybackslash}p{4.3cm}@{}}
+\caption{Evaluaci{\'o}n pr{\'a}ctica de Agent4 para fichas trazables}
+\label{tab:evaluacion_practica_agent4_tfm}\\
+\toprule
+\textbf{Dimensi{\'o}n evaluada} & \textbf{M{\'e}trica usada} & \textbf{Resultado} & \textbf{Lectura para el TFM} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Dimensi{\'o}n evaluada} & \textbf{M{\'e}trica usada} & \textbf{Resultado} & \textbf{Lectura para el TFM} \\
+\midrule
+\endhead
+Fidelidad documental & Precisi{\'o}n@k media & 100\,\% & La evidencia recuperada coincide con documentos esperados. \\
+Cobertura documental & Recall documental & 100\,\% & Los documentos esperados aparecen en el contexto recuperado. \\
+Trazabilidad de citas & Cita trazable & 100\,\% & Las citas conservan \texttt{document\_id}, \texttt{chunk\_id} y contrato. \\
+Consistencia del contrato & Contrato consistente & 100\,\% & La evidencia pertenece al contrato consultado. \\
+Prudencia explicativa & Sin fraude no soportado & 100\,\% & La ficha no declara fraude sin soporte documental. \\
+Validaci{\'o}n pr{\'a}ctica & Ficha trazable & 100\,\% & Los casos cumplen las condiciones m{\'i}nimas de ficha trazable. \\
+\bottomrule
+\end{longtable}
+}
+
+La evaluaci{\'o}n anterior es rigurosa como validaci{\'o}n pr{\'a}ctica de una capa documental local: mide
+fidelidad, cobertura, trazabilidad, consistencia y prudencia del lenguaje. Su l{\'i}mite es igualmente
+expl{\'i}cito: no valida correcci{\'o}n jur{\'i}dica, no demuestra generalizaci{\'o}n sobre documentos reales
+heterog{\'e}neos y no eval{\'u}a a{\'u}n RAGAS con volumen representativo. En consecuencia, el LLM local
+se presenta como capa explicativa controlada y no como motor decisor.
 
 El dashboard integrado est{\'a} implementado en \texttt{frontend/agent3\_demo.py}. La validaci{\'o}n
 t{\'e}cnica recoge estado \texttt{ready}, 3 contratos cargados, 11 nodos, 13 aristas, 2 comunidades,
@@ -2185,8 +2268,10 @@ realizada indica:
 \begin{itemize}
   \item \texttt{PYTHONPATH=scr python -m procurewatch.cli doctor}: resultado OK, con PostgreSQL, Neo4j, Qdrant y
   Ollama como servicios opcionales;
-  \item \texttt{PYTHONPATH=scr python -m pytest tests}: 111 pruebas superadas y 1 omitida;
-  \item \texttt{PYTHONPATH=scr python -m ruff check api scr tests frontend}: sin errores;
+  \item \texttt{PYTHONPATH=scr python -m pytest tests}: 115 pruebas superadas y 1 omitida;
+  \item \texttt{PYTHONPATH=scr python -m ruff check scr tests}: sin errores;
+  \item \texttt{PYTHONPATH=scr python -m procurewatch run-benchmark}: 31 m{\'e}tricas evaluadas, con
+  28 en \texttt{pass}, 1 en \texttt{warning}, 0 en \texttt{fail} y 2 como \texttt{not\_applicable};
   \item demo integrada y dashboard Streamlit validados en modo headless con 0 excepciones.
 \end{itemize}
 
@@ -2209,6 +2294,7 @@ Fuentes & Parser BOE, unidades de an{\'a}lisis BOE, OpenTender, PLACE y normaliz
 Agent2 & Reglas, scoring, pipeline estable, RF-01 a RF-06 y reportes de salida. \\
 Agent3 & Construcci{\'o}n de grafo, nodos, aristas, m{\'e}tricas, comunidades, features y carga Neo4j. \\
 Agent4 & Carga documental, chunks, Qdrant, embeddings, flujo RAG, contexto de caso y evaluaci{\'o}n local. \\
+Benchmark & Evaluaci{\'o}n agregada por agente, estados \texttt{pass}/\texttt{warning}/\texttt{fail} y matriz de alcance del TFM. \\
 CLI y batch & Comandos principales, diagn{\'o}stico, ejecuci{\'o}n del prototipo y skip semanal por ausencia de cambios. \\
 \bottomrule
 \end{longtable}
@@ -2219,6 +2305,9 @@ no dispone de etiquetas fiables de fraude confirmado para el conjunto analizado.
 m{\'e}tricas de Agent2 deben describirse como evaluaci{\'o}n exploratoria, de estabilidad, de
 consistencia de reglas y de priorizaci{\'o}n proxy. Este enfoque es metodol{\'o}gicamente correcto:
 resulta preferible declarar el alcance real que presentar una precisi{\'o}n de fraude no verificable.
+El benchmark final refuerza esta misma idea: es riguroso como evaluaci{\'o}n t{\'e}cnica, objetiva y
+reproducible del prototipo, pero no debe confundirse con una validaci{\'o}n estad{\'i}stica de detecci{\'o}n
+de fraude.
 
 \section{Matriz de evidencias de evaluaci{\'o}n}
 \label{sec:matriz_evidencias_evaluacion}
@@ -2248,6 +2337,7 @@ Reports de Agent1 & Fuentes procesadas, filas, errores, calidad y cobertura. & C
 Parquet can{\'o}nico & Existencia de una frontera estable Agent1--Agent2. & Operativo y reproducible. & Depende de la calidad de los campos de origen. \\
 Reports de Agent2 & Flags, scores y distribuci{\'o}n de riesgo en la muestra evaluada. & Cuantitativo/proxy. & No equivale a validaci{\'o}n supervisada contra fraude. \\
 Tests automatizados & Correctitud funcional de parsers, agentes, CLI y batch. & Validaci{\'o}n t{\'e}cnica. & No sustituye validaci{\'o}n por expertos. \\
+Benchmark ProcureWatch & Evaluaci{\'o}n agregada de Agent1, Agent2, Agent3, Agent4 e integraci{\'o}n. & T{\'e}cnico, objetivo y reproducible. & Mantiene \texttt{warning} por matching interfuente; no valida fraude supervisado. \\
 Dashboard headless & Disponibilidad de la interfaz y lectura de KPIs. & Prueba de integraci{\'o}n. & No mide usabilidad con usuarios finales. \\
 Demo integrada Agent2--Agent3--Agent4 & Integraci{\'o}n de scoring, grafo, evidencias y dashboard sobre caso demostrativo. & Evidencia funcional de extremo a extremo. & No es una evaluaci{\'o}n masiva del RAG. \\
 Manifests y hashes & Trazabilidad de entradas, salidas y ejecuciones batch. & Reproducibilidad. & Requiere conservar el estado de ejecuci{\'o}n y rutas asociadas. \\
@@ -2267,11 +2357,11 @@ para que la memoria sea defendible.
 
 La evaluaci{\'o}n de Agent1 se interpreta principalmente como evaluaci{\'o}n de datos. Sus resultados
 son positivos en tres aspectos: el parser BOE presenta una tasa de parseo alta, las fuentes se
-normalizan en artefactos Parquet y el sistema genera reports de calidad. Sin embargo, tambi{\'e}n
-muestra limitaciones relevantes: la completitud OCDS cr{\'i}tica no alcanza el umbral inicial, la
-cobertura de NIF es insuficiente sobre el total y la coherencia temporal solo es evaluable en una
-parte reducida de los registros. En t{\'e}rminos de TFM, Agent1 queda operativo, pero sus resultados
-obligan a no sobredimensionar el alcance de los cruces entre fuentes.
+normalizan en artefactos Parquet y el sistema genera reports de calidad. El diagn{\'o}stico de
+benchmark aporta adem{\'a}s una lectura espec{\'i}fica de cobertura entre fuentes: 3.437 claves
+can{\'o}nicas, cobertura por BOE, PLACE y OpenTender, y 0 intersecciones exactas entre pares de
+fuentes. En t{\'e}rminos de TFM, Agent1 queda operativo, pero sus resultados obligan a no
+sobredimensionar el alcance de los cruces entre fuentes.
 
 La evaluaci{\'o}n de Agent2 se interpreta como evaluaci{\'o}n de reglas y priorizaci{\'o}n. La muestra de
 scoring documentada confirma que el motor genera una puntuaci{\'o}n por contrato y registra las
@@ -2293,7 +2383,10 @@ resultado esperado no es que el LLM descubra fraude, sino que ayude a transforma
 de datos tabulares, red flags y relaciones en una ficha revisable con evidencias y advertencias. La
 calidad de Agent4 depende de tres condiciones: que el corpus contenga fragmentos relevantes, que la
 recuperaci{\'o}n devuelva contexto suficiente y que la generaci{\'o}n no a{\~n}ada afirmaciones sin
-soporte. Cuando estas condiciones no se cumplen, el sistema debe mostrar la limitaci{\'o}n.
+soporte. La evaluaci{\'o}n final mide estas condiciones mediante fidelidad documental, cobertura,
+trazabilidad de citas, consistencia de contrato, ausencia de declaraciones de fraude no soportadas y
+validaci{\'o}n pr{\'a}ctica de la ficha. Cuando estas condiciones no se cumplen, el sistema debe mostrar
+la limitaci{\'o}n.
 
 El dashboard se eval{\'u}a como capa de consumo. Su aportaci{\'o}n principal es ordenar la revisi{\'o}n:
 primero muestra una visi{\'o}n agregada, despu{\'e}s permite seleccionar contratos priorizados y
@@ -2426,7 +2519,7 @@ Agent1 & NIF y fechas incompletas. & Reduce evaluabilidad de algunas m{\'e}trica
 Agent2 & Ausencia de etiquetas de fraude confirmado. & Impide medir precisi{\'o}n supervisada real. & Evaluaci{\'o}n proxy, reglas explicables y revisi{\'o}n humana. \\
 Agent2 & Cat{\'a}logo RF reducido en la versi{\'o}n evaluada. & No cubre todos los patrones planteados inicialmente. & Priorizar RF-01 a RF-06 verificables y documentar extensiones. \\
 Agent3 & Demo relacional limitada por artefactos disponibles. & No permite afirmar escalado completo de grafo. & Features reproducibles y Neo4j opcional para exploraci{\'o}n. \\
-Agent4 & Corpus documental no masivo en la evidencia disponible. & Limita evaluaci{\'o}n RAG cuantitativa. & Ficha demostrable, citas, fallback y advertencias de contexto. \\
+Agent4 & Corpus documental no masivo en la evidencia disponible. & Limita evaluaci{\'o}n RAG cuantitativa. & M{\'e}tricas de fidelidad, cobertura, citas, consistencia y prudencia explicativa. \\
 Dashboard & Validaci{\'o}n headless, no estudio formal de usuarios. & No mide usabilidad institucional completa. & Dise{\~n}o orientado a revisi{\'o}n humana y trazabilidad visible. \\
 Batch & Dependencia de manifests y estado anterior. & Si se pierde estado, se reduce capacidad incremental. & Hashes, modo force y snapshot final reproducible. \\
 \bottomrule
@@ -2511,13 +2604,11 @@ reduce el riesgo de dependencia operativa en la defensa y permite ejecutar tests
 La contrapartida es que algunas capacidades se demuestran como soporte opcional o PoC, no como
 despliegue productivo permanente.
 
-Tambi{\'e}n existe una limitaci{\'o}n de disponibilidad de artefactos. La documentaci{\'o}n t{\'e}cnica
-recoge una demo integrada Agent3--Agent4, pero la carpeta correspondiente no estaba disponible junto
-con los artefactos principales de la ejecuci{\'o}n utilizada para esta versi{\'o}n. Por ello, la memoria
-diferencia entre resultados documentados y artefactos generados por el pipeline que se han utilizado
-como base cuantitativa.
-Si se incorpora un snapshot final consolidado, las cifras cuantitativas deber{\'a}n actualizarse
-con ese snapshot.
+Tambi{\'e}n existe una limitaci{\'o}n de versi{\'o}n de artefactos. La demo integrada y el benchmark final
+est{\'a}n disponibles como evidencias reproducibles, pero proceden de una ejecuci{\'o}n local concreta.
+Por ello, la memoria diferencia entre resultados hist{\'o}ricos de ejecuciones amplias y artefactos
+generados para la validaci{\'o}n final. Si se incorpora un snapshot posterior consolidado, las cifras
+cuantitativas deber{\'a}n actualizarse con ese snapshot, en lugar de mezclar ejecuciones distintas.
 
 \section{Trabajo futuro}
 \label{sec:trabajo_futuro}
@@ -2584,6 +2675,12 @@ soporte documental y t{\'e}cnico. La arquitectura, las limitaciones, las m{\'e}t
 de lote quedaron alineados con los artefactos generados, de forma que cada afirmaci{\'o}n relevante
 puede rastrearse a una salida del sistema o a una decisi{\'o}n de dise{\~n}o documentada.
 
+El benchmark final refuerza esta conclusi{\'o}n con una lectura agregada: 31 m{\'e}tricas evaluadas, 28
+en \texttt{pass}, 1 en \texttt{warning}, 0 en \texttt{fail} y 2 como \texttt{not\_applicable}. El
+{\'u}nico \texttt{warning} corresponde al matching interfuente, no a un fallo de ejecuci{\'o}n. Esta
+separaci{\'o}n permite afirmar que el prototipo es t{\'e}cnicamente funcional y medible, al mismo tiempo
+que mantiene visible la principal limitaci{\'o}n metodol{\'o}gica para una versi{\'o}n institucional.
+
 La quinta conclusi{\'o}n es que el bloque de extensi{\'o}n relacional y documental no qued{\'o} como una
 idea pendiente, sino como una integraci{\'o}n demostrable. Agent~3 y Agent~4 dejaron una demo
 conjunta cerrada, compatible con el contrato can{\'o}nico, la evidencia textual y el \textit{score}
@@ -2618,8 +2715,8 @@ scoring, grafo, recuperaci{\'o}n documental, dashboard y reproducibilidad. La ej
 de Agent~1 genera 51.720 registros can{\'o}nicos; Agent~2 produce puntuaciones explicables mediante
 RF-01 a RF-06; la demo integrada muestra un caso completo con \texttt{risk\_score=0.5}, dos
 se{\~n}ales de riesgo, 11 nodos, 13 relaciones, 2 comunidades, 2 evidencias documentales y 2 citas; y
-la validaci{\'o}n t{\'e}cnica recoge 111 tests superados, 1 omitido y dashboard Streamlit sin
-excepciones en modo headless. El valor central del trabajo se sostiene, por tanto, sobre un flujo
+la validaci{\'o}n t{\'e}cnica recoge 115 tests superados, 1 omitido, benchmark global sin fallos y
+dashboard Streamlit sin excepciones en modo headless. El valor central del trabajo se sostiene, por tanto, sobre un flujo
 operativo implementado, trazable y documentado, sin afirmar detecci{\'o}n autom{\'a}tica de fraude.
 
 %=========================================================
@@ -2801,7 +2898,12 @@ configuraci{\'o}n local.
 \begin{verbatim}
 PYTHONPATH=scr python -m procurewatch.cli doctor
 PYTHONPATH=scr python -m pytest tests
-PYTHONPATH=scr python -m ruff check api scr tests frontend
+PYTHONPATH=scr python -m ruff check scr tests
+PYTHONPATH=scr python -m procurewatch run-benchmark \
+  --processed-dir data/processed_sample \
+  --demo-dir data/processed/agent3_agent4_demo_2026_06_23 \
+  --agent4-evaluation data/processed/agent4_evaluation_report.json \
+  --output-dir data/processed/benchmark
 \end{verbatim}
 
 Para ejecutar los agentes principales:
@@ -2809,6 +2911,8 @@ Para ejecutar los agentes principales:
 \begin{verbatim}
 PYTHONPATH=scr python -m procurewatch.cli run-agent1 --year 2024 --cpv-prefix 71
 PYTHONPATH=scr python -m procurewatch.cli run-agent1 --year 2024 --cpv-prefix 71 --place-download
+PYTHONPATH=scr python -m procurewatch report-agent1-source-diagnostics \
+  --output-dir data/processed_sample --cpv-prefix 71 --year 2024
 PYTHONPATH=scr python -m procurewatch.cli run-agent2-mvp \
   --input data/processed/agent2_contracts_canonical.parquet \
   --output-dir data/processed
