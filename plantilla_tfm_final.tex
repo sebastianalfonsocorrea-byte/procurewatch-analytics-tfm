@@ -439,7 +439,7 @@ Dise{\~n}ar e implementar un motor explicable de red flags basado en literatura 
 \subsection*{OE5 --- M{\'o}dulo de an{\'a}lisis de redes}
 Construir y analizar el grafo empresa-organismo-contrato para calcular comunidades mediante Louvain, variables de centralidad y patrones de concentraci{\'o}n relevantes en el dominio CPV~71. Leiden queda como ampliaci{\'o}n futura.
 
-\textbf{M{\'e}trica:} Artefactos reproducibles de nodos, aristas, comunidades Louvain, m{\'e}tricas y features relacionales, con una demo integrada de 11 nodos, 13 aristas y 2 comunidades.
+\textbf{M{\'e}trica:} Artefactos reproducibles de nodos, aristas, comunidades Louvain, m{\'e}tricas y features relacionales; modularidad $Q>0{,}30$. La muestra evaluada obtiene $Q=0{,}6051129926$ y la demo integrada, con 11 nodos, 13 aristas y 2 comunidades, obtiene $Q=0{,}3165680473$.
 
 \subsection*{OE6 --- M{\'o}dulo NLP y enriquecimiento Documental}
 Implementar un componente documental trazable para cargar contenido HTML o textual, fragmentarlo, recuperar evidencias y generar fichas de caso con citas. La versi{\'o}n evaluada utiliza una ruta local con fallback determinista; Qdrant y Ollama son servicios opcionales, BGE-M3 es una configuraci{\'o}n opcional de embeddings y spaCy queda como marco previsto para una ampliaci{\'o}n de extracci{\'o}n ling{\"u}{\'i}stica.
@@ -536,7 +536,7 @@ El motor de \textit{red flags} (OE4) se diseña inicialmente con tres posibles e
 
 \item Los conjuntos de datos de entrenamiento sean representativos (artículo 10.2). Para una eventual ampliación con PUL, las etiquetas positivas deberían proceder de casos documentados y verificarse su distribución, sin asumir que la ausencia de etiqueta equivale a ausencia de fraude.
 
-\item Se realice una evaluación de la conformidad antes del despliegue (artículo 43). En el ámbito del TFM, esta evaluación se aproxima mediante validación técnica, tests automatizados, métricas de calidad de datos, consistencia de reglas, trazabilidad de salidas y análisis de riesgos documentado. Las métricas supervisadas de precisión, la modularidad objetivo del grafo, la evaluación RAGAS completa y la usabilidad formal quedan reservadas para una validación posterior con datos y usuarios suficientes.
+\item Se realice una evaluación de la conformidad antes del despliegue (artículo 43). En el ámbito del TFM, esta evaluación se aproxima mediante validación técnica, tests automatizados, métricas de calidad de datos, consistencia de reglas, modularidad del grafo, trazabilidad de salidas y análisis de riesgos documentado. Las métricas supervisadas de precisión, la evaluación RAGAS completa y la usabilidad formal quedan reservadas para una validación posterior con datos y usuarios suficientes.
 \end{itemize}
 
 \subsection{Consecuencias del soporte opcional de un LLM local}
@@ -577,7 +577,7 @@ Supervisión humana obligatoria (AI Act) & Interfaz con revisión manual; ningun
 \hline
 Trazabilidad y explicabilidad (AI Act) & Reglas versionadas, registros de ejecución, trazabilidad de datos y código versionado para auditoría técnica. \\
 \hline
-Evaluación de riesgos y conformidad (AI Act) & Evaluación técnica del prototipo mediante tests, métricas de calidad de datos, consistencia de reglas, evaluación proxy del scoring y documentación de limitaciones; precisión supervisada, RAGAS, modularidad objetivo y SUS quedan como objetivos de validación futura. \\
+Evaluación de riesgos y conformidad (AI Act) & Evaluación técnica del prototipo mediante tests, métricas de calidad de datos, consistencia de reglas, modularidad Louvain, evaluación proxy del scoring y documentación de limitaciones; precisión supervisada, RAGAS y SUS quedan como objetivos de validación futura. \\
 \hline
 Datos locales y privacidad (RGPD + AI Act) & Ruta local sin API externa; Ollama es opcional y la demo puede ejecutarse mediante fallback determinista. \\
 \hline
@@ -1979,8 +1979,8 @@ metodol{\'o}gica ha sido no inventar resultados y distinguir entre salidas gener
 validaciones t{\'e}cnicas realizadas y cifras hist{\'o}ricas procedentes de documentos anteriores.
 
 Para reforzar esa delimitaci{\'o}n, la versi{\'o}n final incorpora un benchmark reproducible del
-prototipo. El informe \texttt{benchmark\_report.md} eval{\'u}a 33 m{\'e}tricas distribuidas entre Agent1,
-Agent2, Agent3, Agent4 e integraci{\'o}n. El resultado global fue \texttt{warning}: 30 m{\'e}tricas en
+prototipo. El informe \texttt{benchmark\_report.md} eval{\'u}a 34 m{\'e}tricas distribuidas entre Agent1,
+Agent2, Agent3, Agent4 e integraci{\'o}n. El resultado global fue \texttt{warning}: 31 m{\'e}tricas en
 \texttt{pass}, 1 en \texttt{warning}, 0 en \texttt{fail} y 2 como \texttt{not\_applicable}. La
 advertencia no corresponde a un fallo de ejecuci{\'o}n, sino a la ausencia de intersecciones exactas
 entre fuentes. La Tabla~\ref{tab:alcance_benchmark_tfm} resume qu{\'e} partes quedan implementadas,
@@ -2002,7 +2002,7 @@ qu{\'e} partes quedan evaluadas y qu{\'e} elementos se mantienen como extensi{\'
 \endhead
 Agent1 & Implementado y evaluado. & Calidad de campos, duplicados y cobertura interfuente. & Sin matching exacto transversal validado. \\
 Agent2 & Implementado y evaluado sobre muestra reproducible. & 3.437 scores, evaluabilidad por regla y sensibilidad del 10\,\%. & Falta repetir sobre el can{\'o}nico completo y contrastar con referencia externa. \\
-Agent3 & Implementado y evaluado. & Nodos, aristas, comunidades y cobertura de features. & Validado en demo local; falta escala institucional. \\
+Agent3 & Implementado y evaluado. & Nodos, aristas, comunidades, modularidad y cobertura de features. & Validado en muestra reproducible y demo local; falta escala institucional. \\
 Agent4 & Implementado y evaluado. & Retrieval, citas, trazabilidad y prudencia del lenguaje. & Corpus local/sint{\'e}tico; RAGAS queda futuro. \\
 Integraci{\'o}n y dashboard & Demo integrada evaluada. & Flujo Agent2--Agent3--Agent4 y validaciones internas. & No equivale a despliegue productivo institucional. \\
 \bottomrule
@@ -2257,7 +2257,9 @@ disponible. Los controles no representan contratos ``sin riesgo'', sino referenc
 en las que no se activaron se{\~n}ales con los datos evaluables.
 
 Agent3 se ejecut{\'o} sobre los 3.437 contratos antes de construir las fichas. El grafo resultante
-contiene 7.333 nodos y 16.303 aristas, y publica 3.437 filas de features relacionales. Las diez
+contiene 7.333 nodos y 16.303 aristas, publica 30 comunidades y 3.437 filas de features
+relacionales. La partici{\'o}n Louvain obtiene una modularidad $Q=0{,}6051129926$, superior al
+objetivo metodol{\'o}gico $Q>0{,}30$. Las diez
 fichas combinan estas relaciones con los scores y evidencias congelados del escenario base; Agent3
 no recalcula ni modifica el riesgo. La Tabla~\ref{tab:casos_cualitativos_seleccion} resume la
 selecci{\'o}n observada.
@@ -2353,7 +2355,9 @@ componente conexa y 3 filas de features reutilizables por Agent2 y Agent4. La ma
 11 nodos. La descomposici{\'o}n por tipos es: 2 compradores, 3 contratos, 3 nodos CPV, 1 fuente y 2
 proveedores. Las relaciones generadas son 3 \texttt{AWARDED\_TO}, 3 \texttt{FROM\_SOURCE}, 4
 \texttt{HAS\_CPV} y 3 \texttt{PUBLISHED}. No se registran contratos sin proveedor ni sin CPV en la
-demo integrada.
+demo integrada. La modularidad de su partici{\'o}n Louvain es $Q=0{,}3165680473$, tambi{\'e}n por
+encima del umbral $Q>0{,}30$. Este resultado cuantifica separaci{\'o}n comunitaria en el grafo simple
+no ponderado; no demuestra fraude ni validez jur{\'i}dica de las comunidades.
 
 Agent4 recupera evidencia documental trazable asociada al contrato. Para \texttt{PW-2024-0001},
 recupera dos fragmentos documentales y genera dos citas con \texttt{document\_id},
@@ -2413,11 +2417,11 @@ realizada indica:
 \begin{itemize}
   \item \texttt{PYTHONPATH=scr python -m procurewatch.cli doctor}: resultado OK, con PostgreSQL, Neo4j, Qdrant y
   Ollama como servicios opcionales;
-  \item \texttt{PYTHONPATH=scr python -m pytest tests}: 120 pruebas superadas y 1 omitida en el
+  \item \texttt{PYTHONPATH=scr python -m pytest tests}: 122 pruebas superadas y 1 omitida en el
   entorno Windows sin el extra \texttt{db};
   \item \texttt{PYTHONPATH=scr python -m ruff check api scr tests frontend}: sin errores;
-  \item \texttt{PYTHONPATH=scr python -m procurewatch.cli run-benchmark}: 33 m{\'e}tricas evaluadas, con
-  30 en \texttt{pass}, 1 en \texttt{warning}, 0 en \texttt{fail} y 2 como \texttt{not\_applicable};
+  \item \texttt{PYTHONPATH=scr python -m procurewatch.cli run-benchmark}: 34 m{\'e}tricas evaluadas, con
+  31 en \texttt{pass}, 1 en \texttt{warning}, 0 en \texttt{fail} y 2 como \texttt{not\_applicable};
   \item demo integrada y dashboard Streamlit validados en modo headless con 0 excepciones.
 \end{itemize}
 
@@ -2438,7 +2442,7 @@ La Tabla~\ref{tab:tests_resumen} resume la cobertura funcional de los tests exis
 Agent1 & Pipeline, can{\'o}nico, calidad, esquema anal{\'i}tico, cobertura, PostgreSQL y cat{\'a}logo de compradores. \\
 Fuentes & Parser BOE, unidades de an{\'a}lisis BOE, OpenTender, PLACE y normalizaci{\'o}n de entradas. \\
 Agent2 & Reglas, scoring, pipeline estable, RF-01 a RF-06 y reportes de salida. \\
-Agent3 & Construcci{\'o}n de grafo, nodos, aristas, m{\'e}tricas, comunidades, features y carga Neo4j. \\
+Agent3 & Construcci{\'o}n de grafo, nodos, aristas, m{\'e}tricas, comunidades, modularidad, features y carga Neo4j. \\
 Agent4 & Carga documental, chunks, retrieval, citas, contexto de caso, fallback determinista e integraciones opcionales. \\
 Fichas cualitativas & Selecci{\'o}n 5/3/2, empates, controles, evidencia por flag, relaciones y ausencia documental. \\
 Benchmark & Evaluaci{\'o}n agregada por agente, estados \texttt{pass}/\texttt{warning}/\texttt{fail} y matriz de alcance del TFM. \\
@@ -2483,6 +2487,7 @@ cifras nuevas, sino ordenar qu{\'e} tipo de afirmaci{\'o}n puede defenderse con 
 Reports de Agent1 & Fuentes procesadas, filas, errores, calidad y cobertura. & Cuantitativo sobre la ejecuci{\'o}n disponible. & No resuelve por s{\'i} solo la falta de intersecciones entre fuentes. \\
 Parquet can{\'o}nico & Existencia de una frontera estable Agent1--Agent2. & Operativo y reproducible. & Depende de la calidad de los campos de origen. \\
 Reports de Agent2 & Flags, scores y distribuci{\'o}n de riesgo en la muestra evaluada. & Cuantitativo/proxy. & No equivale a validaci{\'o}n supervisada contra fraude. \\
+Reports de Agent3 & Grafo, partici{\'o}n Louvain y modularidad $Q=0{,}6051129926$ en la muestra. & Cuantitativo sobre estructura relacional. & Q no valida fraude ni significado jur{\'i}dico de las comunidades. \\
 Diez fichas cualitativas & Priorizaci{\'o}n 5/3/2, evidencia completa de 21 flags y contexto relacional. & Cualitativo/proxy sobre la muestra. & Sin etiquetas, revisi{\'o}n experta ni documentos asociados en el corpus actual. \\
 Tests automatizados & Correctitud funcional de parsers, agentes, CLI y batch. & Validaci{\'o}n t{\'e}cnica. & No sustituye validaci{\'o}n por expertos. \\
 Benchmark ProcureWatch & Evaluaci{\'o}n agregada de Agent1, Agent2, Agent3, Agent4 e integraci{\'o}n. & T{\'e}cnico, objetivo y reproducible. & Mantiene \texttt{warning} por matching interfuente; no valida fraude supervisado. \\
@@ -2524,7 +2529,10 @@ can{\'o}nico, sino que lo proyecta en una estructura de relaciones. Por ello, su
 leerse como contexto: grado, comunidad o recurrencia ayudan a explicar patrones, pero no son
 evidencia aut{\'o}noma de irregularidad. Esta precauci{\'o}n es importante porque, en contrataci{\'o}n
 p{\'u}blica, la centralidad puede deberse a especializaci{\'o}n t{\'e}cnica, tama{\~n}o empresarial o
-presencia territorial leg{\'i}tima.
+presencia territorial leg{\'i}tima. La modularidad observada, $Q=0{,}6051129926$ en la muestra y
+$Q=0{,}3165680473$ en la demo, supera el objetivo $Q>0{,}30$ y permite afirmar que Louvain encuentra
+una partici{\'o}n con estructura comunitaria cuantificable en ambos grafos evaluados. No permite
+atribuir una interpretaci{\'o}n irregular a esas comunidades sin evidencia adicional.
 
 La evaluaci{\'o}n de Agent4 se interpreta como evaluaci{\'o}n documental y de explicabilidad. El
 resultado esperado no es que el LLM descubra fraude, sino que ayude a transformar una combinaci{\'o}n
@@ -2624,7 +2632,7 @@ Esquema OCDS adaptado & Campos m{\'i}nimos implementados en \texttt{analytical\_
 PostgreSQL & Persistencia anal{\'i}tica de Agent1 implementada. & Parcial para el conjunto multiagente completo. \\
 Red flags y scoring & RF-01 a RF-06 implementadas en la versi{\'o}n evaluada; scoring por contrato. & Cumplido para el prototipo; RF adicionales y scoring agregado por adjudicatario quedan como extensiones. \\
 Isolation Forest y PU Learning & Enfoque contemplado como comparativa deseable, sin resultado final verificable en los artefactos disponibles de la versi{\'o}n de cierre. & No se presenta como validaci{\'o}n cerrada si no hay artefacto verificable. \\
-Grafo y comunidades & Agent3 implementa grafo, m{\'e}tricas, Louvain y features; Neo4j opcional. & Cumplido como an{\'a}lisis relacional reproducible. \\
+Grafo y comunidades & Agent3 implementa grafo, m{\'e}tricas, Louvain, modularidad y features; Neo4j opcional. & Cumplido como an{\'a}lisis relacional reproducible; $Q>0{,}30$ en muestra y demo. \\
 Neo4j & Carga opcional implementada. & Servicio no obligatorio para la demo local. \\
 RAG documental & Agent4 implementa corpus, chunks, retrieval, contexto de caso y fallback. & Cumplido como componente documental del prototipo, no como evaluaci{\'o}n masiva. \\
 Qdrant y Ollama & Soportados como servicios opcionales. & Dise{\~n}o flexible: la demo no queda bloqueada por servicios externos. \\
@@ -2666,7 +2674,7 @@ Agent1 & Heterogeneidad BOE/PLACE/OpenTender y falta de intersecciones por clave
 Agent1 & NIF y fechas incompletas. & Reduce evaluabilidad de algunas m{\'e}tricas de calidad. & Marcar no evaluable y separar validez cuando el dato est{\'a} presente. \\
 Agent2 & Ausencia de etiquetas de fraude confirmado. & Impide medir precisi{\'o}n supervisada real. & Evaluaci{\'o}n proxy, reglas explicables y revisi{\'o}n humana. \\
 Agent2 & Cat{\'a}logo RF reducido en la versi{\'o}n evaluada. & No cubre todos los patrones planteados inicialmente. & Priorizar RF-01 a RF-06 verificables y documentar extensiones. \\
-Agent3 & Demo relacional limitada por artefactos disponibles. & No permite afirmar escalado completo de grafo. & Features reproducibles y Neo4j opcional para exploraci{\'o}n. \\
+Agent3 & Muestra relacional menor que el can{\'o}nico completo. & No permite afirmar escalado institucional ni significado sustantivo de las comunidades. & Features reproducibles, modularidad cuantificada y Neo4j opcional para exploraci{\'o}n. \\
 Agent4 & Corpus documental no masivo en la evidencia disponible. & Limita evaluaci{\'o}n RAG cuantitativa. & M{\'e}tricas de fidelidad, cobertura, citas, consistencia y prudencia explicativa. \\
 Dashboard & Validaci{\'o}n headless, no estudio formal de usuarios. & No mide usabilidad institucional completa. & Dise{\~n}o orientado a revisi{\'o}n humana y trazabilidad visible. \\
 Batch & Dependencia de manifests y estado anterior. & Si se pierde estado, se reduce capacidad incremental. & Hashes, modo force y criterio metodol{\'o}gico de snapshot final. \\
@@ -2824,11 +2832,17 @@ soporte documental y t{\'e}cnico. La arquitectura, las limitaciones, las m{\'e}t
 de lote quedaron alineados con los artefactos generados, de forma que cada afirmaci{\'o}n relevante
 puede rastrearse a una salida del sistema o a una decisi{\'o}n de dise{\~n}o documentada.
 
-El benchmark final refuerza esta conclusi{\'o}n con una lectura agregada: 33 m{\'e}tricas evaluadas, 30
+El benchmark final refuerza esta conclusi{\'o}n con una lectura agregada: 34 m{\'e}tricas evaluadas, 31
 en \texttt{pass}, 1 en \texttt{warning}, 0 en \texttt{fail} y 2 como \texttt{not\_applicable}. El
 {\'u}nico \texttt{warning} corresponde al matching interfuente, no a un fallo de ejecuci{\'o}n. Esta
 separaci{\'o}n permite afirmar que el prototipo es t{\'e}cnicamente funcional y medible, al mismo tiempo
 que mantiene visible la principal limitaci{\'o}n metodol{\'o}gica para una versi{\'o}n institucional.
+
+La evaluaci{\'o}n relacional convierte la existencia de comunidades en un resultado cuantitativo:
+Agent~3 obtiene $Q=0{,}6051129926$ en el grafo de la muestra y $Q=0{,}3165680473$ en la demo
+integrada. Ambos valores superan el objetivo $Q>0{,}30$. Esta evidencia respalda la calidad
+estructural de la partici{\'o}n Louvain en los grafos evaluados, sin convertir las comunidades en
+prueba de fraude ni extrapolar el resultado al can{\'o}nico completo.
 
 La evaluaci{\'o}n cualitativa de diez fichas ampl{\'i}a esa evidencia: cinco casos de score m{\'a}ximo,
 tres de riesgo medio y dos controles conservaron trazabilidad de fuente y relaciones; las 21
@@ -2870,10 +2884,11 @@ En conjunto, el TFM cerr{\'o} un prototipo coherente de extremo a extremo: inges
 scoring, grafo, recuperaci{\'o}n documental, dashboard y reproducibilidad. La ejecuci{\'o}n documentada
 de Agent~1 genera 51.720 registros can{\'o}nicos; Agent~2 produce puntuaciones explicables mediante
 RF-01 a RF-06; la demo integrada muestra un caso completo con \texttt{risk\_score=0.5}, dos
-se{\~n}ales de riesgo, 11 nodos, 13 relaciones, 2 comunidades, 2 evidencias documentales y 2 citas; y
+se{\~n}ales de riesgo, 11 nodos, 13 relaciones, 2 comunidades, modularidad $Q=0{,}3165680473$, 2
+evidencias documentales y 2 citas; y
 la evaluaci{\'o}n cualitativa publica diez fichas con composici{\'o}n 5/3/2 y evidencia completa para
 21 activaciones de reglas;
-la validaci{\'o}n t{\'e}cnica recoge 120 tests superados y 1 omitido por una dependencia opcional,
+la validaci{\'o}n t{\'e}cnica recoge 122 tests superados y 1 omitido por una dependencia opcional,
 benchmark global sin fallos y
 dashboard Streamlit sin excepciones en modo headless. El valor central del trabajo se sostiene, por tanto, sobre un flujo
 operativo implementado, trazable y documentado, sin afirmar detecci{\'o}n autom{\'a}tica de fraude.
