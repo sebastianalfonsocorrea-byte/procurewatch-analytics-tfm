@@ -1,0 +1,100 @@
+\shorthandoff{<>}
+\begin{tikzpicture}[
+  font=\small,
+  >=Latex,
+  mvp/.style={
+    draw,
+    rounded corners=2pt,
+    align=center,
+    minimum width=2.35cm,
+    minimum height=0.92cm,
+    fill=blue!8
+  },
+  artifact/.style={
+    draw,
+    rounded corners=2pt,
+    align=center,
+    minimum width=2.55cm,
+    minimum height=0.92cm,
+    fill=green!10
+  },
+  optional/.style={
+    draw,
+    dashed,
+    rounded corners=2pt,
+    align=center,
+    minimum width=2.05cm,
+    minimum height=0.78cm,
+    fill=gray!10
+  },
+  source/.style={
+    draw,
+    rounded corners=2pt,
+    align=center,
+    minimum width=1.55cm,
+    minimum height=0.78cm,
+    fill=orange!12
+  },
+  output/.style={
+    draw,
+    rounded corners=2pt,
+    align=center,
+    minimum width=2.35cm,
+    minimum height=0.92cm,
+    fill=purple!10
+  },
+  line/.style={->, thick},
+  optline/.style={->, dashed, gray!70}
+]
+
+% Fuentes
+\node[source] (boe) {BOE};
+\node[source, below=0.32cm of boe] (place) {PLACE};
+\node[source, below=0.32cm of place] (opentender) {OpenTender};
+\node[draw, rounded corners=3pt, fit=(boe)(place)(opentender),
+      inner sep=0.18cm, label={[font=\bfseries]above:Fuentes externas}] (sources) {};
+
+% Flujo principal
+\node[mvp, right=1.0cm of place] (agent1) {Agent1\\Ingesta y\\normalizacion};
+\node[artifact, right=0.85cm of agent1] (canonical) {Parquet canonico\\reports\\manifests};
+\node[mvp, right=0.85cm of canonical] (agent2) {Agent2\\Red flags\\scoring};
+\node[mvp, right=0.78cm of agent2] (agent3) {Agent3\\Grafo y\\comunidades};
+\node[mvp, right=0.78cm of agent3] (agent4) {Agent4\\Evidencias\\RAG};
+\node[output, right=0.78cm of agent4] (dashboard) {Dashboard\\Streamlit};
+\node[output, right=0.78cm of dashboard] (human) {Revision\\humana};
+
+\draw[line] (sources.east) -- (agent1.west);
+\draw[line] (agent1) -- (canonical);
+\draw[line] (canonical) -- (agent2);
+\draw[line] (agent2) -- (agent3);
+\draw[line] (agent3) -- (agent4);
+\draw[line] (agent4) -- (dashboard);
+\draw[line] (dashboard) -- (human);
+
+% Capa transversal
+\node[artifact, below=1.08cm of canonical, minimum width=7.1cm] (batch)
+  {CLI / batch / manifests / hashes / snapshot o freeze reproducible};
+\draw[line] (batch.north) -- (canonical.south);
+\draw[line] (batch.north east) -- (agent2.south);
+\draw[line] (batch.north west) -- (agent1.south);
+
+% Servicios opcionales
+\node[optional, above=1.1cm of canonical] (postgres) {PostgreSQL\\opcional};
+\node[optional, above=1.1cm of agent3] (neo4j) {Neo4j\\opcional};
+\node[optional, above=1.1cm of agent4] (qdrant) {Qdrant\\opcional};
+\node[optional, above=1.1cm of dashboard] (ollama) {Ollama\\opcional};
+
+\draw[optline] (agent1.north) -- (postgres.south);
+\draw[optline] (agent3.north) -- (neo4j.south);
+\draw[optline] (agent4.north) -- (qdrant.south);
+\draw[optline] (agent4.north east) -- (ollama.south west);
+
+% Leyenda
+\node[source, below=0.95cm of batch, minimum width=2.2cm] (legsrc) {Fuente};
+\node[mvp, right=0.35cm of legsrc, minimum width=2.2cm] (legmvp) {MVP obligatorio};
+\node[artifact, right=0.35cm of legmvp, minimum width=2.2cm] (legart) {Artefacto};
+\node[optional, right=0.35cm of legart, minimum width=2.2cm] (legopt) {Servicio opcional};
+\node[output, right=0.35cm of legopt, minimum width=2.2cm] (legout) {Salida humana};
+
+\end{tikzpicture}
+\shorthandon{<>}
