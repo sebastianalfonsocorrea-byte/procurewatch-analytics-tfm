@@ -432,22 +432,23 @@ Implementar un \textit{pipeline} reproducible de descarga, limpieza, normalizaci
 \textbf{M{\'e}trica:} Pipeline ejecutable en Python\,+\,Pandas\,+\,DuckDB; completitud OCDS $>$\,90\,\%; coherencia temporal $>$\,98\,\%; tiempo de ejecuci{\'o}n $<$\,2\,h.
 
 \subsection*{OE4 --- Desarrollo del motor de red flags}
-Dise{\~n}ar e implementar m{\'i}nimo 15 indicadores de red flags basados en literatura \cite{OCP2024RedFlags,Fazekas2020DIGIWHIST}, complementados con Isolation Forest y Positive-Unlabeled Learning para scoring de riesgo por contrato y por adjudicatario.
+Dise{\~n}ar e implementar un motor explicable de red flags basado en literatura \cite{OCP2024RedFlags,Fazekas2020DIGIWHIST}, con reglas deterministas para priorizar contratos y variables relacionales que contextualicen la recurrencia y la concentraci{\'o}n.
 
-\textbf{M{\'e}trica:} M{\'i}nimo 15 indicadores (RF-01 a RF-15) documentados con umbral y l{\'o}gica; precisi{\'o}n $>$\,70\,\% en casos con ground truth parcial; comparativa de tres enfoques documentada.
+\textbf{M{\'e}trica:} Seis indicadores (RF-01 a RF-06) implementados con l{\'o}gica trazable, flags y scores por contrato y reporte de ejecuci{\'o}n; RF-07 a RF-15, Isolation Forest y Positive-Unlabeled Learning quedan como extensiones.
 
 \subsection*{OE5 --- M{\'o}dulo de an{\'a}lisis de redes}
-Construir y analizar el grafo bipartito empresa-organismo-contrato para detectar comunidades (Leiden), patrones de centralidad at{\'i}picos y posibles conexiones societarias relevantes en el dominio CPV~71.
+Construir y analizar el grafo empresa-organismo-contrato para calcular comunidades mediante Louvain, variables de centralidad y patrones de concentraci{\'o}n relevantes en el dominio CPV~71. Leiden queda como ampliaci{\'o}n futura.
 
-\textbf{M{\'e}trica:} Grafo con m{\'i}nimo 2.031 nodos empresa y 394 organismos CPV~71; modularidad $Q\,>\,0.30$; m{\'i}nimo 5 patrones de concentraci{\'o}n at{\'i}pica; correlaci{\'o}n red-flags vs centralidad $\geq$\,0.45.
+\textbf{M{\'e}trica:} Artefactos reproducibles de nodos, aristas, comunidades Louvain, m{\'e}tricas y features relacionales, con una demo integrada de 11 nodos, 13 aristas y 2 comunidades.
 
 \subsection*{OE6 --- M{\'o}dulo NLP y enriquecimiento Documental}
-Implementar un sistema de extracci{\'o}n de informaci{\'o}n estructurada sobre anuncios de licitaci{\'o}n del BOE y pliegos alojados en PLACE para el dominio CPV 71, mediante web scraping (BeautifulSoup), NER en español (spaCy) y generaci{\'o}n de fichas explicativas con LLM local. El planteamiento inicial consideraba Qwen3-7B; la versi{\'o}n de cierre adopta Qwen3-8B por disponibilidad y capacidad local.
-\textbf{M{\'e}trica:} Corpus procesado de m{\'i}nimo 500 anuncios del BOE correspondientes a contratos adjudicados del CPV 71; extracci{\'o}n exitosa de criterios de adjudicaci{\'o}n y certificaciones en > 70\% de los casos; ficha explicativa generada con claridad $\geq$\,3.5/5 (Likert).
+Implementar un componente documental trazable para cargar contenido HTML o textual, fragmentarlo, recuperar evidencias y generar fichas de caso con citas. La versi{\'o}n evaluada utiliza una ruta local con fallback determinista; Qdrant y Ollama son servicios opcionales, BGE-M3 es una configuraci{\'o}n opcional de embeddings y spaCy queda como marco previsto para una ampliaci{\'o}n de extracci{\'o}n ling{\"u}{\'i}stica.
+
+\textbf{M{\'e}trica:} Flujo demostrable de corpus, chunks, retrieval, contexto y citas; la demo integrada recupera 2 evidencias y genera 2 citas sin requerir servicios externos.
 
 
 \subsection*{OE7 --- Desarrollo del \textit{front-end} anal{\'i}tico}
-Construir una interfaz web interactiva, basada en Streamlit y visualizaciones complementarias, con grafo de relaciones, panel de indicadores de riesgo, \textit{timeline} de evoluci{\'o}n temporal y ficha explicativa de caso generada con LLM local. Sigma.js queda como opci{\'o}n de extensi{\'o}n para grafos web de mayor escala.
+Construir una interfaz web interactiva, basada en Streamlit y visualizaciones complementarias, con grafo de relaciones, panel de indicadores de riesgo, \textit{timeline} de evoluci{\'o}n temporal y ficha explicativa de caso respaldada por evidencias. Sigma.js queda como opci{\'o}n de extensi{\'o}n para grafos web de mayor escala.
 
 \textbf{M{\'e}trica:} SUS $>$\,68; tiempo medio para documentar un caso de riesgo $<$\,5\,min; ficha explicativa con claridad $\geq$\,3.5/5 (Likert).
 
@@ -538,9 +539,9 @@ El motor de \textit{red flags} (OE4) se diseña inicialmente con tres posibles e
 \item Se realice una evaluación de la conformidad antes del despliegue (artículo 43). En el ámbito del TFM, esta evaluación se aproxima mediante validación técnica, tests automatizados, métricas de calidad de datos, consistencia de reglas, trazabilidad de salidas y análisis de riesgos documentado. Las métricas supervisadas de precisión, la modularidad objetivo del grafo, la evaluación RAGAS completa y la usabilidad formal quedan reservadas para una validación posterior con datos y usuarios suficientes.
 \end{itemize}
 
-\subsection{Consecuencias del uso de un LLM local}
+\subsection{Consecuencias del soporte opcional de un LLM local}
 
-El AI Act exime de ciertos requisitos a los sistemas de IA de «uso libre» (artículo 2.6), pero no a los de alto riesgo. Sin embargo, el empleo de un \textbf{LLM local} con funciones estrictamente auxiliares (extraer entidades, estructurar fichas, no tomar decisiones) reduce la superficie de riesgo. En la versión de cierre se adopta Qwen3-8B vía Ollama. Se siguen las siguientes buenas prácticas:
+El AI Act exime de ciertos requisitos a los sistemas de IA de «uso libre» (artículo 2.6), pero no a los de alto riesgo. El prototipo puede utilizar un \textbf{LLM local} con funciones estrictamente auxiliares para estructurar fichas, sin intervenir en el score ni tomar decisiones. Qwen3-8B v{\'i}a Ollama se contempla como soporte opcional; la demo evaluada emplea el fallback determinista de Agent4 y no depende del modelo. Cuando se active la generaci{\'o}n local, se aplican las siguientes buenas pr{\'a}cticas:
 
 \begin{itemize}
 \item El LLM no se \textit{fine-tune} con datos de contratación sensibles; se usa con \textit{prompting few-shot} controlado.
@@ -572,13 +573,13 @@ Transparencia activa (LCSP, Ley 19/2013) & \textit{Pipeline} de datos abiertos (
 \hline
 Minimización y limitación de finalidad (RGPD) & No se tratan datos personales superfluos; \textit{scores} solo para priorización, no para denegación de contratos. \\
 \hline
-Supervisión humana obligatoria (AI Act) & Interfaz con revisión manual; ninguna acción automática; generación de fichas explicativas con LLM local. \\
+Supervisión humana obligatoria (AI Act) & Interfaz con revisión manual; ninguna acción automática; fichas explicativas trazables con fallback determinista y generaci{\'o}n local opcional. \\
 \hline
 Trazabilidad y explicabilidad (AI Act) & Reglas versionadas, registros de ejecución, trazabilidad de datos y código versionado para auditoría técnica. \\
 \hline
 Evaluación de riesgos y conformidad (AI Act) & Evaluación técnica del prototipo mediante tests, métricas de calidad de datos, consistencia de reglas, evaluación proxy del scoring y documentación de limitaciones; precisión supervisada, RAGAS, modularidad objetivo y SUS quedan como objetivos de validación futura. \\
 \hline
-Datos locales y privacidad (RGPD + AI Act) & LLM local v{\'i}a Ollama; ninguna API externa; todo el procesamiento en infraestructura local. \\
+Datos locales y privacidad (RGPD + AI Act) & Ruta local sin API externa; Ollama es opcional y la demo puede ejecutarse mediante fallback determinista. \\
 \hline
 \end{tabular}
 \end{table}
@@ -704,14 +705,14 @@ fueran resultados cerrados. La memoria adopta una posici{\'o}n intermedia: recon
 ampliable, pero defiende como resultado principal aquello que la versi{\'o}n de cierre permite
 ejecutar, verificar y explicar.
 
-\section{Stack tecnol{\'o}gico definitivo}
+\section{Stack tecnol{\'o}gico de la versi{\'o}n evaluada}
 \label{sec:stack_definitivo}
 
-La selección tecnológica prioriza cuatro criterios: ejecución local, reproducibilidad académica, ecosistema abierto y adecuación al problema de contratación pública. La Tabla~\ref{tab:stack_tecnologico} resume el stack tecnológico definitivo del prototipo.
+La selección tecnológica prioriza cuatro criterios: ejecución local, reproducibilidad académica, ecosistema abierto y adecuación al problema de contratación pública. La Tabla~\ref{tab:stack_tecnologico} distingue las tecnologías utilizadas en la versión evaluada de las integraciones opcionales.
 
 {\small
 \begin{longtable}{p{3.1cm}p{4.1cm}p{6.1cm}}
-\caption{Stack tecnol{\'o}gico definitivo de ProcureWatch Analytics}
+\caption{Stack tecnol{\'o}gico implementado y extensiones opcionales de ProcureWatch Analytics}
 \label{tab:stack_tecnologico}\\
 \toprule
 \textbf{Capa} & \textbf{Tecnolog{\'i}a elegida} & \textbf{Justificaci{\'o}n} \\
@@ -726,11 +727,11 @@ Procesamiento tabular & pandas, DuckDB y Polars \cite{DuckDBOfficial,PolarsOffic
 Persistencia relacional & PostgreSQL \cite{PostgreSQLOfficial} & Base relacional robusta para contratos, adjudicatarios, organismos, indicadores, scores y trazabilidad de ejecuciones. \\
 Grafo anal{\'i}tico & Neo4j Community y NetworkX \cite{Neo4jOfficial,NetworkXPython} & Neo4j facilita consulta y exploraci{\'o}n del grafo; NetworkX permite reproducir m{\'e}tricas y experimentos en scripts Python. \\
 Motor de red flags & Python, reglas OCDS y soporte de comparativa con scikit-learn \cite{IsolationForestSklearn,OCP2024RedFlags} & La versi{\'o}n evaluada prioriza reglas expl{\'i}citas y trazables; Isolation Forest se conserva como comparativa o extensi{\'o}n no supervisada. \\
-Web scraping y parsing documental & BeautifulSoup y spaCy \cite{Richardson2024BeautifulSoup,SpaCyOfficial} & Extraen informaci{\'o}n desde anuncios HTML, p{\'a}ginas p{\'u}blicas y contenido textual estructurado, con menor complejidad operativa que el tratamiento de documentos escaneados. \\
-NLP cl{\'a}sico & spaCy \cite{SpaCyOfficial} & Adecuado para tokenizaci{\'o}n, NER, normalizaci{\'o}n ling{\"u}{\'i}stica y reglas de extracci{\'o}n en espa{\~n}ol. \\
-Embeddings & BGE-M3 \cite{BGEAM3Embeddings} & Modelo multiling{\"u}e adecuado para recuperaci{\'o}n sem{\'a}ntica sobre documentos en espa{\~n}ol y terminolog{\'i}a t{\'e}cnica. \\
-Vector store & Qdrant \cite{QdrantOfficial} & Base vectorial local para indexar fragmentos documentales y recuperar contexto por contrato o adjudicatario. \\
-LLM local & \textbf{Qwen3-8B v{\'i}a Ollama} \cite{AlibabaQwen3,Qwen3TechnicalReport,OllamaOfficial} & Modelo de 8.2B par{\'a}metros, licencia Apache-2.0, soporte multiling{\"u}e, contexto amplio y capacidades de razonamiento/uso de herramientas. Se adopta para generaci{\'o}n de fichas explicables, no para decidir fraude. \\
+Web scraping y parsing documental & BeautifulSoup y fallback HTML \cite{Richardson2024BeautifulSoup} & La versi{\'o}n evaluada carga contenido HTML o textual y conserva una ruta determinista; no incluye scraping masivo ni descarga autom{\'a}tica de pliegos. \\
+NLP cl{\'a}sico & spaCy como extensi{\'o}n prevista \cite{SpaCyOfficial} & La tokenizaci{\'o}n, NER y extracci{\'o}n jur{\'i}dica compleja no forman un pipeline cerrado en el MVP. \\
+Embeddings & BGE-M3 como configuraci{\'o}n opcional \cite{BGEAM3Embeddings} & Modelo previsto para recuperaci{\'o}n sem{\'a}ntica cuando se activa la ruta de embeddings; no es requisito de la demo final. \\
+Vector store & Qdrant opcional \cite{QdrantOfficial} & Soporte local para indexaci{\'o}n vectorial; la recuperaci{\'o}n evaluada dispone de fallback sin este servicio. \\
+LLM local & Qwen3-8B v{\'i}a Ollama, opcional \cite{AlibabaQwen3,Qwen3TechnicalReport,OllamaOfficial} & Soporte de generaci{\'o}n local para fichas explicativas; el flujo evaluado puede producir una salida determinista y no utiliza el LLM para decidir el score. \\
 Orquestaci{\'o}n multiagente & CLI, batch y dise{\~n}o compatible con LangGraph/LangChain \cite{LangChain2024LangGraph,LangChainOfficial} & La versi{\'o}n evaluada se reproduce mediante comandos y batch; LangGraph/LangChain se documentan como soporte de orquestaci{\'o}n ampliable. \\
 API de servicio & FastAPI como extensi{\'o}n prevista \cite{FastAPIOfficial} & No es requisito de ejecuci{\'o}n de la versi{\'o}n evaluada; se reserva para exponer consultas y fichas en una versi{\'o}n de servicio. \\
 Evaluaci{\'o}n RAG & RAGAS como marco de referencia \cite{RAGASOfficial} & La evaluaci{\'o}n disponible es local/proxy; RAGAS queda para evaluaciones documentales con corpus mayor y artefactos suficientes. \\
@@ -740,16 +741,16 @@ Reproducibilidad & Docker Compose, Git y scripts parametrizados \cite{DockerComp
 \end{longtable}
 }
 
-La decisi{\'o}n de usar \textbf{Qwen3-8B} responde a una restricci{\'o}n pr{\'a}ctica: el TFM requiere un modelo local suficientemente capaz para explicar casos y sintetizar contexto documental, pero no debe depender de APIs externas ni de infraestructura de entrenamiento intensivo. Seg{\'u}n la ficha oficial del modelo, Qwen3-8B es un modelo causal de 8.2B par{\'a}metros con soporte multiling{\"u}e, contexto nativo de 32.768 tokens y licencia Apache-2.0 \cite{AlibabaQwen3}. En ProcureWatch se ejecutar{\'a} mediante \textbf{Ollama}, lo que simplifica la instalaci{\'o}n local, permite reproducir experimentos, reduce la exposici{\'o}n de documentos a servicios externos y facilita una defensa t{\'e}cnica coherente con el RGPD y el AI Act.
+Qwen3-8B se conserva como opci{\'o}n de generaci{\'o}n local para explicar casos y sintetizar contexto documental. Seg{\'u}n la ficha oficial, es un modelo causal de 8.2B par{\'a}metros con soporte multiling{\"u}e, contexto nativo de 32.768 tokens y licencia Apache-2.0 \cite{AlibabaQwen3}. ProcureWatch puede ejecutarlo mediante Ollama cuando el servicio est{\'a} disponible, pero esta ruta no es obligatoria: Agent4 mantiene un fallback determinista que permite reproducir la demo sin APIs externas ni infraestructura adicional.
 
 \section{Justificaci{\'o}n del uso de IA y LLM}
 \label{sec:justificacion_ia_llm_cap6}
 
 El uso de IA en ProcureWatch no se justifica por sustituir el juicio experto, sino por resolver dos problemas t{\'e}cnicos que no se abordan adecuadamente con consultas relacionales simples. En primer lugar, la contrataci{\'o}n p{\'u}blica combina variables estructuradas con texto administrativo heterog{\'e}neo: anuncios, pliegos, resoluciones, memorias justificativas y criterios de adjudicaci{\'o}n. En segundo lugar, la detecci{\'o}n temprana de riesgo requiere relacionar se{\~n}ales tabulares, patrones de red y evidencia documental de forma explicable.
 
-Por ello, el prototipo adopta un enfoque de IA \textbf{h{\'i}brido y controlado}. Las reglas OCDS, los modelos estad{\'i}sticos y las m{\'e}tricas de red calculan variables verificables; Qwen3-8B se reserva para tareas ling{\"u}{\'i}sticas: extracci{\'o}n asistida de informaci{\'o}n, resumen de documentos, generaci{\'o}n de fichas explicativas y reformulaci{\'o}n de evidencias recuperadas. Esta separaci{\'o}n permite aprovechar capacidades de NLP y RAG sin convertir al LLM en decisor del nivel de riesgo.
+Por ello, el prototipo adopta un enfoque \textbf{explicable y controlado}. Las reglas RF-01 a RF-06 y las m{\'e}tricas de red calculan variables verificables. Agent4 recupera fragmentos y construye fichas citadas mediante una ruta determinista; cuando se habilita Qwen3-8B, el modelo se limita a apoyar la redacci{\'o}n sobre evidencias ya recuperadas. Esta separaci{\'o}n impide que el LLM decida el nivel de riesgo.
 
-La elecci{\'o}n de un LLM local v{\'i}a Ollama aporta tres ventajas espec{\'i}ficas al TFM: (a)~reproducibilidad, porque el modelo y sus par{\'a}metros pueden versionarse; (b)~privacidad operativa, porque los documentos analizados no se env{\'i}an a APIs externas; y (c)~trazabilidad, porque cada ficha debe vincularse a indicadores calculados y fragmentos documentales recuperados. Esta arquitectura es coherente con el principio \textit{human-in-the-loop}: el sistema prioriza y explica, pero la evaluaci{\'o}n final corresponde siempre a una persona.
+La opci{\'o}n de un LLM local v{\'i}a Ollama aporta privacidad operativa y evita enviar documentos a APIs externas. No obstante, la reproducibilidad de la versi{\'o}n evaluada se apoya en el fallback determinista y en la vinculaci{\'o}n de cada ficha con indicadores y fragmentos recuperados. Esta arquitectura es coherente con el principio \textit{human-in-the-loop}: el sistema prioriza y explica, pero la evaluaci{\'o}n final corresponde siempre a una persona.
 
 \section{Pipeline de datos}
 \label{sec:pipeline_datos}
@@ -765,7 +766,7 @@ El \textit{pipeline} de datos convierte fuentes heterog{\'e}neas en un modelo an
   \item \textbf{Filtrado del dominio CPV~71.} Selecci{\'o}n de servicios de arquitectura, ingenier{\'i}a e inspecci{\'o}n para reducir heterogeneidad sectorial y mejorar comparabilidad de importes, plazos y criterios t{\'e}cnicos.
   \item \textbf{Enriquecimiento.} Derivaci{\'o}n de variables como duraci{\'o}n del procedimiento, desviaci{\'o}n de importe, recurrencia proveedor-organismo, importe acumulado, a{\~n}o de adjudicaci{\'o}n, subfamilia CPV y presencia documental.
   \item \textbf{Perfilado de calidad.} Generaci{\'o}n autom{\'a}tica de m{\'e}tricas de completitud, coherencia temporal, nulos, duplicados, distribuci{\'o}n de importes y cobertura por organismo.
-  \item \textbf{Carga anal{\'i}tica.} Persistencia en PostgreSQL para consultas tabulares, Neo4j/NetworkX para el grafo y Qdrant para fragmentos documentales indexados.
+  \item \textbf{Carga anal{\'i}tica.} Persistencia opcional en PostgreSQL para consultas tabulares, artefactos NetworkX/Parquet para el grafo y soporte opcional de Neo4j y Qdrant.
 \end{enumerate}
 
 \subsection{Modelo de datos anal{\'i}tico}
@@ -811,13 +812,7 @@ La primera versi{\'o}n prioriza indicadores implementables con los campos BOE/OC
   \item \textbf{RF-06 Patr{\'o}n temporal an{\'o}malo:} intervalo an{\'o}malo entre publicaci{\'o}n, adjudicaci{\'o}n y formalizaci{\'o}n cuando existen fechas suficientes.
 \end{enumerate}
 
-RF-07 a RF-15, incluyendo fragmentaci{\'o}n avanzada y riesgo de red como indicador directo, forman parte del cat{\'a}logo de ampliaci{\'o}n, pero no se presentan como reglas evaluadas si no existe artefacto verificable. El \textit{score} compuesto se plantea como \textbf{h{\'i}brido}, pero no opaco. La base de la puntuaci{\'o}n procede de reglas expl{\'i}citas y ponderadas; las variables de red enriquecen el contexto; los modelos no supervisados, como Isolation Forest, se reservan para comparar anomal{\'i}as cuando existan datos suficientes; y el LLM genera explicaciones a partir de evidencias ya calculadas o recuperadas. La puntuaci{\'o}n final se expresa en una escala 0--100 y se traduce en niveles bajo, medio, alto o cr{\'i}tico, siempre acompa{\~n}ada de los factores que la han producido.
-
-\begin{equation}
-Score = w_r R + w_g G + w_d D + w_a A
-\end{equation}
-
-Donde \(R\) representa red flags tabulares, \(G\) variables de grafo, \(D\) evidencia documental estructurada y \(A\) anomal{\'i}as estad{\'i}sticas. Los pesos \(w\) deben quedar versionados y justificados. Qwen3-8B no modifica esos pesos ni decide el score; su funci{\'o}n es redactar una explicaci{\'o}n controlada del resultado, citando indicadores y fragmentos recuperados.
+RF-07 a RF-15, incluyendo fragmentaci{\'o}n avanzada y riesgo de red como indicador directo, forman parte del cat{\'a}logo de ampliaci{\'o}n. La versi{\'o}n evaluada calcula la puntuaci{\'o}n mediante RF-01 a RF-06, reglas deterministas y ponderadas que producen un score explicable por contrato. Las features de Agent3 pueden contextualizar RF-03 y RF-04, pero la evidencia documental y un LLM no alteran el score. Isolation Forest, Positive-Unlabeled Learning y una combinaci{\'o}n estad{\'i}stica h{\'i}brida quedan como comparaciones futuras cuando existan datos y etiquetas suficientes.
 
 \section{Grafo de contrataci{\'o}n}
 \label{sec:grafo_contratacion_cap6}
@@ -830,7 +825,7 @@ Las m{\'e}tricas previstas son:
   \item grado y grado ponderado por importe;
   \item centralidad de intermediaci{\'o}n para detectar actores puente;
   \item centralidad de autovector o PageRank para estimar influencia estructural;
-  \item detecci{\'o}n de comunidades con Leiden o Louvain;
+  \item detecci{\'o}n de comunidades con Louvain; Leiden queda como extensi{\'o}n futura;
   \item concentraci{\'o}n por organismo, proveedor y subfamilia CPV.
 \end{itemize}
 
@@ -839,18 +834,19 @@ Estas variables no se interpretan como evidencia de irregularidad por s{\'i} sol
 \section{M{\'o}dulo documental, embeddings y RAG}
 \label{sec:rag_cap6}
 
-El m{\'o}dulo documental incorpora contexto cualitativo procedente de anuncios BOE, p{\'a}ginas p{\'u}blicas de PLACE, resoluciones y memorias justificativas accesibles como contenido HTML o texto reutilizable. Para esta versi{\'o}n del prototipo se prioriza \textit{web scraping} con BeautifulSoup frente al tratamiento de documentos escaneados: el objetivo es capturar campos, criterios t{\'e}cnicos, certificaciones, solvencia requerida y ponderaciones de adjudicaci{\'o}n desde fuentes trazables y repetibles. Posteriormente, spaCy extrae entidades y patrones b{\'a}sicos: organismos, empresas, importes, fechas, criterios t{\'e}cnicos, certificaciones, solvencia requerida y ponderaciones de adjudicaci{\'o}n.
+El m{\'o}dulo documental incorpora contexto cualitativo desde un corpus de contenido HTML o textual asociado a contratos. La versi{\'o}n evaluada dispone de parsing con BeautifulSoup y fallback HTML, carga de corpus, fragmentaci{\'o}n, recuperaci{\'o}n y citas. No implementa scraping masivo, descarga autom{\'a}tica de pliegos ni un pipeline principal cerrado de extracci{\'o}n con spaCy; estas capacidades quedan como ampliaci{\'o}n.
 
 El flujo RAG se limita a explicar casos, no a decidir el nivel de riesgo:
 
 \begin{enumerate}
-  \item fragmentaci{\'o}n de documentos por contrato y secci{\'o}n;
-  \item generaci{\'o}n de embeddings con BGE-M3;
-  \item indexaci{\'o}n en Qdrant con metadatos de contrato, fuente y p{\'a}gina;
-  \item recuperaci{\'o}n de fragmentos relevantes para cada contrato priorizado;
-  \item generaci{\'o}n de ficha explicativa con Qwen3-8B;
-  \item validaci{\'o}n de que cada afirmaci{\'o}n de la ficha est{\'a} respaldada por fragmentos recuperados.
+  \item carga y fragmentaci{\'o}n del corpus por contrato;
+  \item recuperaci{\'o}n de fragmentos relevantes para cada caso priorizado;
+  \item composici{\'o}n de contexto con identificadores de documento y fragmento;
+  \item generaci{\'o}n de una ficha explicativa mediante fallback determinista;
+  \item validaci{\'o}n de que las afirmaciones de la ficha est{\'a}n respaldadas por citas recuperadas.
 \end{enumerate}
+
+BGE-M3 puede configurarse como modelo de embeddings, Qdrant como almac{\'e}n vectorial y Qwen3-8B mediante Ollama como apoyo de generaci{\'o}n local. Los tres componentes son opcionales y no fueron necesarios para la demo integrada evaluada.
 
 La ficha explicativa tendr{\'a} formato estructurado: resumen del contrato, indicadores activados, evidencia tabular, evidencia de red, evidencia documental, limitaciones y recomendaci{\'o}n de revisi{\'o}n humana.
 
@@ -882,9 +878,9 @@ La arquitectura multiagente se plantea como un flujo de responsabilidades expl{\
 \midrule
 \endhead
 \textbf{Agente 1: Pipeline de Datos y Normalizaci{\'o}n OCDS} & Descarga, limpia, valida y normaliza fuentes BOE/OCDS, PLACE y OpenTender; detecta inconsistencias de importes, fechas, duplicados y NIF; prepara tablas anal{\'i}ticas y artefactos de carga. & Dataset normalizado, perfil de calidad, hashes de fuentes, tablas PostgreSQL y ficheros Parquet/DuckDB. \\
-\textbf{Agente 2: Red Flags y Scoring} & Calcula indicadores de riesgo por contrato y adjudicatario; combina reglas OCDS, concentraci{\'o}n, recurrencia, desviaciones, variables de red y modelos no supervisados; genera rankings para revisi{\'o}n humana. & Red flags activadas, score 0--100, nivel de riesgo, justificaci{\'o}n por indicador y ranking priorizado. \\
-\textbf{Agente 3: An{\'a}lisis de Redes y Comunidades} & Construye y analiza el grafo empresa-organismo-contrato; calcula centralidad, clustering, comunidades Leiden/Louvain, patrones de concentraci{\'o}n y posibles relaciones societarias cuando existan fuentes abiertas. & M{\'e}tricas de red, comunidades, subgrafos de caso, entidades puente y alertas de concentraci{\'o}n relacional. \\
-\textbf{Agente 4: Web Scraping, NLP y Recuperaci{\'o}n Documental} & Procesa anuncios, p{\'a}ginas p{\'u}blicas y documentos textuales reutilizables; aplica BeautifulSoup, spaCy, embeddings BGE-M3 y Qdrant; recupera contexto y genera fichas explicativas con Qwen3-8B mediante Ollama. & Entidades extra{\'i}das, corpus indexado, fragmentos recuperados, respuesta RAG citada y ficha explicativa de caso. \\
+\textbf{Agente 2: Red Flags y Scoring} & Calcula RF-01 a RF-06 por contrato mediante reglas deterministas; incorpora recurrencia, concentraci{\'o}n, desviaciones y variables relacionales para priorizar la revisi{\'o}n humana. & Red flags activadas, score 0--100 por contrato, nivel de riesgo, justificaci{\'o}n por indicador y reporte de ejecuci{\'o}n. \\
+\textbf{Agente 3: An{\'a}lisis de Redes y Comunidades} & Construye el grafo empresa-organismo-contrato con NetworkX; calcula m{\'e}tricas, comunidades Louvain y features relacionales. Leiden y el enriquecimiento societario quedan como extensiones. & Nodos, aristas, m{\'e}tricas de red, comunidades Louvain, resumen y features para otros agentes. \\
+\textbf{Agente 4: Recuperaci{\'o}n Documental} & Carga contenido HTML o textual, fragmenta el corpus, recupera contexto y genera fichas citadas mediante fallback determinista. Qdrant, Ollama y BGE-M3 son opcionales; spaCy queda como ampliaci{\'o}n. & Manifest de corpus, chunks, fragmentos recuperados, citas, contexto y ficha explicativa de caso. \\
 \bottomrule
 \end{longtable}
 }
@@ -900,11 +896,11 @@ El dise{\~n}o de orquestaci{\'o}n es compatible con un estado compartido de tipo
 \textbf{Trazabilidad de una ficha de riesgo}\\[0.1cm]
 \begin{tabular}{>{\centering\arraybackslash}p{0.18\textwidth}>{\centering\arraybackslash}p{0.18\textwidth}>{\centering\arraybackslash}p{0.18\textwidth}>{\centering\arraybackslash}p{0.18\textwidth}>{\centering\arraybackslash}p{0.18\textwidth}}
 Fuente & Transformaci{\'o}n & Indicador & Evidencia & Salida \tabularnewline
-BOE/PLACE & OCDS + calidad & RF/score/grafo & Qdrant + documentos & ficha revisable \tabularnewline
+BOE/PLACE & OCDS + calidad & RF/score/grafo & corpus + documentos & ficha revisable \tabularnewline
 \texttt{url/hash} & \texttt{run\_id} & \texttt{rule\_version} & \texttt{chunk\_id} & \texttt{case\_id} \tabularnewline
 \end{tabular}\\[0.12cm]
 \(\downarrow\)\\[-0.05cm]
-Cada afirmaci{\'o}n generada por Qwen3-8B debe poder enlazarse con una regla, un valor observado o un fragmento documental recuperado.
+Cada afirmaci{\'o}n de la ficha debe poder enlazarse con una regla, un valor observado o un fragmento documental recuperado.
 \end{minipage}
 }
 \caption{Flujo de trazabilidad desde la fuente hasta la ficha explicativa.}
@@ -919,7 +915,7 @@ El dashboard se dise{\~n}a para una tarea concreta: localizar contratos de mayor
 \begin{itemize}
   \item KPIs generales: n{\'u}mero de contratos, importe total, organismos, adjudicatarios y distribuci{\'o}n de riesgo;
   \item filtros por a{\~n}o, CPV, organismo, adjudicatario, procedimiento y nivel de riesgo;
-  \item ranking de contratos y adjudicatarios por score;
+  \item ranking de contratos por score y filtros por adjudicatario;
   \item vista de detalle de contrato con red flags activadas y valores observados;
   \item grafo interactivo de relaciones organismo-adjudicatario-contrato;
   \item ficha explicativa generada con evidencias tabulares, de red y documentales.
@@ -958,7 +954,7 @@ La Tabla~\ref{tab:protocolo_revision_humana} resume el protocolo de revisi{\'o}n
 \midrule
 \endhead
 1. Panorama & Revisa volumen, importes y distribuci{\'o}n de riesgo. & KPIs agregados y filtros iniciales. \\
-2. Priorizaci{\'o}n & Ordena contratos o adjudicatarios por riesgo. & Ranking, score y nivel bajo/medio/alto/cr{\'i}tico. \\
+2. Priorizaci{\'o}n & Ordena contratos por riesgo y filtra por adjudicatario. & Ranking contractual, score y nivel bajo/medio/alto/cr{\'i}tico. \\
 3. Diagn{\'o}stico & Comprueba por qu{\'e} se prioriza el caso. & Red flags activadas, pesos, campos usados y no evaluables. \\
 4. Contexto & Analiza relaciones y evidencias documentales. & Grafo, comunidades, fragmentos recuperados y citas. \\
 5. Decisi{\'o}n humana & Decide si abre revisi{\'o}n, pide informaci{\'o}n o descarta. & Ficha explicativa con limitaciones y trazabilidad. \\
@@ -1022,28 +1018,25 @@ Los criterios m{\'i}nimos de calidad son:
   \item separaci{\'o}n entre hechos observados, inferencias anal{\'i}ticas y limitaciones.
 \end{itemize}
 
-\section{Orquestaci{\'o}n batch, congelado reproducible y evidencia operativa}
+\section{Orquestaci{\'o}n batch, planificaci{\'o}n reproducible y evidencia operativa}
 \label{sec:batch_freeze_cap6}
 
-El prototipo qued{\'o} respaldado por una orquestaci{\'o}n batch semanal y mensual que evit{\'o} el
-procesamiento completo cuando las fuentes no cambiaron y mantuvo trazabilidad completa de las
-entradas y salidas relevantes. El lote semanal compar{\'o} manifiestos, tama{\~n}os y hashes de las
-fuentes para decidir si exist{\'i}an cambios reales; cuando no los hubo, la ejecuci{\'o}n se registr{\'o}
-como \texttt{skipped}. Cuando el can{\'o}nico de Agent~1 cambi{\'o}, el batch reejecut{\'o} Agent~2 sobre
-\texttt{agent2\_contracts\_canonical.parquet} y consolid{\'o} los artefactos anal{\'i}ticos resultantes
-sin duplicar datos pesados.
+El prototipo incorpora un batch con modos semanal y mensual. La implementaci{\'o}n comprueba la
+existencia de entradas y compara metadatos, tama{\~n}os, fechas y hashes; cuando no detecta cambios
+relevantes, registra la ejecuci{\'o}n como \texttt{skipped}. Cuando procede, ejecuta Agent~1 y genera
+un manifest con las fuentes revisadas, el estado, los avisos y las rutas de los artefactos.
 
-En los lotes mensuales y forzados se gener{\'o} un \texttt{freeze\_manifest.json} con hashes, rutas,
-versi{\'o}n del lote y referencia a los reportes de Agent~1 y Agent~2. Ese manifiesto qued{\'o}
-como artefacto de cierre reproducible del TFM, mientras que \texttt{data/tmp/} se reserv{\'o} como
-espacio temporal de trabajo para descargas y descompresiones intermedias, eliminado al finalizar
-cada ejecuci{\'o}n correcta.
+El batch no ejecuta autom{\'a}ticamente Agent~2, Agent~3 ni Agent~4. En su lugar, incorpora
+\texttt{derived\_rebuild\_plan}, que registra el estado previsto de las salidas downstream; Agent~2 se
+lanza mediante su comando espec{\'i}fico y Agent~4 mantiene una ruta manual o de demo. Tampoco existe
+un \texttt{freeze\_manifest.json} implementado en la versi{\'o}n evaluada. El snapshot o congelado
+final se conserva como criterio metodol{\'o}gico para una entrega reproducible, no como artefacto ya
+generado por el c{\'o}digo.
 
-La persistencia de estado de lote en \texttt{run\_batch\_state.json} y el manifiesto por batch en
-\texttt{data/manifest/batches/<run\_mode>/<batch\_id>/manifest.json} permitieron reconstruir cada corrida
-sin depender de la memoria operativa del sistema. Esta capa de orquestaci{\'o}n cerr{\'o} la parte de
-reproducibilidad definida para el sistema y dej{\'o} la memoria de ejecuci{\'o}n alineada
-con los artefactos generados.
+La persistencia de estado en \texttt{run\_batch\_state.json} y el manifest por batch en
+\path{data/manifest/batches/<run_mode>/<batch_id>/manifest.json} permiten auditar cada ejecuci{\'o}n
+y decidir qu{\'e} componentes deben regenerarse sin atribuir al batch una orquestaci{\'o}n downstream
+que no realiza.
 
 \section{Cierre integrado de Agent3 y Agent4}
 \label{sec:cierre_agent3_agent4_cap6}
@@ -1106,12 +1099,12 @@ Agent1 & \texttt{agent1/pipeline.py} & Construye el can{\'o}nico de contratos, c
 Esquema anal{\'i}tico & \texttt{agent1/analytical\_schema.py} & Define los campos m{\'i}nimos de \texttt{CONTRATO} y \texttt{ADJUDICATARIO} definidos en el alcance del TFM. \\
 Persistencia relacional & \texttt{db.py} & Inserta tablas anal{\'i}ticas de Agent1 en PostgreSQL cuando el servicio est{\'a} disponible. \\
 Agent2 estable & \texttt{agent2/pipeline.py} & Calcula red flags y scores sobre el can{\'o}nico de Agent1 con reglas versionadas. \\
-Agent2 versi{\'o}n evaluada & \texttt{agent2/mvp\_pipeline.py} & Ejecuta RF-01 a RF-06, genera flags, scores por contrato y adjudicatario, y reporte JSON. \\
+Agent2 versi{\'o}n evaluada & \texttt{agent2/mvp\_pipeline.py} & Ejecuta RF-01 a RF-06 y genera flags por contrato, scores por contrato y reporte JSON. \\
 Agent3 & \texttt{agent3/} & Construye grafo, nodos, aristas, m{\'e}tricas, comunidades Louvain, resumen de red y features para otros agentes. \\
 Neo4j opcional & \texttt{agent3/neo4j\_store.py} & Define constraints, carga nodos/aristas y ejecuta consultas de control cuando Neo4j est{\'a} activo. \\
 Agent4 & \texttt{agent4/} & Carga corpus, fragmenta documentos, recupera evidencias, genera contexto de caso y eval{\'u}a la calidad local del RAG. \\
 Qdrant/Ollama opcionales & \texttt{agent4/qdrant\_store.py}, \texttt{embeddings.py}, \texttt{generation.py} & Indexaci{\'o}n vectorial y generaci{\'o}n local si los servicios existen; fallback determinista en tests. \\
-Batch & \texttt{batch.py} & Orquesta ejecuciones por lote con manifests, hashes y estado \texttt{skipped} cuando no hay cambios. \\
+Batch & \texttt{batch.py} & Gestiona la ejecuci{\'o}n de Agent1 por lote, genera manifests y hashes, registra \texttt{skipped} y planifica el estado downstream. \\
 Dashboard & \texttt{frontend/agent3\_demo.py} & Interfaz Streamlit con pesta{\~n}as de resumen, contratos priorizados, caso, relaciones, evidencias y trazabilidad. \\
 Tests & \texttt{tests/} & Pruebas automatizadas de agentes, fuentes, batch, CLI, PostgreSQL, Neo4j, RAG y configuraci{\'o}n. \\
 \bottomrule
@@ -1186,7 +1179,7 @@ La Tabla~\ref{tab:contratos_datos_agentes} resume los contratos operativos utili
 \midrule
 \endhead
 Fuentes--Agent1 & Ficheros BOE, PLACE u OpenTender con metadatos de fuente. & Tablas por fuente normalizadas y can{\'o}nico. & Filas procesadas, errores de parseo, hashes y rutas de entrada. \\
-Agent1--Agent2 & \texttt{agent2\_contracts\_canonical.parquet}. & Red flags, scores por contrato y scores por adjudicatario. & Campos obligatorios, contratos evaluables y reglas activadas. \\
+Agent1--Agent2 & \texttt{agent2\_contracts\_canonical.parquet}. & Red flags y scores por contrato. & Campos obligatorios, contratos evaluables y reglas activadas. \\
 Agent2--Agent3 & Can{\'o}nico y, cuando existe, score por contrato. & Nodos, aristas, comunidades, m{\'e}tricas y features relacionales. & Integridad de claves, ausencia de nodos hu{\'e}rfanos y consistencia de aristas. \\
 Agent2/3--Agent4 & Caso priorizado, score, relaciones y corpus documental. & Contexto recuperado, evidencias, citas y ficha de caso. & Evidencia enlazada a fragmentos y advertencias si falta contexto. \\
 Agentes--Dashboard & Artefactos Parquet/JSON generados por el pipeline. & Vistas de resumen, detalle, relaciones, evidencias y trazabilidad. & Lectura sin recalcular reglas ni alterar outputs anal{\'i}ticos. \\
@@ -1270,11 +1263,11 @@ entre importe estimado y adjudicado y patrones temporales. Cuando una regla no p
 falta de campos, el contrato no debe recibir una penalizaci{\'o}n artificial; el estado no evaluable
 forma parte de la salida anal{\'i}tica.
 
-La agregaci{\'o}n por adjudicatario permite pasar de una lectura contrato a contrato a una lectura
-por proveedor. Esta vista resume n{\'u}mero de contratos, importe adjudicado, organismos distintos,
-flags recurrentes y score agregado. Su funci{\'o}n no es se{\~n}alar empresas como fraudulentas, sino
-detectar perfiles que concentran m{\'u}ltiples se{\~n}ales y que, por tanto, pueden justificar una
-revisi{\'o}n m{\'a}s profunda.
+Agent1 genera una tabla anal{\'i}tica de adjudicatarios y Agent2 utiliza variables de proveedor para
+evaluar recurrencia y concentraci{\'o}n en cada contrato. Estas salidas permiten filtrar o agrupar la
+revisi{\'o}n por adjudicatario, pero la versi{\'o}n evaluada no publica un artefacto final versionado de
+score agregado por proveedor. Por ello, la priorizaci{\'o}n demostrada y evaluada se presenta a nivel
+de contrato.
 
 \subsection{Agent3: grafo derivado y variables relacionales}
 
@@ -1438,7 +1431,7 @@ con la versi{\'o}n de cierre del prototipo. La Tabla~\ref{tab:evaluacion_objetiv
 OE1 & An{\'a}lisis de fuentes BOE, PLACE y OpenTender; foco CPV~71; perfilado de calidad. & Cumplido como an{\'a}lisis de disponibilidad y calidad, con limitaciones documentadas. \\
 OE2 & Esquema OCDS adaptado para contrato y adjudicatario, implementado en c{\'o}digo. & Cumplido; los campos m{\'i}nimos est{\'a}n formalizados. \\
 OE3 & Pipeline reproducible con parsers, can{\'o}nico, reportes y persistencia opcional. & Cumplido parcialmente en calidad: el pipeline existe, pero algunas m{\'e}tricas no alcanzan umbral. \\
-OE4 & RF-01 a RF-06 y scoring 0--100 por contrato/adjudicatario. & Cumplido en la versi{\'o}n evaluada; el cat{\'a}logo completo de 15 RF queda como extensi{\'o}n. \\
+OE4 & RF-01 a RF-06 y scoring 0--100 por contrato. & Cumplido en la versi{\'o}n evaluada; el cat{\'a}logo completo de 15 RF y el scoring agregado por adjudicatario quedan como extensiones. \\
 OE5 & Grafo con nodos, aristas, m{\'e}tricas, comunidades y features. & Cumplido como grafo derivado; Neo4j es opcional. \\
 OE6 & Agent4 con corpus, chunks, retrieval, contexto de caso y citas. & Cumplido como componente documental del prototipo; evaluaci{\'o}n masiva RAG queda limitada. \\
 OE7 & Dashboard Streamlit integrado con vistas de resumen, caso, relaciones y evidencias. & Cumplido para demo local. \\
@@ -1558,12 +1551,11 @@ v{\'a}lida: informa de que el dato disponible no permite aplicar una regla sin r
 \section{Lectura operativa de los resultados}
 \label{sec:lectura_operativa_resultados}
 
-Los resultados de Agent2 muestran una distribuci{\'o}n amplia de riesgo, con miles de contratos en
-niveles bajo y medio, y un subconjunto menor en alto y cr{\'i}tico. Esta distribuci{\'o}n es coherente
-con una herramienta de priorizaci{\'o}n: si todos los contratos aparecieran como cr{\'i}ticos, el sistema
-no reducir{\'i}a la carga de revisi{\'o}n; si casi ninguno tuviera se{\~n}ales, las reglas ser{\'i}an
-demasiado poco sensibles. El objetivo pr{\'a}ctico es generar un ranking que permita seleccionar
-casos para revisi{\'o}n m{\'a}s profunda.
+La evaluaci{\'o}n disponible de Agent2 comprende una muestra de scoring de 50 contratos y la demo
+integrada de 3 contratos. Estos artefactos permiten comprobar la activaci{\'o}n de reglas, el c{\'a}lculo
+del score y la priorizaci{\'o}n, pero no respaldan una caracterizaci{\'o}n estad{\'i}stica de miles de
+contratos por nivel de riesgo. El objetivo pr{\'a}ctico demostrado es generar un ranking contractual
+que permita seleccionar casos para una revisi{\'o}n m{\'a}s profunda.
 
 La interpretaci{\'o}n operativa puede organizarse en tres niveles:
 
@@ -1612,37 +1604,31 @@ regeneraci{\'o}n con hashes verificables.
 
 El sistema no se plantea como streaming. La contrataci{\'o}n p{\'u}blica no requiere procesar eventos
 segundo a segundo para el objetivo de este TFM; requiere reproducibilidad, trazabilidad y capacidad
-de actualizar datos sin repetir trabajo innecesario. Por ello, la estrategia final se basa en batch
-incremental. Esta decisi{\'o}n reduce complejidad operativa, facilita la defensa del prototipo y
-permite congelar resultados de forma controlada.
+de actualizar datos sin repetir trabajo innecesario. Por ello, la implementaci{\'o}n utiliza un batch
+incremental para Agent~1 y genera un plan expl{\'i}cito de reconstrucci{\'o}n para los componentes
+downstream.
 
-La estrategia se organiza en cuatro modos de ejecuci{\'o}n. El primero es la \textbf{carga inicial
-completa}, que construye el can{\'o}nico desde las fuentes disponibles y genera los reports base. El
-segundo es el \textbf{batch semanal ligero}, que comprueba si las fuentes han cambiado mediante
-metadatos, tama{\~n}o, URL, fecha y hash, y registra la ejecuci{\'o}n como \texttt{skipped} cuando no
-hay cambios relevantes. El tercero es el \textbf{batch mensual de consolidaci{\'o}n}, orientado a
-resolver duplicados, modificaciones y periodos afectados. El cuarto es el \textbf{snapshot final},
-que congela artefactos, manifests, versiones y hashes para que los resultados del TFM puedan
-reproducirse.
+El c{\'o}digo admite dos modos: \textbf{semanal}, que ejecuta Agent~1 si detecta cambios o se fuerza la
+ejecuci{\'o}n, y \textbf{mensual}, que permite adem{\'a}s las descargas PLACE configuradas y ejecuta
+Agent~1 siempre que las entradas obligatorias est{\'e}n disponibles. Ambos modos generan un manifest
+y un \texttt{derived\_rebuild\_plan}; ninguno ejecuta autom{\'a}ticamente Agent~2, Agent~3 o Agent~4.
 
 La Tabla~\ref{tab:modos_batch} resume la finalidad de cada modo.
 
 {\small
-\begin{longtable}{p{3.2cm}p{4.4cm}p{3.4cm}p{2.6cm}}
+\begin{longtable}{p{2.7cm}p{4.5cm}p{3.4cm}p{3.0cm}}
 \caption{Modos de ejecuci{\'o}n batch del prototipo}
 \label{tab:modos_batch}\\
 \toprule
-\textbf{Modo} & \textbf{Objetivo} & \textbf{Salida principal} & \textbf{Criterio de Agent2} \\
+\textbf{Modo} & \textbf{Objetivo} & \textbf{Salida principal} & \textbf{Plan downstream} \\
 \midrule
 \endfirsthead
 \toprule
-\textbf{Modo} & \textbf{Objetivo} & \textbf{Salida principal} & \textbf{Criterio de Agent2} \\
+\textbf{Modo} & \textbf{Objetivo} & \textbf{Salida principal} & \textbf{Plan downstream} \\
 \midrule
 \endhead
-Inicial & Construir can{\'o}nico desde cero y perfilar calidad. & Parquet can{\'o}nico, reports y manifest. & Ejecutar si el can{\'o}nico se genera. \\
-Semanal & Detectar cambios ligeros en fuentes sin reprocesar todo. & Manifest con estado \texttt{completed} o \texttt{skipped}. & Ejecutar solo si cambia el can{\'o}nico o se fuerza. \\
-Mensual & Consolidar periodo, resolver duplicados y recalcular salidas. & Can{\'o}nico consolidado y reports actualizados. & Ejecutar para recalcular flags y scores. \\
-Final & Congelar resultados usados en memoria y defensa. & Snapshot/freeze con hashes, esquemas y versiones. & Ejecutar o conservar salidas cerradas. \\
+Semanal & Detectar cambios sin reprocesar Agent~1 innecesariamente. & Manifest y estado de ejecuci{\'o}n. & No planifica agentes posteriores; registra el bloqueo si faltan entradas. \\
+Mensual & Revisar fuentes y ejecutar Agent~1 con descarga PLACE habilitada por defecto. & Manifest, reporte de Agent~1 y snapshots de entrada. & Planifica la reconstrucci{\'o}n si existe el can{\'o}nico; no ejecuta otros agentes. \\
 \bottomrule
 \end{longtable}
 }
@@ -1656,7 +1642,7 @@ las fuentes y decidi{\'o}, con criterios trazables, no recalcular. Esta propieda
 \section{Manifiestos, hashes y limpieza de temporales}
 \label{sec:manifests_hashes_temporales}
 
-Cada ejecuci{\'o}n batch debe dejar evidencia suficiente para responder a cuatro preguntas: qu{\'e}
+Cada ejecuci{\'o}n batch deja evidencia suficiente para responder a cuatro preguntas: qu{\'e}
 fuentes se revisaron, cu{\'a}les cambiaron, qu{\'e} artefactos se generaron y con qu{\'e} versi{\'o}n del
 sistema. Para ello, el manifest de batch incluye identificador de ejecuci{\'o}n, modo, rutas o URLs de
 entrada, tama{\~n}os, hashes, salidas, estado y versiones relevantes. No es necesario guardar todos
@@ -1675,12 +1661,11 @@ ejecuci{\'o}n correcta, esos temporales deben eliminarse o quedar fuera del cont
 pol{\'i}tica evita que el repositorio crezca con ZIPs, XMLs o Parquet intermedios, y permite repetir
 la ejecuci{\'o}n sin mezclar resultados antiguos con resultados nuevos.
 
-El snapshot final se interpreta como el punto de cierre de la evaluaci{\'o}n. Debe incluir, como
-m{\'i}nimo, el can{\'o}nico consumido por Agent2, las salidas de red flags, scores por contrato, scores
-por adjudicatario, reports de Agent1 y Agent2, manifests, hashes, versi{\'o}n de dependencias y
-esquemas. Si posteriormente se incorpora una ejecuci{\'o}n m{\'a}s completa con datos adicionales, el
-snapshot debe regenerarse y las cifras de resultados deben actualizarse, en lugar de mezclar
-artefactos de ejecuciones distintas.
+El snapshot final se interpreta como un criterio metodol{\'o}gico de cierre, no como un modo o
+artefacto implementado por \texttt{batch.py}. Una futura entrega congelada deber{\'i}a incluir el
+can{\'o}nico consumido por Agent2, las salidas de red flags y scores por contrato, los reports, los
+manifests, los hashes, la versi{\'o}n de dependencias y los esquemas. Si se incorpora una ejecuci{\'o}n
+m{\'a}s completa, ese snapshot deber{\'i}a regenerarse y las cifras de resultados actualizarse.
 
 \section{Comandos de ejecuci{\'o}n y reproducci{\'o}n}
 \label{sec:comandos_reproduccion}
@@ -2268,8 +2253,8 @@ realizada indica:
 \begin{itemize}
   \item \texttt{PYTHONPATH=scr python -m procurewatch.cli doctor}: resultado OK, con PostgreSQL, Neo4j, Qdrant y
   Ollama como servicios opcionales;
-  \item \texttt{PYTHONPATH=scr python -m pytest tests}: 115 pruebas superadas y 1 omitida;
-  \item \texttt{PYTHONPATH=scr python -m ruff check scr tests}: sin errores;
+  \item \texttt{PYTHONPATH=scr python -m pytest tests}: 116 pruebas superadas;
+  \item \texttt{PYTHONPATH=scr python -m ruff check api scr tests frontend}: sin errores;
   \item \texttt{PYTHONPATH=scr python -m procurewatch run-benchmark}: 31 m{\'e}tricas evaluadas, con
   28 en \texttt{pass}, 1 en \texttt{warning}, 0 en \texttt{fail} y 2 como \texttt{not\_applicable};
   \item demo integrada y dashboard Streamlit validados en modo headless con 0 excepciones.
@@ -2293,7 +2278,7 @@ Agent1 & Pipeline, can{\'o}nico, calidad, esquema anal{\'i}tico, cobertura, Post
 Fuentes & Parser BOE, unidades de an{\'a}lisis BOE, OpenTender, PLACE y normalizaci{\'o}n de entradas. \\
 Agent2 & Reglas, scoring, pipeline estable, RF-01 a RF-06 y reportes de salida. \\
 Agent3 & Construcci{\'o}n de grafo, nodos, aristas, m{\'e}tricas, comunidades, features y carga Neo4j. \\
-Agent4 & Carga documental, chunks, Qdrant, embeddings, flujo RAG, contexto de caso y evaluaci{\'o}n local. \\
+Agent4 & Carga documental, chunks, retrieval, citas, contexto de caso, fallback determinista e integraciones opcionales. \\
 Benchmark & Evaluaci{\'o}n agregada por agente, estados \texttt{pass}/\texttt{warning}/\texttt{fail} y matriz de alcance del TFM. \\
 CLI y batch & Comandos principales, diagn{\'o}stico, ejecuci{\'o}n del prototipo y skip semanal por ausencia de cambios. \\
 \bottomrule
@@ -2474,7 +2459,7 @@ La Tabla~\ref{tab:propuesta_vs_impl} resume la relaci{\'o}n entre alcance previs
 Ingesta BOE, PLACE y OpenTender & Parsers y normalizadores implementados; can{\'o}nico generado. & Cumplido como flujo reproducible, con limitaci{\'o}n de matching entre fuentes. \\
 Esquema OCDS adaptado & Campos m{\'i}nimos implementados en \texttt{analytical\_schema.py}. & Cumplido y validable por tests. \\
 PostgreSQL & Persistencia anal{\'i}tica de Agent1 implementada. & Parcial para el conjunto multiagente completo. \\
-Red flags y scoring & RF-01 a RF-06 implementadas en la versi{\'o}n evaluada; scoring por contrato y adjudicatario. & Cumplido para el prototipo; RF adicionales quedan como extensi{\'o}n. \\
+Red flags y scoring & RF-01 a RF-06 implementadas en la versi{\'o}n evaluada; scoring por contrato. & Cumplido para el prototipo; RF adicionales y scoring agregado por adjudicatario quedan como extensiones. \\
 Isolation Forest y PU Learning & Enfoque contemplado como comparativa deseable, sin resultado final verificable en los artefactos disponibles de la versi{\'o}n de cierre. & No se presenta como validaci{\'o}n cerrada si no hay artefacto verificable. \\
 Grafo y comunidades & Agent3 implementa grafo, m{\'e}tricas, Louvain y features; Neo4j opcional. & Cumplido como an{\'a}lisis relacional reproducible. \\
 Neo4j & Carga opcional implementada. & Servicio no obligatorio para la demo local. \\
@@ -2521,7 +2506,7 @@ Agent2 & Cat{\'a}logo RF reducido en la versi{\'o}n evaluada. & No cubre todos l
 Agent3 & Demo relacional limitada por artefactos disponibles. & No permite afirmar escalado completo de grafo. & Features reproducibles y Neo4j opcional para exploraci{\'o}n. \\
 Agent4 & Corpus documental no masivo en la evidencia disponible. & Limita evaluaci{\'o}n RAG cuantitativa. & M{\'e}tricas de fidelidad, cobertura, citas, consistencia y prudencia explicativa. \\
 Dashboard & Validaci{\'o}n headless, no estudio formal de usuarios. & No mide usabilidad institucional completa. & Dise{\~n}o orientado a revisi{\'o}n humana y trazabilidad visible. \\
-Batch & Dependencia de manifests y estado anterior. & Si se pierde estado, se reduce capacidad incremental. & Hashes, modo force y snapshot final reproducible. \\
+Batch & Dependencia de manifests y estado anterior. & Si se pierde estado, se reduce capacidad incremental. & Hashes, modo force y criterio metodol{\'o}gico de snapshot final. \\
 \bottomrule
 \end{longtable}
 }
@@ -2658,17 +2643,18 @@ cobertura entre fuentes se registr{\'o} de forma expl{\'i}cita, y las limitacion
 mantuvieron visibles en lugar de forzar coincidencias artificiales.
 
 La segunda conclusi{\'o}n es que Agent~2 qued{\'o} operativo como motor determinista de red flags y
-scoring explicable. El sistema calcul{\'o} se{\~n}ales por contrato, agreg{\'o} riesgo por adjudicatario,
-y almacen{\'o} la evidencia necesaria para justificar cada activaci{\'o}n. La evaluaci{\'o}n se
+scoring explicable. El sistema calcul{\'o} se{\~n}ales y scores por contrato y almacen{\'o} la evidencia
+necesaria para justificar cada activaci{\'o}n. Agent1 aporta una tabla anal{\'i}tica de adjudicatarios,
+pero no se presenta un score final agregado por proveedor. La evaluaci{\'o}n se
 present{\'o} como contraste proxy cuando no existieron etiquetas confirmadas de fraude, lo que
 preserv{\'o} la coherencia metodol{\'o}gica del TFM y evit{\'o} afirmar una validaci{\'o}n supervisada
 que no estaba disponible en los artefactos de la versi{\'o}n de cierre.
 
-La tercera conclusi{\'o}n es que la orquestaci{\'o}n batch reforz{\'o} la reproducibilidad del prototipo.
-La ejecuci{\'o}n por lotes semanal y mensual, junto con los manifiestos de entrada y salida, el
-estado de batch y el freeze reproducible, permiti{\'o} separar trabajo temporal de evidencia final.
-Ese dise{\~n}o hizo posible conservar la trazabilidad sin versionar artefactos pesados ni depender de
-reprocesamientos completos cuando no hubo cambios en las fuentes.
+La tercera conclusi{\'o}n es que el batch reforz{\'o} la reproducibilidad de Agent~1. Los modos semanal
+y mensual registran snapshots de entrada, hashes, manifests, estado y un plan de reconstrucci{\'o}n
+downstream. El batch evita reprocesar Agent~1 cuando no hay cambios, pero no ejecuta autom{\'a}ticamente
+los agentes posteriores. El freeze final queda como criterio metodol{\'o}gico pendiente de
+materializar en un artefacto espec{\'i}fico.
 
 La cuarta conclusi{\'o}n es que el sistema desarrollado permite sostener la defensa del proyecto con
 soporte documental y t{\'e}cnico. La arquitectura, las limitaciones, las m{\'e}tricas y los manifiestos
@@ -2715,7 +2701,7 @@ scoring, grafo, recuperaci{\'o}n documental, dashboard y reproducibilidad. La ej
 de Agent~1 genera 51.720 registros can{\'o}nicos; Agent~2 produce puntuaciones explicables mediante
 RF-01 a RF-06; la demo integrada muestra un caso completo con \texttt{risk\_score=0.5}, dos
 se{\~n}ales de riesgo, 11 nodos, 13 relaciones, 2 comunidades, 2 evidencias documentales y 2 citas; y
-la validaci{\'o}n t{\'e}cnica recoge 115 tests superados, 1 omitido, benchmark global sin fallos y
+la validaci{\'o}n t{\'e}cnica recoge 116 tests superados, benchmark global sin fallos y
 dashboard Streamlit sin excepciones en modo headless. El valor central del trabajo se sostiene, por tanto, sobre un flujo
 operativo implementado, trazable y documentado, sin afirmar detecci{\'o}n autom{\'a}tica de fraude.
 
