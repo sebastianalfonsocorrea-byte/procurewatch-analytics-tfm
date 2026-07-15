@@ -453,7 +453,7 @@ Construir una interfaz web interactiva, basada en Streamlit y visualizaciones co
 \textbf{M{\'e}trica:} SUS $>$\,68; tiempo medio para documentar un caso de riesgo $<$\,5\,min; ficha explicativa con claridad $\geq$\,3.5/5 (Likert).
 
 \subsection*{OE8 --- Evaluaci{\'o}n integral del sistema}
-Validar el prototipo con m{\'e}tricas cuantitativas de calidad del \textit{pipeline}, precisi{\'o}n del motor de red flags, modularidad del grafo, calidad de la extracci{\'o}n de criterios contractuales (precisi{\'o}n/cobertura) y usabilidad, analizando cualitativamente m{\'i}nimo 10 casos de riesgo en el dominio CPV~71.
+Validar el prototipo con m{\'e}tricas cuantitativas de calidad del \textit{pipeline}, consistencia del motor de red flags, modularidad del grafo, trazabilidad documental y usabilidad, analizando cualitativamente diez fichas del dominio CPV~71: cinco casos de score m{\'a}ximo, tres de riesgo medio y dos controles.
 
 \textbf{M{\'e}trica:} Informe de evaluaci{\'o}n completo; fichas de 10 casos analizados; documento de limitaciones y \textit{roadmap} de mejora.
 
@@ -1435,7 +1435,7 @@ OE4 & RF-01 a RF-06 y scoring 0--100 por contrato. & Cumplido en la versi{\'o}n 
 OE5 & Grafo con nodos, aristas, m{\'e}tricas, comunidades y features. & Cumplido como grafo derivado; Neo4j es opcional. \\
 OE6 & Agent4 con corpus, chunks, retrieval, contexto de caso y citas. & Cumplido como componente documental del prototipo; evaluaci{\'o}n masiva RAG queda limitada. \\
 OE7 & Dashboard Streamlit integrado con vistas de resumen, caso, relaciones y evidencias. & Cumplido para demo local. \\
-OE8 & Validaci{\'o}n con tests, reports y documentaci{\'o}n de cierre. & Cumplido como validaci{\'o}n t{\'e}cnica; no es validaci{\'o}n supervisada de fraude. \\
+OE8 & Validaci{\'o}n con tests, benchmark y diez fichas cualitativas. & Cumplimiento parcial: valida priorizaci{\'o}n y explicaci{\'o}n, sin etiquetas de fraude, revisi{\'o}n experta ni estudio formal de usabilidad. \\
 \bottomrule
 \end{longtable}
 }
@@ -1778,6 +1778,7 @@ Tabla~\ref{tab:artefactos_sistema} agrupa los artefactos principales.
 \texttt{agent3\_edges.parquet} & Agent3 & Aristas del grafo. \\
 \texttt{agent3\_contract\_metrics.parquet} & Agent3 & M{\'e}tricas relacionales por contrato. \\
 \texttt{agent3\_agent2\_features.parquet} & Agent3 & Variables relacionales consumibles por scoring o explicaci{\'o}n. \\
+\path{case_studies_report.json} & Evaluaci{\'o}n & Informe agregado y diez fichas individuales con selecci{\'o}n 5/3/2, evidencia y advertencias. \\
 \texttt{agent4\_case\_context\_integrated\_demo.json} & Agent4 & Ficha/contexto integrado de caso con evidencias y citas. \\
 \texttt{agent4\_evaluation\_report.md} & Agent4 & Evaluaci{\'o}n de fidelidad, cobertura, trazabilidad y consistencia de citas. \\
 \texttt{benchmark\_report.md} & Benchmark & Evaluaci{\'o}n global por agentes, matriz de alcance y conclusiones acad{\'e}micas. \\
@@ -1978,8 +1979,8 @@ metodol{\'o}gica ha sido no inventar resultados y distinguir entre salidas gener
 validaciones t{\'e}cnicas realizadas y cifras hist{\'o}ricas procedentes de documentos anteriores.
 
 Para reforzar esa delimitaci{\'o}n, la versi{\'o}n final incorpora un benchmark reproducible del
-prototipo. El informe \texttt{benchmark\_report.md} eval{\'u}a 32 m{\'e}tricas distribuidas entre Agent1,
-Agent2, Agent3, Agent4 e integraci{\'o}n. El resultado global fue \texttt{warning}: 29 m{\'e}tricas en
+prototipo. El informe \texttt{benchmark\_report.md} eval{\'u}a 33 m{\'e}tricas distribuidas entre Agent1,
+Agent2, Agent3, Agent4 e integraci{\'o}n. El resultado global fue \texttt{warning}: 30 m{\'e}tricas en
 \texttt{pass}, 1 en \texttt{warning}, 0 en \texttt{fail} y 2 como \texttt{not\_applicable}. La
 advertencia no corresponde a un fallo de ejecuci{\'o}n, sino a la ausencia de intersecciones exactas
 entre fuentes. La Tabla~\ref{tab:alcance_benchmark_tfm} resume qu{\'e} partes quedan implementadas,
@@ -2245,6 +2246,98 @@ precisi{\'o}n frente a fraude confirmado. La demo integrada, por su parte, conse
 \texttt{risky\_procedure} y \texttt{awarded\_above\_estimate} para mostrar el flujo completo del caso
 \texttt{PW-2024-0001}.
 
+\section{Evaluaci{\'o}n cualitativa de diez fichas}
+
+Para comprobar si el sistema prioriza y explica casos de forma coherente se generaron diez fichas
+individuales a partir del escenario base de Agent2. La selecci{\'o}n aplica una pol{\'i}tica
+reproducible: cinco contratos con el score m{\'a}ximo observado, resolviendo empates mediante
+diversidad comprador-proveedor; tres contratos de riesgo medio, priorizando diversidad entre
+PLACE, BOE y OpenTender; y dos controles con score cero, sin flags y con la mayor evaluabilidad
+disponible. Los controles no representan contratos ``sin riesgo'', sino referencias comparativas
+en las que no se activaron se{\~n}ales con los datos evaluables.
+
+Agent3 se ejecut{\'o} sobre los 3.437 contratos antes de construir las fichas. El grafo resultante
+contiene 7.333 nodos y 16.303 aristas, y publica 3.437 filas de features relacionales. Las diez
+fichas combinan estas relaciones con los scores y evidencias congelados del escenario base; Agent3
+no recalcula ni modifica el riesgo. La Tabla~\ref{tab:casos_cualitativos_seleccion} resume la
+selecci{\'o}n observada.
+
+{\small
+\begin{longtable}{p{1.2cm}p{2.3cm}p{1.8cm}r p{5.4cm}}
+\caption{Selecci{\'o}n de diez fichas cualitativas}
+\label{tab:casos_cualitativos_seleccion}\\
+\toprule
+\textbf{Caso} & \textbf{Grupo} & \textbf{Fuente} & \textbf{Score} & \textbf{Reglas activadas} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Caso} & \textbf{Grupo} & \textbf{Fuente} & \textbf{Score} & \textbf{Reglas activadas} \\
+\midrule
+\endhead
+CS-01 & Score m{\'a}ximo & PLACE & 65 & RF-03, RF-04 y RF-05 \\
+CS-02 & Score m{\'a}ximo & PLACE & 65 & RF-03, RF-04 y RF-05 \\
+CS-03 & Score m{\'a}ximo & PLACE & 65 & RF-03, RF-04 y RF-05 \\
+CS-04 & Score m{\'a}ximo & PLACE & 65 & RF-03, RF-04 y RF-05 \\
+CS-05 & Score m{\'a}ximo & PLACE & 65 & RF-03, RF-04 y RF-05 \\
+CS-06 & Riesgo medio & PLACE & 45 & RF-03 y RF-05 \\
+CS-07 & Riesgo medio & BOE & 45 & RF-02 y RF-05 \\
+CS-08 & Riesgo medio & OpenTender & 40 & RF-03 y RF-04 \\
+CS-09 & Control & PLACE & 0 & Ninguna \\
+CS-10 & Control & BOE & 0 & Ninguna \\
+\bottomrule
+\end{longtable}
+}
+
+Cada ficha conserva identificador can{\'o}nico, fuente y registro de origen, comprador,
+adjudicatario, procedimiento, importes, reglas activadas, evidencia textual de cada flag, reglas no
+evaluables, relaciones de Agent3, disponibilidad documental y advertencias. La
+Tabla~\ref{tab:casos_cualitativos_datos} presenta los datos cuantitativos utilizados en la lectura.
+Los c{\'o}digos num{\'e}ricos de procedimiento se mantienen tal como aparecen en PLACE u OpenTender;
+su interpretaci{\'o}n requiere consultar el cat{\'a}logo de la fuente.
+
+{\small
+\setlength{\tabcolsep}{3pt}
+\begin{longtable}{p{1.2cm}r r p{2.8cm}r}
+\caption{Importes, procedimiento y contexto relacional de las diez fichas}
+\label{tab:casos_cualitativos_datos}\\
+\toprule
+\textbf{Caso} & \textbf{Estimado (EUR)} & \textbf{Adjudicado (EUR)} & \textbf{Procedimiento} & \textbf{Recurr. Agent3} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Caso} & \textbf{Estimado (EUR)} & \textbf{Adjudicado (EUR)} & \textbf{Procedimiento} & \textbf{Recurr. Agent3} \\
+\midrule
+\endhead
+CS-01 & 86.011.743,00 & 104.074.209,00 & C{\'o}d. PLACE 1 & 1 \\
+CS-02 & 1.335.452,00 & 1.615.897,00 & C{\'o}d. PLACE 7 & 2 \\
+CS-03 & 60.480,00 & 731.808,00 & C{\'o}d. PLACE 7 & 3 \\
+CS-04 & 44.544,00 & 449.152,00 & C{\'o}d. PLACE 9 & 2 \\
+CS-05 & 1.697.623,00 & 2.054.124,00 & C{\'o}d. PLACE 7 & 2 \\
+CS-06 & 5.208,00 & 557.256,00 & C{\'o}d. PLACE 7 & 4 \\
+CS-07 & 53.000,00 & 63.767,00 & Negociado sin publicidad & 1 \\
+CS-08 & 644,22 & 644,22 & C{\'o}d. OpenTender 1 & 2 \\
+CS-09 & 826.446,00 & 10.000,00 & C{\'o}d. PLACE 9 & 1 \\
+CS-10 & 495.867,77 & 432.817,00 & Abierto & 1 \\
+\bottomrule
+\end{longtable}
+}
+
+En conjunto se observaron 21 activaciones de reglas y las 21 disponen de un registro de evidencia
+trazable. Las relaciones est{\'a}n disponibles en las diez fichas, la composici{\'o}n 5/3/2 se cumple
+sin duplicados y no se genera ninguna afirmaci{\'o}n de fraude. El corpus documental versionado no
+contiene documentos asociados a estos contratos reales, por lo que las diez fichas registran cero
+evidencias documentales y una advertencia expl{\'i}cita; no se descargaron documentos ni se crearon
+evidencias sint{\'e}ticas para ocultar esa limitaci{\'o}n.
+
+Las fichas tambi{\'e}n advierten que los importes extremos deben comprobarse en la fuente original,
+por posibles diferencias de lote, unidad o agregaci{\'o}n. En las se{\~n}ales relacionales se mantiene
+otra frontera metodol{\'o}gica: Agent2 calcula RF-03 y RF-04 con nombres normalizados y cuota de
+importe, mientras Agent3 usa identificadores del grafo y cuota de contratos. Por ello sus valores
+son contexto complementario y no se fuerza que coincidan. El informe
+\texttt{case\_studies\_report.md} y las diez fichas JSON/Markdown conservan el detalle completo,
+incluidas 56 advertencias. La validaci{\'o}n pr{\'a}ctica es positiva para priorizaci{\'o}n y
+explicaci{\'o}n; no equivale a precisi{\'o}n frente a fraude confirmado ni a revisi{\'o}n experta.
+
 \section{Resultados de grafo, RAG y dashboard}
 
 La demo integrada del sistema muestra el flujo completo entre scoring, grafo, recuperaci{\'o}n
@@ -2320,11 +2413,11 @@ realizada indica:
 \begin{itemize}
   \item \texttt{PYTHONPATH=scr python -m procurewatch.cli doctor}: resultado OK, con PostgreSQL, Neo4j, Qdrant y
   Ollama como servicios opcionales;
-  \item \texttt{PYTHONPATH=scr python -m pytest tests}: 117 pruebas superadas y 1 omitida en el
+  \item \texttt{PYTHONPATH=scr python -m pytest tests}: 120 pruebas superadas y 1 omitida en el
   entorno Windows sin el extra \texttt{db};
   \item \texttt{PYTHONPATH=scr python -m ruff check api scr tests frontend}: sin errores;
-  \item \texttt{PYTHONPATH=scr python -m procurewatch.cli run-benchmark}: 32 m{\'e}tricas evaluadas, con
-  29 en \texttt{pass}, 1 en \texttt{warning}, 0 en \texttt{fail} y 2 como \texttt{not\_applicable};
+  \item \texttt{PYTHONPATH=scr python -m procurewatch.cli run-benchmark}: 33 m{\'e}tricas evaluadas, con
+  30 en \texttt{pass}, 1 en \texttt{warning}, 0 en \texttt{fail} y 2 como \texttt{not\_applicable};
   \item demo integrada y dashboard Streamlit validados en modo headless con 0 excepciones.
 \end{itemize}
 
@@ -2347,6 +2440,7 @@ Fuentes & Parser BOE, unidades de an{\'a}lisis BOE, OpenTender, PLACE y normaliz
 Agent2 & Reglas, scoring, pipeline estable, RF-01 a RF-06 y reportes de salida. \\
 Agent3 & Construcci{\'o}n de grafo, nodos, aristas, m{\'e}tricas, comunidades, features y carga Neo4j. \\
 Agent4 & Carga documental, chunks, retrieval, citas, contexto de caso, fallback determinista e integraciones opcionales. \\
+Fichas cualitativas & Selecci{\'o}n 5/3/2, empates, controles, evidencia por flag, relaciones y ausencia documental. \\
 Benchmark & Evaluaci{\'o}n agregada por agente, estados \texttt{pass}/\texttt{warning}/\texttt{fail} y matriz de alcance del TFM. \\
 CLI y batch & Comandos principales, diagn{\'o}stico, ejecuci{\'o}n del prototipo y skip semanal por ausencia de cambios. \\
 \bottomrule
@@ -2389,6 +2483,7 @@ cifras nuevas, sino ordenar qu{\'e} tipo de afirmaci{\'o}n puede defenderse con 
 Reports de Agent1 & Fuentes procesadas, filas, errores, calidad y cobertura. & Cuantitativo sobre la ejecuci{\'o}n disponible. & No resuelve por s{\'i} solo la falta de intersecciones entre fuentes. \\
 Parquet can{\'o}nico & Existencia de una frontera estable Agent1--Agent2. & Operativo y reproducible. & Depende de la calidad de los campos de origen. \\
 Reports de Agent2 & Flags, scores y distribuci{\'o}n de riesgo en la muestra evaluada. & Cuantitativo/proxy. & No equivale a validaci{\'o}n supervisada contra fraude. \\
+Diez fichas cualitativas & Priorizaci{\'o}n 5/3/2, evidencia completa de 21 flags y contexto relacional. & Cualitativo/proxy sobre la muestra. & Sin etiquetas, revisi{\'o}n experta ni documentos asociados en el corpus actual. \\
 Tests automatizados & Correctitud funcional de parsers, agentes, CLI y batch. & Validaci{\'o}n t{\'e}cnica. & No sustituye validaci{\'o}n por expertos. \\
 Benchmark ProcureWatch & Evaluaci{\'o}n agregada de Agent1, Agent2, Agent3, Agent4 e integraci{\'o}n. & T{\'e}cnico, objetivo y reproducible. & Mantiene \texttt{warning} por matching interfuente; no valida fraude supervisado. \\
 Dashboard headless & Disponibilidad de la interfaz y lectura de KPIs. & Prueba de integraci{\'o}n. & No mide usabilidad con usuarios finales. \\
@@ -2729,11 +2824,18 @@ soporte documental y t{\'e}cnico. La arquitectura, las limitaciones, las m{\'e}t
 de lote quedaron alineados con los artefactos generados, de forma que cada afirmaci{\'o}n relevante
 puede rastrearse a una salida del sistema o a una decisi{\'o}n de dise{\~n}o documentada.
 
-El benchmark final refuerza esta conclusi{\'o}n con una lectura agregada: 32 m{\'e}tricas evaluadas, 29
+El benchmark final refuerza esta conclusi{\'o}n con una lectura agregada: 33 m{\'e}tricas evaluadas, 30
 en \texttt{pass}, 1 en \texttt{warning}, 0 en \texttt{fail} y 2 como \texttt{not\_applicable}. El
 {\'u}nico \texttt{warning} corresponde al matching interfuente, no a un fallo de ejecuci{\'o}n. Esta
 separaci{\'o}n permite afirmar que el prototipo es t{\'e}cnicamente funcional y medible, al mismo tiempo
 que mantiene visible la principal limitaci{\'o}n metodol{\'o}gica para una versi{\'o}n institucional.
+
+La evaluaci{\'o}n cualitativa de diez fichas ampl{\'i}a esa evidencia: cinco casos de score m{\'a}ximo,
+tres de riesgo medio y dos controles conservaron trazabilidad de fuente y relaciones; las 21
+activaciones de reglas quedaron justificadas por sus registros de evidencia. La ausencia de
+documentos asociados en el corpus actual se mantuvo visible en las diez fichas. Este resultado
+respalda la capacidad de priorizar y explicar, pero no sustituye una validaci{\'o}n con etiquetas de
+fraude, documentos reales ampliados o revisi{\'o}n experta.
 
 La quinta conclusi{\'o}n es que el bloque de extensi{\'o}n relacional y documental no qued{\'o} como una
 idea pendiente, sino como una integraci{\'o}n demostrable. Agent~3 y Agent~4 dejaron una demo
@@ -2769,7 +2871,9 @@ scoring, grafo, recuperaci{\'o}n documental, dashboard y reproducibilidad. La ej
 de Agent~1 genera 51.720 registros can{\'o}nicos; Agent~2 produce puntuaciones explicables mediante
 RF-01 a RF-06; la demo integrada muestra un caso completo con \texttt{risk\_score=0.5}, dos
 se{\~n}ales de riesgo, 11 nodos, 13 relaciones, 2 comunidades, 2 evidencias documentales y 2 citas; y
-la validaci{\'o}n t{\'e}cnica recoge 117 tests superados y 1 omitido por una dependencia opcional,
+la evaluaci{\'o}n cualitativa publica diez fichas con composici{\'o}n 5/3/2 y evidencia completa para
+21 activaciones de reglas;
+la validaci{\'o}n t{\'e}cnica recoge 120 tests superados y 1 omitido por una dependencia opcional,
 benchmark global sin fallos y
 dashboard Streamlit sin excepciones en modo headless. El valor central del trabajo se sostiene, por tanto, sobre un flujo
 operativo implementado, trazable y documentado, sin afirmar detecci{\'o}n autom{\'a}tica de fraude.
