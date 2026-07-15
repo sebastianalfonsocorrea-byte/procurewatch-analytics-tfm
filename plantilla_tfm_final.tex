@@ -6,18 +6,22 @@
 \usepackage{longtable}
 \usepackage{booktabs}
 \usepackage{array}
+\usepackage{listings}
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta,positioning,fit,backgrounds}
 \numberwithin{equation}{chapter}
 \numberwithin{figure}{chapter}
+\setlength{\emergencystretch}{2em}
+\lstset{basicstyle=\small\ttfamily,breaklines=true,breakatwhitespace=false,columns=fullflexible,keepspaces=true,showstringspaces=false}
+\Urlmuskip=0mu plus 1mu\relax
 
 %---------------------------
 % METADATOS
 %---------------------------
-\title{ProcureWatch Analytics: Plataforma Multiagente para la Detecci{\'o}n de Patrones de Riesgo en Contrataci{\'o}n P{\'u}blica mediante Open Data, An{\'a}lisis de Redes, NLP y Modelos Locales}
+\title{ProcureWatch Analytics:\newline Plataforma Multiagente para la\newline Detecci{\'o}n de Patrones de Riesgo en\newline Contrataci{\'o}n P{\'u}blica mediante Open Data,\newline An{\'a}lisis de Redes, NLP y Modelos Locales}
 \titulacion{M{\'a}ster Universitario en An{\'a}lisis y Visualizaci{\'o}n de Datos Masivos}
 \author{Sebasti{\'a}n Alfonso Correa y Satur{\'i}a Mar{\'i}a Hurtado {\'A}lvarez}
-\date{20 de mayo de 2026}
+\date{15 de julio de 2026}
 \director{Enrique de Miguel Ambite}
 \nombreciudad{}
 
@@ -188,7 +192,7 @@ Los sistemas de control de la contrataci{\'o}n p{\'u}blica presentan diversas li
 
   \item \textbf{Ausencia de perspectiva relacional.} Los controles tradicionales no detectan comunidades de proveedores con comportamientos coordinados, ni patrones de concentraci{\'o}n at{\'i}pica que s{\'o}lo son visibles en el grafo de relaciones empresa-organismo \cite{Wachs2025ML,Martins2022Network}.
 
-  \item \textbf{Invisibilidad del contexto documental.} Los pliegos de prescripciones t{\'e}cnicas, memorias justificativas y resoluciones contienen se{\~n}ales textuales ---direccionamientos t{\'e}cnicos, criterios de adjudicaci{\'o}n subjetivos--- que permanecen invisibles en an{\'a}lisis puramente estructurados \cite{NLPLegalSurvey2024}.
+  \item \textbf{Invisibilidad del contexto documental.} Los pliegos de prescripciones t{\'e}cnicas, memorias justificativas y resoluciones contienen se{\~n}ales textuales ---direc\-cionamientos t{\'e}cnicos, criterios de adjudicaci{\'o}n subjetivos--- que permanecen invisibles en an{\'a}lisis puramente estructurados \cite{NLPLegalSurvey2024}.
 \end{enumerate}
 
 \section{Pregunta 4: Evidencia de eficacia del an{\'a}lisis de datos para detectar riesgo}
@@ -448,9 +452,9 @@ Implementar un componente documental trazable para cargar contenido HTML o textu
 
 
 \subsection*{OE7 --- Desarrollo del \textit{front-end} anal{\'i}tico}
-Construir una interfaz web local basada en Streamlit con resumen, ranking de contratos priorizados, detalle de caso, grafo de relaciones, evidencias y trazabilidad. Sigma.js queda como opci{\'o}n de extensi{\'o}n para grafos web de mayor escala.
+Construir una interfaz web local basada en Streamlit con resumen, evoluci{\'o}n temporal de contratos y riesgo, ranking de contratos priorizados, detalle de caso, grafo de relaciones, evidencias y trazabilidad. Sigma.js queda como opci{\'o}n de extensi{\'o}n para grafos web de mayor escala.
 
-\textbf{M{\'e}trica:} Validaci{\'o}n headless en estado \texttt{ready}, 10 comprobaciones superadas y 0 excepciones. SUS, tiempo por tarea y claridad Likert quedan pendientes de un estudio formal con usuarios.
+\textbf{M{\'e}trica:} Validaci{\'o}n headless en estado \texttt{ready}, 11 comprobaciones superadas, 8 pesta{\~n}as, 18 m{\'e}tricas de Streamlit y 0 excepciones. SUS, tiempo por tarea y claridad Likert quedan pendientes de un estudio formal con usuarios.
 
 \subsection*{OE8 --- Evaluaci{\'o}n integral del sistema}
 Validar el prototipo mediante tests automatizados, benchmark reproducible, calidad de datos, consistencia y sensibilidad de red flags, modularidad Louvain, trazabilidad documental y diez fichas cualitativas del dominio CPV~71: cinco casos de score m{\'a}ximo, tres de riesgo medio y dos controles.
@@ -893,8 +897,9 @@ El dise{\~n}o de orquestaci{\'o}n es compatible con un estado compartido de tipo
 \begin{minipage}{0.94\textwidth}
 \footnotesize
 \centering
+\setlength{\tabcolsep}{2pt}
 \textbf{Trazabilidad de una ficha de riesgo}\\[0.1cm]
-\begin{tabular}{>{\centering\arraybackslash}p{0.18\textwidth}>{\centering\arraybackslash}p{0.18\textwidth}>{\centering\arraybackslash}p{0.18\textwidth}>{\centering\arraybackslash}p{0.18\textwidth}>{\centering\arraybackslash}p{0.18\textwidth}}
+\begin{tabular}{@{}>{\centering\arraybackslash}p{0.18\textwidth}>{\centering\arraybackslash}p{0.18\textwidth}>{\centering\arraybackslash}p{0.18\textwidth}>{\centering\arraybackslash}p{0.18\textwidth}>{\centering\arraybackslash}p{0.18\textwidth}@{}}
 Fuente & Transformaci{\'o}n & Indicador & Evidencia & Salida \tabularnewline
 BOE/PLACE & OCDS + calidad & RF/score/grafo & corpus + documentos & ficha revisable \tabularnewline
 \texttt{url/hash} & \texttt{run\_id} & \texttt{rule\_version} & \texttt{chunk\_id} & \texttt{case\_id} \tabularnewline
@@ -913,12 +918,13 @@ Cada afirmaci{\'o}n de la ficha debe poder enlazarse con una regla, un valor obs
 El dashboard se dise{\~n}a para una tarea concreta: localizar contratos de mayor riesgo, entender por qu{\'e} han sido priorizados y revisar la evidencia asociada. La versi{\'o}n de cierre organiza la informaci{\'o}n en torno a:
 
 \begin{itemize}
-  \item KPIs generales: n{\'u}mero de contratos, importe total, organismos, adjudicatarios y distribuci{\'o}n de riesgo;
-  \item filtros por a{\~n}o, CPV, organismo, adjudicatario, procedimiento y nivel de riesgo;
-  \item ranking de contratos por score y filtros por adjudicatario;
+  \item KPIs de la demo integrada: contratos, compradores, adjudicatarios, relaciones, comunidades y evidencias;
+  \item evoluci{\'o}n mensual del volumen y riesgo medio sobre la muestra real evaluada por Agent2, sin imputar fechas ausentes;
+  \item filtros por estado del caso, comprador, adjudicatario, comunidad y contrato seleccionado;
+  \item ranking de contratos por score;
   \item vista de detalle de contrato con red flags activadas y valores observados;
   \item grafo interactivo de relaciones organismo-adjudicatario-contrato;
-  \item ficha explicativa generada con evidencias tabulares, de red y documentales.
+  \item ficha explicativa generada con evidencias tabulares, de red y documentales, adem{\'a}s de trazabilidad y metodolog{\'i}a.
 \end{itemize}
 
 La interfaz no debe mostrar el score como una verdad absoluta. Debe presentarlo como una prioridad de revisi{\'o}n, acompa{\~n}ada de factores explicativos y limitaciones de datos.
@@ -1091,22 +1097,22 @@ servicios opcionales utilizados cuando el entorno de ejecuci{\'o}n dispone de el
 \textbf{Componente} & \textbf{Ruta principal} & \textbf{Funci{\'o}n verificada} \\
 \midrule
 \endhead
-CLI & \texttt{scr/procurewatch/cli.py} & Expone comandos de diagn{\'o}stico, normalizaci{\'o}n, ejecuci{\'o}n de agentes, batch, RAG, evaluaci{\'o}n y carga Neo4j. \\
-Fuentes BOE & \texttt{data\_sources/boe.py} & Normaliza el CSV BOE 2014--2024, extrae contratos y l{\'i}neas de adjudicaci{\'o}n CPV~71 y genera reportes de calidad. \\
-Fuentes PLACE & \texttt{data\_sources/place.py}, \texttt{place\_normalize.py} & Gestiona descarga y lectura de fuentes PLACE, parsing de ZIP/Atom/XML, filtrado CPV y deduplicaci{\'o}n. \\
-Fuentes OpenTender & \texttt{data\_sources/opentender.py} & Descubre y procesa ficheros JSONL/GZ/ZIP de OpenTender, normalizando registros CPV~71 para el can{\'o}nico. \\
-Agent1 & \texttt{agent1/pipeline.py} & Construye el can{\'o}nico de contratos, cobertura entre fuentes, datasets anal{\'i}ticos y reportes de calidad. \\
-Esquema anal{\'i}tico & \texttt{agent1/analytical\_schema.py} & Define los campos m{\'i}nimos de \texttt{CONTRATO} y \texttt{ADJUDICATARIO} definidos en el alcance del TFM. \\
-Persistencia relacional & \texttt{db.py} & Inserta tablas anal{\'i}ticas de Agent1 en PostgreSQL cuando el servicio est{\'a} disponible. \\
-Agent2 estable & \texttt{agent2/pipeline.py} & Calcula red flags y scores sobre el can{\'o}nico de Agent1 con reglas versionadas. \\
-Agent2 versi{\'o}n evaluada & \texttt{agent2/mvp\_pipeline.py} & Ejecuta RF-01 a RF-06 y genera flags por contrato, scores por contrato y reporte JSON. \\
-Agent3 & \texttt{agent3/} & Construye grafo, nodos, aristas, m{\'e}tricas, comunidades Louvain, resumen de red y features para otros agentes. \\
-Neo4j opcional & \texttt{agent3/neo4j\_store.py} & Define constraints, carga nodos/aristas y ejecuta consultas de control cuando Neo4j est{\'a} activo. \\
-Agent4 & \texttt{agent4/} & Carga corpus, fragmenta documentos, recupera evidencias, genera contexto de caso y eval{\'u}a la calidad local del RAG. \\
-Qdrant/Ollama opcionales & \texttt{agent4/qdrant\_store.py}, \texttt{embeddings.py}, \texttt{generation.py} & Indexaci{\'o}n vectorial y generaci{\'o}n local si los servicios existen; fallback determinista en tests. \\
-Batch & \texttt{batch.py} & Gestiona la ejecuci{\'o}n de Agent1 por lote, genera manifests y hashes, registra \texttt{skipped} y planifica el estado downstream. \\
-Dashboard & \texttt{frontend/agent3\_demo.py} & Interfaz Streamlit con pesta{\~n}as de resumen, contratos priorizados, caso, relaciones, evidencias y trazabilidad. \\
-Tests & \texttt{tests/} & Pruebas automatizadas de agentes, fuentes, batch, CLI, PostgreSQL, Neo4j, RAG y configuraci{\'o}n. \\
+CLI & \path{scr/procurewatch/cli.py} & Expone comandos de diagn{\'o}stico, normalizaci{\'o}n, ejecuci{\'o}n de agentes, batch, RAG, evaluaci{\'o}n y carga Neo4j. \\
+Fuentes BOE & \path{data_sources/boe.py} & Normaliza el CSV BOE 2014--2024, extrae contratos y l{\'i}neas de adjudicaci{\'o}n CPV~71 y genera reportes de calidad. \\
+Fuentes PLACE & \path{data_sources/place.py}, \path{place_normalize.py} & Gestiona descarga y lectura de fuentes PLACE, parsing de ZIP/Atom/XML, filtrado CPV y deduplicaci{\'o}n. \\
+Fuentes OpenTender & \path{data_sources/opentender.py} & Descubre y procesa ficheros JSONL/GZ/ZIP de OpenTender, normalizando registros CPV~71 para el can{\'o}nico. \\
+Agent1 & \path{agent1/pipeline.py} & Construye el can{\'o}nico de contratos, cobertura entre fuentes, datasets anal{\'i}ticos y reportes de calidad. \\
+Esquema anal{\'i}tico & \path{agent1/analytical_schema.py} & Define los campos m{\'i}nimos de \texttt{CONTRATO} y \texttt{ADJUDICATARIO} definidos en el alcance del TFM. \\
+Persistencia relacional & \path{db.py} & Inserta tablas anal{\'i}ticas de Agent1 en PostgreSQL cuando el servicio est{\'a} disponible. \\
+Agent2 estable & \path{agent2/pipeline.py} & Calcula red flags y scores sobre el can{\'o}nico de Agent1 con reglas versionadas. \\
+Agent2 versi{\'o}n evaluada & \path{agent2/mvp_pipeline.py} & Ejecuta RF-01 a RF-06 y genera flags por contrato, scores por contrato y reporte JSON. \\
+Agent3 & \path{agent3/} & Construye grafo, nodos, aristas, m{\'e}tricas, comunidades Louvain, resumen de red y features para otros agentes. \\
+Neo4j opcional & \path{agent3/neo4j_store.py} & Define constraints, carga nodos/aristas y ejecuta consultas de control cuando Neo4j est{\'a} activo. \\
+Agent4 & \path{agent4/} & Carga corpus, fragmenta documentos, recupera evidencias, genera contexto de caso y eval{\'u}a la calidad local del RAG. \\
+Qdrant/Ollama opcionales & \path{agent4/qdrant_store.py}, \path{embeddings.py}, \path{generation.py} & Indexaci{\'o}n vectorial y generaci{\'o}n local si los servicios existen; fallback determinista en tests. \\
+Batch & \path{batch.py} & Gestiona la ejecuci{\'o}n de Agent1 por lote, genera manifests y hashes, registra \texttt{skipped} y planifica el estado downstream. \\
+Dashboard & \path{frontend/agent3_demo.py} & Interfaz Streamlit con pesta{\~n}as de resumen, evoluci{\'o}n temporal, contratos priorizados, caso, relaciones, evidencias y trazabilidad. \\
+Tests & \path{tests/} & Pruebas automatizadas de agentes, fuentes, batch, CLI, PostgreSQL, Neo4j, RAG y configuraci{\'o}n. \\
 \bottomrule
 \end{longtable}
 }
@@ -1121,7 +1127,7 @@ sin necesidad de ejecutar toda la cadena completa en cada revisi{\'o}n. La Tabla
 resume las entradas, procesos y salidas de cada etapa.
 
 {\small
-\begin{longtable}{p{2.8cm}p{3.7cm}p{3.9cm}p{3.3cm}}
+\begin{longtable}{@{}p{2.8cm}p{3.7cm}p{3.9cm}p{3.3cm}@{}}
 \caption{Flujo extremo a extremo del prototipo}
 \label{tab:flujo_e2e}\\
 \toprule
@@ -1167,7 +1173,7 @@ sin modificar las reglas de riesgo, siempre que el can{\'o}nico mantenga el mism
 La Tabla~\ref{tab:contratos_datos_agentes} resume los contratos operativos utilizados por el prototipo.
 
 {\small
-\begin{longtable}{p{2.4cm}p{3.4cm}p{3.8cm}p{3.8cm}}
+\begin{longtable}{@{}p{2.4cm}p{3.4cm}p{3.8cm}p{3.8cm}@{}}
 \caption{Contratos de datos entre agentes del prototipo}
 \label{tab:contratos_datos_agentes}\\
 \toprule
@@ -1179,7 +1185,7 @@ La Tabla~\ref{tab:contratos_datos_agentes} resume los contratos operativos utili
 \midrule
 \endhead
 Fuentes--Agent1 & Ficheros BOE, PLACE u OpenTender con metadatos de fuente. & Tablas por fuente normalizadas y can{\'o}nico. & Filas procesadas, errores de parseo, hashes y rutas de entrada. \\
-Agent1--Agent2 & \texttt{agent2\_contracts\_canonical.parquet}. & Red flags y scores por contrato. & Campos obligatorios, contratos evaluables y reglas activadas. \\
+Agent1--Agent2 & \path{agent2_contracts_canonical.parquet}. & Red flags y scores por contrato. & Campos obligatorios, contratos evaluables y reglas activadas. \\
 Agent2--Agent3 & Can{\'o}nico y, cuando existe, score por contrato. & Nodos, aristas, comunidades, m{\'e}tricas y features relacionales. & Integridad de claves, ausencia de nodos hu{\'e}rfanos y consistencia de aristas. \\
 Agent2/3--Agent4 & Caso priorizado, score, relaciones y corpus documental. & Contexto recuperado, evidencias, citas y ficha de caso. & Evidencia enlazada a fragmentos y advertencias si falta contexto. \\
 Agentes--Dashboard & Artefactos Parquet/JSON generados por el pipeline. & Vistas de resumen, detalle, relaciones, evidencias y trazabilidad. & Lectura sin recalcular reglas ni alterar outputs anal{\'i}ticos. \\
@@ -1434,7 +1440,7 @@ OE3 & Pipeline reproducible con parsers, can{\'o}nico, reportes y persistencia o
 OE4 & RF-01 a RF-06 y scoring 0--100 por contrato. & Cumplido en la versi{\'o}n evaluada; el cat{\'a}logo completo de 15 RF y el scoring agregado por adjudicatario quedan como extensiones. \\
 OE5 & Grafo con nodos, aristas, m{\'e}tricas, comunidades y features. & Cumplido como grafo derivado; Neo4j es opcional. \\
 OE6 & Agent4 con corpus, chunks, retrieval, contexto de caso y citas. & Cumplido como componente documental del prototipo; evaluaci{\'o}n masiva RAG queda limitada. \\
-OE7 & Dashboard Streamlit integrado con resumen, ranking, caso, relaciones, evidencias y trazabilidad; validaci{\'o}n headless con 10 comprobaciones y 0 excepciones. & Cumplimiento funcional para demo local; sin SUS, Likert ni medici{\'o}n temporal con usuarios. \\
+OE7 & Dashboard Streamlit integrado con resumen, evoluci{\'o}n temporal, ranking, caso, relaciones, evidencias y trazabilidad; validaci{\'o}n headless con 11 comprobaciones, 8 pesta{\~n}as, 18 m{\'e}tricas y 0 excepciones. & Cumplimiento funcional para demo local; sin SUS, Likert ni medici{\'o}n de tiempos de tarea con usuarios. \\
 OE8 & Validaci{\'o}n con suites m{\'i}nima/completa, benchmark en dos modos, modularidad y diez fichas cualitativas. & Cumplimiento parcial: valida funcionamiento, priorizaci{\'o}n y explicaci{\'o}n, sin etiquetas de fraude, revisi{\'o}n experta, RAGAS amplio ni estudio formal de usabilidad. \\
 \bottomrule
 \end{longtable}
@@ -1618,7 +1624,7 @@ y un \texttt{derived\_rebuild\_plan}; ninguno ejecuta autom{\'a}ticamente Agent~
 La Tabla~\ref{tab:modos_batch} resume la finalidad de cada modo.
 
 {\small
-\begin{longtable}{p{2.7cm}p{4.5cm}p{3.4cm}p{3.0cm}}
+\begin{longtable}{@{}p{2.7cm}p{4.5cm}p{3.4cm}p{3.0cm}@{}}
 \caption{Modos de ejecuci{\'o}n batch del prototipo}
 \label{tab:modos_batch}\\
 \toprule
@@ -1699,8 +1705,8 @@ disponible en el repositorio del proyecto:
 \texttt{normalize-place} & Normaliza ficheros PLACE. \\
 \texttt{normalize-opentender} & Normaliza registros OpenTender. \\
 \texttt{run-agent1} & Ejecuta la ingesta integrada y construye el can{\'o}nico de Agent1. \\
-\texttt{report-agent1-coverage} & Genera informe de cobertura y calidad de Agent1. \\
-\texttt{report-agent1-source-diagnostics} & Genera diagn{\'o}stico de intersecciones y candidatos de matching entre fuentes. \\
+\path{report-agent1-coverage} & Genera informe de cobertura y calidad de Agent1. \\
+\path{report-agent1-source-diagnostics} & Genera diagn{\'o}stico de intersecciones y candidatos de matching entre fuentes. \\
 \texttt{run-mvp} & Ejecuta un flujo compacto de Agent1 con persistencia opcional. \\
 \texttt{run-agent2} & Calcula red flags y scores con el pipeline estable de Agent2. \\
 \texttt{run-agent2-mvp} & Ejecuta la versi{\'o}n evaluada de Agent2 con RF-01 a RF-06. \\
@@ -1720,7 +1726,7 @@ disponible en el repositorio del proyecto:
 
 Un ejemplo representativo de reproducci{\'o}n de la demo integrada es:
 
-\begin{verbatim}
+\begin{lstlisting}
 PYTHONPATH=scr python -m procurewatch.cli doctor
 PYTHONPATH=scr python -m procurewatch.cli run-agent2-mvp \
   --input data/processed/agent2_contracts_canonical.parquet \
@@ -1730,7 +1736,7 @@ PYTHONPATH=scr python -m procurewatch.cli run-agent3 \
   --output-dir data/processed/agent3
 PYTHONPATH=scr python -m procurewatch.cli run-integrated-demo
 PYTHONPATH=scr python -m procurewatch.cli validate-dashboard-demo
-\end{verbatim}
+\end{lstlisting}
 
 El valor de este dise{\~n}o no est{\'a} solo en que los comandos existan, sino en que fuerzan una
 separaci{\'o}n clara entre entradas, salidas y par{\'a}metros. En una herramienta de auditor{\'i}a
@@ -1757,32 +1763,32 @@ Tabla~\ref{tab:artefactos_sistema} agrupa los artefactos principales.
 \textbf{Artefacto} & \textbf{Productor} & \textbf{Funci{\'o}n} \\
 \midrule
 \endhead
-\texttt{contracts\_boe.parquet} & BOE parser & Contratos normalizados desde BOE. \\
-\texttt{contracts\_boe\_cpv71.parquet} & BOE parser & Subconjunto CPV~71. \\
-\texttt{contracts\_boe\_award\_lines\_cpv71.parquet} & BOE parser & L{\'i}neas de adjudicaci{\'o}n CPV~71, unidad preferida para an{\'a}lisis adjudicado. \\
-\texttt{contracts\_place\_cpv71.parquet} & PLACE parser & Contratos PLACE filtrados por CPV~71. \\
-\texttt{contracts\_opentender\_2024\_cpv71.parquet} & OpenTender parser & Registros OpenTender espa{\~n}oles CPV~71. \\
-\texttt{agent2\_contracts\_canonical.parquet} & Agent1 & Dataset can{\'o}nico consumido por Agent2. \\
-\texttt{contracts\_analytical.parquet} & Agent1 & Tabla anal{\'i}tica de contratos alineada con el esquema objetivo del TFM. \\
-\texttt{suppliers\_analytical.parquet} & Agent1 & Tabla anal{\'i}tica de adjudicatarios. \\
-\texttt{agent1\_run\_report.json} & Agent1 & Informe de fuentes, versiones de parsers, filas procesadas y errores. \\
-\texttt{agent1\_data\_quality\_summary.json} & Agent1 & Resumen de calidad, cobertura, completitud y coherencia. \\
-\texttt{agent1\_contract\_key\_coverage.parquet} & Agent1 & Cobertura y cruce por \texttt{contract\_key\_canon}. \\
-\texttt{agent1\_source\_coverage\_analysis.md} & Agent1 & Interpretaci{\'o}n de cobertura aditiva, intersecciones y readiness institucional. \\
-\texttt{agent1\_matching\_diagnostics.json} & Agent1 & Intersecciones exactas y candidatos aproximados de matching entre fuentes. \\
-\texttt{agent2\_risk\_flags.parquet} & Agent2 & Red flags activadas por contrato. \\
-\texttt{agent2\_risk\_scores.parquet} & Agent2 & Score y nivel de riesgo por contrato. \\
-\texttt{agent2\_run\_report.json} & Agent2 & Informe de reglas, filas evaluables, distribuci{\'o}n de riesgo y versi{\'o}n de scoring. \\
+\path{contracts_boe.parquet} & BOE parser & Contratos normalizados desde BOE. \\
+\path{contracts_boe_cpv71.parquet} & BOE parser & Subconjunto CPV~71. \\
+\path{contracts_boe_award_lines_cpv71.parquet} & BOE parser & L{\'i}neas de adjudicaci{\'o}n CPV~71, unidad preferida para an{\'a}lisis adjudicado. \\
+\path{contracts_place_cpv71.parquet} & PLACE parser & Contratos PLACE filtrados por CPV~71. \\
+\path{contracts_opentender_2024_cpv71.parquet} & OpenTender parser & Registros OpenTender espa{\~n}oles CPV~71. \\
+\path{agent2_contracts_canonical.parquet} & Agent1 & Dataset can{\'o}nico consumido por Agent2. \\
+\path{contracts_analytical.parquet} & Agent1 & Tabla anal{\'i}tica de contratos alineada con el esquema objetivo del TFM. \\
+\path{suppliers_analytical.parquet} & Agent1 & Tabla anal{\'i}tica de adjudicatarios. \\
+\path{agent1_run_report.json} & Agent1 & Informe de fuentes, versiones de parsers, filas procesadas y errores. \\
+\path{agent1_data_quality_summary.json} & Agent1 & Resumen de calidad, cobertura, completitud y coherencia. \\
+\path{agent1_contract_key_coverage.parquet} & Agent1 & Cobertura y cruce por \texttt{contract\_key\_canon}. \\
+\path{agent1_source_coverage_analysis.md} & Agent1 & Interpretaci{\'o}n de cobertura aditiva, intersecciones y readiness institucional. \\
+\path{agent1_matching_diagnostics.json} & Agent1 & Intersecciones exactas y candidatos aproximados de matching entre fuentes. \\
+\path{agent2_risk_flags.parquet} & Agent2 & Red flags activadas por contrato. \\
+\path{agent2_risk_scores.parquet} & Agent2 & Score y nivel de riesgo por contrato. \\
+\path{agent2_run_report.json} & Agent2 & Informe de reglas, filas evaluables, distribuci{\'o}n de riesgo y versi{\'o}n de scoring. \\
 \path{agent2_evaluation_report.json} & Agent2 & Evaluabilidad por regla y comparaci{\'o}n de umbrales -10\,\%, base y +10\,\%. \\
-\texttt{agent3\_nodes.parquet} & Agent3 & Nodos del grafo. \\
-\texttt{agent3\_edges.parquet} & Agent3 & Aristas del grafo. \\
-\texttt{agent3\_contract\_metrics.parquet} & Agent3 & M{\'e}tricas relacionales por contrato. \\
-\texttt{agent3\_agent2\_features.parquet} & Agent3 & Variables relacionales consumibles por scoring o explicaci{\'o}n. \\
+\path{agent3_nodes.parquet} & Agent3 & Nodos del grafo. \\
+\path{agent3_edges.parquet} & Agent3 & Aristas del grafo. \\
+\path{agent3_contract_metrics.parquet} & Agent3 & M{\'e}tricas relacionales por contrato. \\
+\path{agent3_agent2_features.parquet} & Agent3 & Variables relacionales consumibles por scoring o explicaci{\'o}n. \\
 \path{case_studies_report.json} & Evaluaci{\'o}n & Informe agregado y diez fichas individuales con selecci{\'o}n 5/3/2, evidencia y advertencias. \\
-\texttt{agent4\_case\_context\_integrated\_demo.json} & Agent4 & Ficha/contexto integrado de caso con evidencias y citas. \\
-\texttt{agent4\_evaluation\_report.md} & Agent4 & Evaluaci{\'o}n de fidelidad, cobertura, trazabilidad y consistencia de citas. \\
-\texttt{benchmark\_report.md} & Benchmark & Evaluaci{\'o}n global por agentes, matriz de alcance y conclusiones acad{\'e}micas. \\
-\texttt{manifest.json} & Batch & Fuentes revisadas, hashes, entradas, salidas, estado y versi{\'o}n de ejecuci{\'o}n. \\
+\path{agent4_case_context_integrated_demo.json} & Agent4 & Ficha/contexto integrado de caso con evidencias y citas. \\
+\path{agent4_evaluation_report.md} & Agent4 & Evaluaci{\'o}n de fidelidad, cobertura, trazabilidad y consistencia de citas. \\
+\path{benchmark_report.md} & Benchmark & Evaluaci{\'o}n global por agentes, matriz de alcance y conclusiones acad{\'e}micas. \\
+\path{manifest.json} & Batch & Fuentes revisadas, hashes, entradas, salidas, estado y versi{\'o}n de ejecuci{\'o}n. \\
 \bottomrule
 \end{longtable}
 }
@@ -1806,7 +1812,7 @@ corresponde al esquema anal{\'i}tico m{\'i}nimo. La implementaci{\'o}n no deja e
 una tabla informal de la memoria, sino como una estructura ejecutable que los tests pueden
 comprobar.
 
-\begin{verbatim}
+\begin{lstlisting}
 CONTRACT_REQUIRED_FIELDS = (
     "id_contrato",
     "id_licitacion",
@@ -1832,7 +1838,7 @@ CONTRACT_REQUIRED_FIELDS = (
     "fuentes_cruzadas",
     "estado_revision",
 )
-\end{verbatim}
+\end{lstlisting}
 
 Este fragmento es importante porque vincula directamente el alcance inicial con el c{\'o}digo:
 los campos de \texttt{CONTRATO} no son una aspiraci{\'o}n documental, sino una lista de requisitos
@@ -1848,7 +1854,7 @@ criterios distintos por fuente y con fallback trazable. El fragmento siguiente r
 central de la funci{\'o}n \texttt{\_build\_contract\_keys}; se omiten detalles auxiliares de
 normalizaci{\'o}n para mantener legibilidad.
 
-\begin{verbatim}
+\begin{lstlisting}
 if source == "boe":
     file_id = _norm_text(id_frame["file_number"]).fillna("")
     buyer_name = _norm_text(id_frame["buyer_name"]).fillna("")
@@ -1863,7 +1869,7 @@ elif source == "place":
     key_parts = contract_folder_id + "|" + buyer_dir3 + "|" + published_date
     fallback = _norm_text(id_frame["source_entry_id"]).fillna("")
     final = _norm_key_candidates(key_parts, fallback)
-\end{verbatim}
+\end{lstlisting}
 
 La decisi{\'o}n t{\'e}cnica consiste en priorizar identificadores fuertes cuando existen y combinar
 campos auxiliares solo como apoyo. Esta regla mejora la trazabilidad porque cada clave puede
@@ -1878,7 +1884,7 @@ principal de las reglas evaluables a nivel de contrato individual: RF-01, RF-02,
 RF-03 y RF-04 se aplican posteriormente en \texttt{agent2/mvp\_pipeline.py}, donde existe contexto
 agregado suficiente para medir recurrencia y concentraci{\'o}n en la pareja comprador-proveedor.
 
-\begin{verbatim}
+\begin{lstlisting}
 FLAG_WEIGHTS = {
     "RF-01": 15.0,
     "RF-02": 20.0,
@@ -1901,7 +1907,7 @@ if temporal_anomaly(contract):
     red_flags.append("RF-06")
 
 risk_score = min(sum(FLAG_WEIGHTS.get(flag, 0.0) for flag in red_flags), 100.0)
-\end{verbatim}
+\end{lstlisting}
 
 Este fragmento muestra por qu{\'e} el score es explicable: cada incremento est{\'a} ligado a una regla
 con c{\'o}digo, peso y evidencia. La limitaci{\'o}n es que no todas las red flags previstas
@@ -1911,7 +1917,7 @@ resultado evaluado.
 \textbf{Ruta:} \texttt{scr/procurewatch/agent2/mvp\_pipeline.py}. El nivel de riesgo se asigna
 mediante umbrales transparentes:
 
-\begin{verbatim}
+\begin{lstlisting}
 def _risk_level_from_score(score: float) -> str:
     if score >= 75:
         return "critico"
@@ -1920,7 +1926,7 @@ def _risk_level_from_score(score: float) -> str:
     if score >= 25:
         return "medio"
     return "bajo"
-\end{verbatim}
+\end{lstlisting}
 
 La ventaja de esta decisi{\'o}n es que un evaluador puede reproducir manualmente la categor{\'i}a de
 riesgo a partir del score. La desventaja es que los umbrales no proceden de entrenamiento
@@ -1932,7 +1938,7 @@ supervisado contra fraude confirmado; son criterios de priorizaci{\'o}n para rev
 batch registra hashes y evita reejecutar Agent1 cuando las fuentes no han cambiado. El test de
 regresi{\'o}n reproduce el escenario semanal sin cambios:
 
-\begin{verbatim}
+\begin{lstlisting}
 with mock.patch("procurewatch.batch.run_agent1") as run_agent1_mock:
     result = run_batch(
         run_mode="weekly",
@@ -1946,7 +1952,7 @@ with mock.patch("procurewatch.batch.run_agent1") as run_agent1_mock:
 self.assertFalse(run_agent1_mock.called)
 self.assertEqual(result["status"], "skipped")
 self.assertEqual(result["agent1_executed"], False)
-\end{verbatim}
+\end{lstlisting}
 
 Este fragmento es relevante porque valida una propiedad operativa del prototipo: el sistema no descarga ni
 procesa todo en cada ejecuci{\'o}n si los hashes, tama{\~n}os y rutas de entrada no cambian. La
@@ -1959,10 +1965,10 @@ El {\'u}ltimo fragmento muestra una consulta Cypher representativa del an{\'a}li
 versi{\'o}n de cierre, Neo4j es opcional, pero el modelo de nodos y relaciones s{\'i} est{\'a}
 preparado para cargar contratos y recuperar su entorno relacional.
 
-\begin{verbatim}
+\begin{lstlisting}
 MATCH (contract:Contract {contract_key_canon: $contract_key_canon})-[rel]-(neighbor)
 RETURN contract, rel, neighbor
-\end{verbatim}
+\end{lstlisting}
 
 Esta consulta permite explicar un contrato desde su vecindario: comprador, adjudicatario, CPV,
 fuente y entidades relacionadas. Para la defensa del TFM, esta capacidad es m{\'a}s relevante que la
@@ -2091,7 +2097,7 @@ La Tabla~\ref{tab:metricas_agent1_calidad} recoge las m{\'e}tricas de calidad pr
 para interpretar la ingesta y la normalizaci{\'o}n.
 
 {\small
-\begin{longtable}{p{4.6cm}p{2.5cm}p{2.2cm}p{4.1cm}}
+\begin{longtable}{@{}p{4.6cm}p{2.5cm}p{2.2cm}p{4.1cm}@{}}
 \caption{M{\'e}tricas de calidad de Agent1 en la ejecuci{\'o}n disponible}
 \label{tab:metricas_agent1_calidad}\\
 \toprule
@@ -2270,7 +2276,7 @@ no recalcula ni modifica el riesgo. La Tabla~\ref{tab:casos_cualitativos_selecci
 selecci{\'o}n observada.
 
 {\small
-\begin{longtable}{p{1.2cm}p{2.3cm}p{1.8cm}r p{5.4cm}}
+\begin{longtable}{p{1.2cm}p{2.3cm}p{2.0cm}r p{5.2cm}}
 \caption{Selecci{\'o}n de diez fichas cualitativas}
 \label{tab:casos_cualitativos_seleccion}\\
 \toprule
@@ -2348,9 +2354,9 @@ explicaci{\'o}n; no equivale a precisi{\'o}n frente a fraude confirmado ni a rev
 \section{Resultados de grafo, RAG y dashboard}
 
 La demo integrada del sistema muestra el flujo completo entre scoring, grafo, recuperaci{\'o}n
-documental y dashboard. Para el caso \texttt{PW-2024-0001}, el sistema asigna
-\texttt{risk\_score=0.5}, activa dos se{\~n}ales de riesgo ---\texttt{risky\_procedure} y
-\texttt{awarded\_above\_estimate}---, genera un grafo de 11 nodos y 13 relaciones, recupera 2
+documental y dashboard. Para el caso \path{PW-2024-0001}, el sistema asigna
+\path{risk_score=0.5}, activa dos se{\~n}ales de riesgo ---\path{risky_procedure} y
+\path{awarded_above_estimate}---, genera un grafo de 11 nodos y 13 relaciones, recupera 2
 evidencias documentales con 2 citas trazables y permite visualizar la ficha de caso en el dashboard
 Streamlit.
 
@@ -2364,17 +2370,17 @@ demo integrada. La modularidad de su partici{\'o}n Louvain es $Q=0{,}3165680473$
 encima del umbral $Q>0{,}30$. Este resultado cuantifica separaci{\'o}n comunitaria en el grafo simple
 no ponderado; no demuestra fraude ni validez jur{\'i}dica de las comunidades.
 
-Agent4 recupera evidencia documental trazable asociada al contrato. Para \texttt{PW-2024-0001},
-recupera dos fragmentos documentales y genera dos citas con \texttt{document\_id},
-\texttt{chunk\_id} y \texttt{contract\_key\_canon}. La generaci{\'o}n se realiza en modo
-\texttt{deterministic\_fallback}; en esta demo Qdrant y Ollama no son necesarios. Las evidencias
+Agent4 recupera evidencia documental trazable asociada al contrato. Para \path{PW-2024-0001},
+recupera dos fragmentos documentales y genera dos citas con \path{document_id},
+\path{chunk_id} y \path{contract_key_canon}. La generaci{\'o}n se realiza en modo
+\path{deterministic_fallback}; en esta demo Qdrant y Ollama no son necesarios. Las evidencias
 incluyen un fragmento HTML del pliego con score 0,6 y un fragmento TXT de adjudicaci{\'o}n con score
 0,4. La ficha conserva la frontera de decisi{\'o}n: el sistema no declara fraude, sino que apoya la
 revisi{\'o}n humana.
 
 La evaluaci{\'o}n local de Agent4 sobre corpus sint{\'e}tico recoge 3 casos evaluados, 2 con evidencia,
-\texttt{expectation\_accuracy=1.0}, \texttt{precision@k} media de 1,0,
-\texttt{expected\_document\_recall=1.0}, trazabilidad media de citas de 1,0, consistencia media de
+\path{expectation_accuracy=1.0}, \path{precision@k} media de 1,0,
+\path{expected_document_recall=1.0}, trazabilidad media de citas de 1,0, consistencia media de
 contrato de 1,0 y validaci{\'o}n pr{\'a}ctica de 1,0. RAGAS queda registrado como \texttt{not\_run}.
 Estos resultados validan la trazabilidad y recuperaci{\'o}n en la versi{\'o}n evaluada del sistema, no
 el rendimiento jur{\'i}dico sobre un corpus real amplio.
@@ -2410,9 +2416,56 @@ se presenta como capa explicativa controlada y no como motor decisor.
 
 El dashboard integrado est{\'a} implementado en \texttt{frontend/agent3\_demo.py}. La validaci{\'o}n
 t{\'e}cnica recoge estado \texttt{ready}, 3 contratos cargados, 11 nodos, 13 aristas, 2 comunidades,
-14 m{\'e}tricas visibles, 7 pesta{\~n}as, 2 evidencias, 2 citas y 0 excepciones en renderizado
+18 m{\'e}tricas de Streamlit, 8 pesta{\~n}as, 11 comprobaciones superadas, 2 evidencias, 2 citas y 0 excepciones en renderizado
 headless. La interfaz est{\'a} organizada para revisi{\'o}n humana: el usuario no recibe una decisi{\'o}n
 autom{\'a}tica, sino una ruta de exploraci{\'o}n desde el ranking de riesgo hasta la evidencia concreta.
+
+La pesta{\~n}a de evoluci{\'o}n temporal no reutiliza los tres contratos sint{\'e}ticos de la demo. Cruza
+los 3.437 scores de la evaluaci{\'o}n base de Agent2 con el can{\'o}nico de esa misma muestra. De ellos,
+976 tienen una fecha de publicaci{\'o}n v{\'a}lida y 2.461 carecen de ella o no pueden interpretarse como
+fecha; no se realiza imputaci{\'o}n. La serie cubre 41 meses entre enero de 2014 y mayo de 2017 y
+representa el n{\'u}mero mensual de contratos junto con el score medio de Agent2 en escala 0--100.
+Esta cobertura es una evaluaci{\'o}n reproducible de la muestra, no del can{\'o}nico completo de 51.720
+registros.
+
+Las Figuras~\ref{fig:dashboard_resumen}--\ref{fig:dashboard_evidencias} son capturas reales de la
+aplicaci{\'o}n ejecutada en local. La primera, tercera, cuarta y quinta corresponden a la demo
+sint{\'e}tica trazable \texttt{PW-2024-0001}; la segunda corresponde a la muestra real de Agent2.
+
+\begin{figure}[p]
+\centering
+\includegraphics[width=\textwidth,height=0.76\textheight,keepaspectratio]{figuras/dashboard/01_resumen.png}
+\caption{Resumen ejecutivo de la demo integrada. Fuente: elaboraci{\'o}n propia a partir del dashboard Streamlit.}
+\label{fig:dashboard_resumen}
+\end{figure}
+
+\begin{figure}[p]
+\centering
+\includegraphics[width=\textwidth,height=0.76\textheight,keepaspectratio]{figuras/dashboard/02_evolucion_temporal.png}
+\caption{Evoluci{\'o}n mensual de contratos y riesgo medio sobre la muestra evaluada por Agent2. Fuente: elaboraci{\'o}n propia.}
+\label{fig:dashboard_evolucion_temporal}
+\end{figure}
+
+\begin{figure}[p]
+\centering
+\includegraphics[width=\textwidth,height=0.76\textheight,keepaspectratio]{figuras/dashboard/03_caso_seleccionado.png}
+\caption{Ficha del caso sint{\'e}tico seleccionado con se{\~n}ales de Agent2, contexto de Agent3 y evidencias de Agent4. Fuente: elaboraci{\'o}n propia.}
+\label{fig:dashboard_caso}
+\end{figure}
+
+\begin{figure}[p]
+\centering
+\includegraphics[width=\textwidth,height=0.76\textheight,keepaspectratio]{figuras/dashboard/04_relaciones.png}
+\caption{Entorno de relaciones del contrato sint{\'e}tico seleccionado. Fuente: elaboraci{\'o}n propia a partir de Agent3.}
+\label{fig:dashboard_relaciones}
+\end{figure}
+
+\begin{figure}[p]
+\centering
+\includegraphics[width=\textwidth,height=0.76\textheight,keepaspectratio]{figuras/dashboard/05_evidencias.png}
+\caption{Evidencias documentales y citas trazables del caso sint{\'e}tico. Fuente: elaboraci{\'o}n propia a partir de Agent4.}
+\label{fig:dashboard_evidencias}
+\end{figure}
 
 \section{Evaluaci{\'o}n t{\'e}cnica y tests}
 
@@ -2422,9 +2475,9 @@ realizada indica:
 \begin{itemize}
   \item \texttt{PYTHONPATH=scr python -m procurewatch.cli doctor}: resultado OK, con PostgreSQL, Neo4j, Qdrant y
   Ollama como servicios opcionales;
-  \item \texttt{PYTHONPATH=scr python -m pytest tests}: 122 pruebas superadas y 1 omitida en el
+  \item \texttt{PYTHONPATH=scr python -m pytest tests}: 126 pruebas superadas y 1 omitida en el
   entorno m{\'i}nimo sin SQLAlchemy; la prueba omitida corresponde a persistencia PostgreSQL opcional;
-  \item la misma suite con SQLAlchemy disponible: 123 pruebas superadas y 0 omitidas;
+  \item la misma suite con SQLAlchemy disponible: 127 pruebas superadas y 0 omitidas;
   \item \texttt{PYTHONPATH=scr python -m ruff check api scr tests frontend}: sin errores;
   \item \texttt{PYTHONPATH=scr python -m procurewatch.cli run-benchmark}: 34 m{\'e}tricas, con 31 en
   \texttt{pass}, 1 en \texttt{warning}, 0 en \texttt{fail} y 2 como \texttt{not\_applicable};
@@ -2481,7 +2534,7 @@ La Tabla~\ref{tab:matriz_evidencias_evaluacion} resume esta distinci{\'o}n. Su f
 cifras nuevas, sino ordenar qu{\'e} tipo de afirmaci{\'o}n puede defenderse con cada artefacto.
 
 {\small
-\begin{longtable}{p{3.0cm}p{4.2cm}p{3.2cm}p{3.0cm}}
+\begin{longtable}{@{}p{3.0cm}p{4.2cm}p{3.2cm}p{3.0cm}@{}}
 \caption{Matriz de evidencias utilizadas en la evaluaci{\'o}n del prototipo}
 \label{tab:matriz_evidencias_evaluacion}\\
 \toprule
@@ -2667,7 +2720,7 @@ restringidas.
 La Tabla~\ref{tab:impacto_limitaciones_componentes} resume este impacto.
 
 {\small
-\begin{longtable}{p{2.5cm}p{4.2cm}p{3.5cm}p{3.4cm}}
+\begin{longtable}{@{}p{2.5cm}p{4.2cm}p{3.5cm}p{3.4cm}@{}}
 \caption{Impacto de las limitaciones sobre los componentes del prototipo}
 \label{tab:impacto_limitaciones_componentes}\\
 \toprule
@@ -2899,7 +2952,7 @@ se{\~n}ales de riesgo, 11 nodos, 13 relaciones, 2 comunidades, modularidad $Q=0{
 evidencias documentales y 2 citas; y
 la evaluaci{\'o}n cualitativa publica diez fichas con composici{\'o}n 5/3/2 y evidencia completa para
 21 activaciones de reglas;
-la validaci{\'o}n t{\'e}cnica recoge 122 tests superados y 1 omitido en el entorno m{\'i}nimo, y 123
+la validaci{\'o}n t{\'e}cnica recoge 126 tests superados y 1 omitido en el entorno m{\'i}nimo, y 127
 tests superados sin omisiones con SQLAlchemy disponible; el benchmark global no presenta fallos y el
 dashboard Streamlit sin excepciones en modo headless. El valor central del trabajo se sostiene, por tanto, sobre un flujo
 operativo implementado, trazable y documentado, sin afirmar detecci{\'o}n autom{\'a}tica de fraude.
@@ -2960,19 +3013,19 @@ estos se mantienen fuera de Git por reproducibilidad y control de tama{\~n}o.
 \textbf{Ruta} & \textbf{Funci{\'o}n} \\
 \midrule
 \endhead
-\texttt{scr/procurewatch/cli.py} & CLI central del proyecto. \\
-\texttt{scr/procurewatch/batch.py} & Orquestaci{\'o}n de lotes, manifests y estado de ejecuci{\'o}n. \\
-\texttt{scr/procurewatch/settings.py} & Lectura de configuraci{\'o}n y disponibilidad de servicios. \\
-\texttt{scr/procurewatch/db.py} & Persistencia PostgreSQL de tablas anal{\'i}ticas. \\
-\texttt{scr/procurewatch/data\_sources/} & Parsers y conectores BOE, PLACE y OpenTender. \\
-\texttt{scr/procurewatch/agent1/} & Ingesta, normalizaci{\'o}n, esquema anal{\'i}tico, calidad y cobertura. \\
-\texttt{scr/procurewatch/agent2/} & Red flags, scoring, agregaci{\'o}n y reportes. \\
-\texttt{scr/procurewatch/agent3/} & Grafo, m{\'e}tricas de red, comunidades, features y Neo4j opcional. \\
-\texttt{scr/procurewatch/agent4/} & Corpus, chunking, retrieval, Qdrant/Ollama opcional, contexto de caso y evaluaci{\'o}n. \\
-\texttt{frontend/agent3\_demo.py} & Dashboard Streamlit integrado para exploraci{\'o}n del prototipo. \\
-\texttt{tests/} & Pruebas automatizadas de agentes, fuentes, batch, CLI y servicios auxiliares. \\
-\texttt{docs/} & Hojas de ruta, seguimiento, planes t{\'e}cnicos, modelo de datos y decisiones de cierre. \\
-\texttt{docker-compose.yml} & Servicios locales PostgreSQL, Neo4j y Qdrant. \\
+\path{scr/procurewatch/cli.py} & CLI central del proyecto. \\
+\path{scr/procurewatch/batch.py} & Orquestaci{\'o}n de lotes, manifests y estado de ejecuci{\'o}n. \\
+\path{scr/procurewatch/settings.py} & Lectura de configuraci{\'o}n y disponibilidad de servicios. \\
+\path{scr/procurewatch/db.py} & Persistencia PostgreSQL de tablas anal{\'i}ticas. \\
+\path{scr/procurewatch/data_sources/} & Parsers y conectores BOE, PLACE y OpenTender. \\
+\path{scr/procurewatch/agent1/} & Ingesta, normalizaci{\'o}n, esquema anal{\'i}tico, calidad y cobertura. \\
+\path{scr/procurewatch/agent2/} & Red flags, scoring, agregaci{\'o}n y reportes. \\
+\path{scr/procurewatch/agent3/} & Grafo, m{\'e}tricas de red, comunidades, features y Neo4j opcional. \\
+\path{scr/procurewatch/agent4/} & Corpus, chunking, retrieval, Qdrant/Ollama opcional, contexto de caso y evaluaci{\'o}n. \\
+\path{frontend/agent3_demo.py} & Dashboard Streamlit integrado para exploraci{\'o}n del prototipo. \\
+\path{tests/} & Pruebas automatizadas de agentes, fuentes, batch, CLI y servicios auxiliares. \\
+\path{docs/} & Hojas de ruta, seguimiento, planes t{\'e}cnicos, modelo de datos y decisiones de cierre. \\
+\path{docker-compose.yml} & Servicios locales PostgreSQL, Neo4j y Qdrant. \\
 \texttt{pyproject.toml} & Dependencias, extras, entrypoint de CLI y configuraci{\'o}n de tests. \\
 \bottomrule
 \end{longtable}
@@ -3023,7 +3076,7 @@ report de Agent1 contiene, de forma resumida, las fuentes procesadas, versiones 
 le{\'i}das, filas normalizadas, errores y rutas de salida. El siguiente ejemplo reproduce la forma
 del artefacto sin incluir hashes reales completos:
 
-\begin{verbatim}
+\begin{lstlisting}
 {
   "run_at": "2026-06-23T00:01:04Z",
   "parser_versions": {
@@ -3043,12 +3096,12 @@ del artefacto sin incluir hashes reales completos:
     "quality": "data/processed/agent1_data_quality_summary.json"
   }
 }
-\end{verbatim}
+\end{lstlisting}
 
 El manifest de batch permite saber si una ejecuci{\'o}n proces{\'o} datos nuevos o se salt{\'o} por no
 haber cambios. Su estructura m{\'i}nima es:
 
-\begin{verbatim}
+\begin{lstlisting}
 {
   "batch_id": "monthly-2026-06",
   "run_mode": "monthly",
@@ -3068,7 +3121,7 @@ haber cambios. Su estructura m{\'i}nima es:
     "scoring_version": "2.0.0"
   }
 }
-\end{verbatim}
+\end{lstlisting}
 
 Este dise{\~n}o facilita responder a una pregunta clave de auditor{\'i}a: con qu{\'e} datos, reglas y
 versi{\'o}n de c{\'o}digo se gener{\'o} un determinado score.
@@ -3080,7 +3133,7 @@ Los comandos siguientes resumen la validaci{\'o}n t{\'e}cnica documentada para l
 Se incluyen como referencia reproducible; la disponibilidad de servicios opcionales depende de la
 configuraci{\'o}n local.
 
-\begin{verbatim}
+\begin{lstlisting}
 PYTHONPATH=scr python -m procurewatch.cli doctor
 PYTHONPATH=scr python -m pytest tests
 PYTHONPATH=scr python -m ruff check scr tests
@@ -3089,11 +3142,11 @@ PYTHONPATH=scr python -m procurewatch run-benchmark \
   --demo-dir data/processed/agent3_agent4_demo_2026_06_23 \
   --agent4-evaluation data/processed/agent4_evaluation_report.json \
   --output-dir data/processed/benchmark
-\end{verbatim}
+\end{lstlisting}
 
 Para ejecutar los agentes principales:
 
-\begin{verbatim}
+\begin{lstlisting}
 PYTHONPATH=scr python -m procurewatch.cli run-agent1 --year 2024 --cpv-prefix 71
 PYTHONPATH=scr python -m procurewatch.cli run-agent1 --year 2024 --cpv-prefix 71 --place-download
 PYTHONPATH=scr python -m procurewatch report-agent1-source-diagnostics \
@@ -3107,11 +3160,11 @@ PYTHONPATH=scr python -m procurewatch.cli run-agent3 \
 PYTHONPATH=scr python -m procurewatch.cli agent4-build-manifest
 PYTHONPATH=scr python -m procurewatch.cli agent4-run-flow
 PYTHONPATH=scr python -m procurewatch.cli agent4-evaluate
-\end{verbatim}
+\end{lstlisting}
 
 Para la demo integrada Agent3--Agent4:
 
-\begin{verbatim}
+\begin{lstlisting}
 PYTHONPATH=scr python -m procurewatch.cli run-integrated-demo
 PYTHONPATH=scr python -m procurewatch.cli validate-dashboard-demo
 PYTHONPATH=scr python -m procurewatch.cli run-agent3 \
@@ -3124,22 +3177,22 @@ PYTHONPATH=scr python -m procurewatch.cli agent4-case-context \
   --canonical-path data/processed/agent3_agent4_demo_2026_06_23/agent2_contracts_canonical_demo.parquet \
   --agent3-features-path data/processed/agent3_agent4_demo_2026_06_23/agent3_agent2_features.parquet \
   --output data/processed/agent3_agent4_demo_2026_06_23/agent4_case_context_integrated_demo.json
-\end{verbatim}
+\end{lstlisting}
 
 Para visualizar la demo:
 
-\begin{verbatim}
+\begin{lstlisting}
 PYTHONPATH=scr \
 PROCUREWATCH_AGENT3_DEMO_DIR=data/processed/agent3_agent4_demo_2026_06_23 \
 PROCUREWATCH_AGENT4_CASE_CONTEXT=data/processed/agent3_agent4_demo_2026_06_23/agent4_case_context_integrated_demo.json \
 streamlit run frontend/agent3_demo.py
-\end{verbatim}
+\end{lstlisting}
 
 Para ejecutar lotes incrementales:
 
-\begin{verbatim}
+\begin{lstlisting}
 PYTHONPATH=scr python -m procurewatch.cli run-batch --run-mode weekly --year 2024 --cpv-prefix 71
 PYTHONPATH=scr python -m procurewatch.cli run-batch --run-mode monthly --year 2024 --cpv-prefix 71
-\end{verbatim}
+\end{lstlisting}
 
 \end{document}
