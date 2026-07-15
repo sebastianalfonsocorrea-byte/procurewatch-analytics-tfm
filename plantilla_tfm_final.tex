@@ -1551,11 +1551,13 @@ v{\'a}lida: informa de que el dato disponible no permite aplicar una regla sin r
 \section{Lectura operativa de los resultados}
 \label{sec:lectura_operativa_resultados}
 
-La evaluaci{\'o}n disponible de Agent2 comprende una muestra de scoring de 50 contratos y la demo
-integrada de 3 contratos. Estos artefactos permiten comprobar la activaci{\'o}n de reglas, el c{\'a}lculo
-del score y la priorizaci{\'o}n, pero no respaldan una caracterizaci{\'o}n estad{\'i}stica de miles de
-contratos por nivel de riesgo. El objetivo pr{\'a}ctico demostrado es generar un ranking contractual
-que permita seleccionar casos para una revisi{\'o}n m{\'a}s profunda.
+La evaluaci{\'o}n disponible de Agent2 comprende los 3.437 contratos del can{\'o}nico de muestra
+versionado y la demo integrada de 3 contratos. La primera ejecuci{\'o}n permite medir evaluabilidad,
+frecuencia de flags, distribuci{\'o}n del score y sensibilidad de umbrales; la segunda conserva un
+caso explicativo completo con grafo y evidencia documental. Estos resultados son una evaluaci{\'o}n
+proxy reproducible y no una estimaci{\'o}n de fraude ni una ejecuci{\'o}n sobre el can{\'o}nico completo
+de 51.720 registros. El objetivo pr{\'a}ctico demostrado es generar un ranking contractual que permita
+seleccionar casos para una revisi{\'o}n m{\'a}s profunda.
 
 La interpretaci{\'o}n operativa puede organizarse en tres niveles:
 
@@ -1771,6 +1773,7 @@ Tabla~\ref{tab:artefactos_sistema} agrupa los artefactos principales.
 \texttt{agent2\_risk\_flags.parquet} & Agent2 & Red flags activadas por contrato. \\
 \texttt{agent2\_risk\_scores.parquet} & Agent2 & Score y nivel de riesgo por contrato. \\
 \texttt{agent2\_run\_report.json} & Agent2 & Informe de reglas, filas evaluables, distribuci{\'o}n de riesgo y versi{\'o}n de scoring. \\
+\path{agent2_evaluation_report.json} & Agent2 & Evaluabilidad por regla y comparaci{\'o}n de umbrales -10\,\%, base y +10\,\%. \\
 \texttt{agent3\_nodes.parquet} & Agent3 & Nodos del grafo. \\
 \texttt{agent3\_edges.parquet} & Agent3 & Aristas del grafo. \\
 \texttt{agent3\_contract\_metrics.parquet} & Agent3 & M{\'e}tricas relacionales por contrato. \\
@@ -1975,8 +1978,8 @@ metodol{\'o}gica ha sido no inventar resultados y distinguir entre salidas gener
 validaciones t{\'e}cnicas realizadas y cifras hist{\'o}ricas procedentes de documentos anteriores.
 
 Para reforzar esa delimitaci{\'o}n, la versi{\'o}n final incorpora un benchmark reproducible del
-prototipo. El informe \texttt{benchmark\_report.md} eval{\'u}a 31 m{\'e}tricas distribuidas entre Agent1,
-Agent2, Agent3, Agent4 e integraci{\'o}n. El resultado global fue \texttt{warning}: 28 m{\'e}tricas en
+prototipo. El informe \texttt{benchmark\_report.md} eval{\'u}a 32 m{\'e}tricas distribuidas entre Agent1,
+Agent2, Agent3, Agent4 e integraci{\'o}n. El resultado global fue \texttt{warning}: 29 m{\'e}tricas en
 \texttt{pass}, 1 en \texttt{warning}, 0 en \texttt{fail} y 2 como \texttt{not\_applicable}. La
 advertencia no corresponde a un fallo de ejecuci{\'o}n, sino a la ausencia de intersecciones exactas
 entre fuentes. La Tabla~\ref{tab:alcance_benchmark_tfm} resume qu{\'e} partes quedan implementadas,
@@ -1997,7 +2000,7 @@ qu{\'e} partes quedan evaluadas y qu{\'e} elementos se mantienen como extensi{\'
 \midrule
 \endhead
 Agent1 & Implementado y evaluado. & Calidad de campos, duplicados y cobertura interfuente. & Sin matching exacto transversal validado. \\
-Agent2 & Implementado; evaluaci{\'o}n parcial en demo integrada. & Score y red flags trazables. & Falta benchmark estad{\'i}stico amplio con referencia externa. \\
+Agent2 & Implementado y evaluado sobre muestra reproducible. & 3.437 scores, evaluabilidad por regla y sensibilidad del 10\,\%. & Falta repetir sobre el can{\'o}nico completo y contrastar con referencia externa. \\
 Agent3 & Implementado y evaluado. & Nodos, aristas, comunidades y cobertura de features. & Validado en demo local; falta escala institucional. \\
 Agent4 & Implementado y evaluado. & Retrieval, citas, trazabilidad y prudencia del lenguaje. & Corpus local/sint{\'e}tico; RAGAS queda futuro. \\
 Integraci{\'o}n y dashboard & Demo integrada evaluada. & Flujo Agent2--Agent3--Agent4 y validaciones internas. & No equivale a despliegue productivo institucional. \\
@@ -2110,12 +2113,13 @@ evaluaci{\'o}n del prototipo y delimita el alcance de los resultados.
 
 \section{Resultados de red flags y scoring}
 
-Agent2 se ejecuta sobre \texttt{agent2\_contracts\_canonical.parquet} y genera puntuaciones
-explicables mediante reglas deterministas. La muestra de scoring documentada evalu{\'o} 50 contratos y
-gener{\'o} 50 puntuaciones. En esa muestra se activ{\'o} una se{\~n}al de riesgo, correspondiente a
-\texttt{risky\_procedure} (RF-02), con 49 contratos sin riesgo y 1 contrato en riesgo bajo. Esta
-salida valida el funcionamiento del motor sobre una muestra controlada, no una estimaci{\'o}n
-supervisada de fraude real.
+Agent2 se ejecut{\'o} sobre los 3.437 contratos del can{\'o}nico de muestra versionado y gener{\'o}
+una puntuaci{\'o}n
+para cada fila mediante RF-01 a RF-06. En el escenario base, 2.066 contratos activaron al menos una
+se{\~n}al y se generaron 2.420 flags. Los 3.437 contratos fueron parcialmente evaluables; ninguno fue
+completamente evaluable porque RF-06 requer{\'i}a simult{\'a}neamente fecha de publicaci{\'o}n y fecha
+de adjudicaci{\'o}n v{\'a}lidas, combinaci{\'o}n ausente en esta muestra. Ning{\'u}n contrato qued{\'o}
+sin score: la evaluabilidad se registra por regla y los campos ausentes no se imputan.
 
 La demo integrada permite observar el flujo completo sobre el caso \texttt{PW-2024-0001}. En ese
 caso, Agent2 asigna \texttt{risk\_score=0.5}, nivel \texttt{medium} y activa dos se{\~n}ales:
@@ -2124,11 +2128,11 @@ Agent2 trabaja conceptualmente con escala 0--100 y umbrales bajo/medio/alto/cr{\
 integrada expresa el resultado en escala normalizada 0--1 para facilitar la visualizaci{\'o}n conjunta
 con grafo y ficha documental.
 
-La distribuci{\'o}n de la muestra de scoring fue:
+La distribuci{\'o}n del escenario base fue:
 
 {\small
 \begin{longtable}{p{4.5cm}r p{5.4cm}}
-\caption{Distribuci{\'o}n de riesgo de Agent2 en la muestra de scoring}
+\caption{Distribuci{\'o}n de riesgo de Agent2 sobre 3.437 contratos}
 \label{tab:distribucion_riesgo_agent2}\\
 \toprule
 \textbf{Nivel de riesgo} & \textbf{Contratos} & \textbf{Interpretaci{\'o}n} \\
@@ -2138,10 +2142,37 @@ La distribuci{\'o}n de la muestra de scoring fue:
 \textbf{Nivel de riesgo} & \textbf{Contratos} & \textbf{Interpretaci{\'o}n} \\
 \midrule
 \endhead
-Sin riesgo & 49 & Contratos sin activaci{\'o}n de red flags en la muestra evaluada. \\
-Bajo & 1 & Contrato con activaci{\'o}n de RF-02 por procedimiento sensible. \\
-Medio & 0 & No observado en la muestra de scoring. \\
-Alto/cr{\'i}tico & 0 & No observado en la muestra de scoring. \\
+Sin flags & 1.371 & Score 0; ninguna regla activa en los datos disponibles. \\
+Bajo positivo & 1.500 & Score mayor que 0 y menor que 25. \\
+Medio & 553 & Score entre 25 y 49. \\
+Alto & 13 & Score entre 50 y 74. \\
+Cr{\'i}tico & 0 & No observado en la muestra evaluada. \\
+\bottomrule
+\end{longtable}
+}
+
+El score medio fue 13,26 sobre 100, con mediana 15, primer cuartil 0, tercer cuartil 20 y m{\'a}ximo
+65. La Tabla~\ref{tab:evaluabilidad_agent2} muestra que la principal limitaci{\'o}n no es la ejecuci{\'o}n
+del motor, sino la disponibilidad desigual de los campos requeridos por cada regla.
+
+{\small
+\begin{longtable}{p{1.4cm}r r r p{4.8cm}}
+\caption{Evaluabilidad por regla de Agent2 en el escenario base}
+\label{tab:evaluabilidad_agent2}\\
+\toprule
+\textbf{Regla} & \textbf{Evaluables} & \textbf{No evaluables} & \textbf{Cobertura} & \textbf{Limitaci{\'o}n principal} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Regla} & \textbf{Evaluables} & \textbf{No evaluables} & \textbf{Cobertura} & \textbf{Limitaci{\'o}n principal} \\
+\midrule
+\endhead
+RF-01 & 3.437 & 0 & 100,00\,\% & La ausencia de adjudicatario forma parte de la propia se{\~n}al. \\
+RF-02 & 3.425 & 12 & 99,65\,\% & Procedimiento ausente. \\
+RF-03 & 2.333 & 1.104 & 67,88\,\% & Adjudicatario no identificado. \\
+RF-04 & 1.445 & 1.992 & 42,04\,\% & Pareja o importe insuficiente para calcular concentraci{\'o}n. \\
+RF-05 & 1.796 & 1.641 & 52,25\,\% & Falta importe adjudicado o estimado positivo. \\
+RF-06 & 0 & 3.437 & 0,00\,\% & No existen ambas fechas v{\'a}lidas en una misma fila. \\
 \bottomrule
 \end{longtable}
 }
@@ -2172,11 +2203,47 @@ RF-06 & Patr{\'o}n temporal an{\'o}malo & Identifica intervalos an{\'o}malos ent
 \end{longtable}
 }
 
-La muestra de scoring documenta una activaci{\'o}n de RF-02. La demo integrada, por su parte, activa
-las se{\~n}ales \texttt{risky\_procedure} y \texttt{awarded\_above\_estimate}, equivalentes a
-procedimiento sensible y adjudicaci{\'o}n por encima del importe estimado en el contexto de la ficha
-demostrativa. RF-03, RF-04 y RF-06 se mantienen implementadas como reglas evaluables cuando existen
-datos agregados o temporales suficientes, pero no se presentan como activadas en esos resultados.
+La frecuencia observada en el escenario base fue: RF-01, 1.104 activaciones; RF-02, 12; RF-03,
+730; RF-04, 34; RF-05, 540; y RF-06, 0. La ausencia de activaciones de RF-06 no significa que la
+muestra carezca de anomal{\'i}as temporales, sino que la regla no pudo calcularse sin las dos fechas
+requeridas. Los campos ausentes m{\'a}s relevantes fueron 1.104 adjudicatarios, 12 procedimientos,
+1.511 importes adjudicados, 2.461 fechas de publicaci{\'o}n no v{\'a}lidas y 3.067 fechas de
+adjudicaci{\'o}n no v{\'a}lidas.
+
+Para comprobar la estabilidad del motor se repiti{\'o} la ejecuci{\'o}n multiplicando los umbrales
+num{\'e}ricos de recurrencia, concentraci{\'o}n, desviaci{\'o}n y ventana temporal por 0,9 y 1,1. La
+Tabla~\ref{tab:sensibilidad_agent2} compara ambos escenarios con el escenario base. RF-01 y RF-02
+se mantienen constantes porque no dependen de esos umbrales. En RF-03 y RF-06 debe considerarse que
+los conteos y los d{\'i}as son discretos, por lo que una variaci{\'o}n decimal puede trasladarse al
+siguiente entero efectivo.
+
+{\small
+\begin{longtable}{p{2.8cm}r r r}
+\caption{Sensibilidad de Agent2 ante variaci{\'o}n de umbrales}
+\label{tab:sensibilidad_agent2}\\
+\toprule
+\textbf{M{\'e}trica} & \textbf{-10\,\%} & \textbf{Base} & \textbf{+10\,\%} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{M{\'e}trica} & \textbf{-10\,\%} & \textbf{Base} & \textbf{+10\,\%} \\
+\midrule
+\endhead
+Flags totales & 2.427 & 2.420 & 2.224 \\
+Contratos sin flags & 1.368 & 1.371 & 1.516 \\
+Score medio & 13,31 & 13,26 & 12,12 \\
+Scores sin cambios respecto a base & 99,80\,\% & 100,00\,\% & 95,11\,\% \\
+Nivel de riesgo sin cambios & 99,80\,\% & 100,00\,\% & 99,04\,\% \\
+Conjunto de flags sin cambios & 99,80\,\% & 100,00\,\% & 95,11\,\% \\
+\bottomrule
+\end{longtable}
+}
+
+Estos resultados documentan una estabilidad alta ante la perturbaci{\'o}n definida, sin necesidad de
+incorporar Isolation Forest. La comparaci{\'o}n mide robustez interna de reglas deterministas, no
+precisi{\'o}n frente a fraude confirmado. La demo integrada, por su parte, conserva las se{\~n}ales
+\texttt{risky\_procedure} y \texttt{awarded\_above\_estimate} para mostrar el flujo completo del caso
+\texttt{PW-2024-0001}.
 
 \section{Resultados de grafo, RAG y dashboard}
 
@@ -2253,10 +2320,11 @@ realizada indica:
 \begin{itemize}
   \item \texttt{PYTHONPATH=scr python -m procurewatch.cli doctor}: resultado OK, con PostgreSQL, Neo4j, Qdrant y
   Ollama como servicios opcionales;
-  \item \texttt{PYTHONPATH=scr python -m pytest tests}: 116 pruebas superadas;
+  \item \texttt{PYTHONPATH=scr python -m pytest tests}: 117 pruebas superadas y 1 omitida en el
+  entorno Windows sin el extra \texttt{db};
   \item \texttt{PYTHONPATH=scr python -m ruff check api scr tests frontend}: sin errores;
-  \item \texttt{PYTHONPATH=scr python -m procurewatch run-benchmark}: 31 m{\'e}tricas evaluadas, con
-  28 en \texttt{pass}, 1 en \texttt{warning}, 0 en \texttt{fail} y 2 como \texttt{not\_applicable};
+  \item \texttt{PYTHONPATH=scr python -m procurewatch.cli run-benchmark}: 32 m{\'e}tricas evaluadas, con
+  29 en \texttt{pass}, 1 en \texttt{warning}, 0 en \texttt{fail} y 2 como \texttt{not\_applicable};
   \item demo integrada y dashboard Streamlit validados en modo headless con 0 excepciones.
 \end{itemize}
 
@@ -2661,7 +2729,7 @@ soporte documental y t{\'e}cnico. La arquitectura, las limitaciones, las m{\'e}t
 de lote quedaron alineados con los artefactos generados, de forma que cada afirmaci{\'o}n relevante
 puede rastrearse a una salida del sistema o a una decisi{\'o}n de dise{\~n}o documentada.
 
-El benchmark final refuerza esta conclusi{\'o}n con una lectura agregada: 31 m{\'e}tricas evaluadas, 28
+El benchmark final refuerza esta conclusi{\'o}n con una lectura agregada: 32 m{\'e}tricas evaluadas, 29
 en \texttt{pass}, 1 en \texttt{warning}, 0 en \texttt{fail} y 2 como \texttt{not\_applicable}. El
 {\'u}nico \texttt{warning} corresponde al matching interfuente, no a un fallo de ejecuci{\'o}n. Esta
 separaci{\'o}n permite afirmar que el prototipo es t{\'e}cnicamente funcional y medible, al mismo tiempo
@@ -2701,7 +2769,8 @@ scoring, grafo, recuperaci{\'o}n documental, dashboard y reproducibilidad. La ej
 de Agent~1 genera 51.720 registros can{\'o}nicos; Agent~2 produce puntuaciones explicables mediante
 RF-01 a RF-06; la demo integrada muestra un caso completo con \texttt{risk\_score=0.5}, dos
 se{\~n}ales de riesgo, 11 nodos, 13 relaciones, 2 comunidades, 2 evidencias documentales y 2 citas; y
-la validaci{\'o}n t{\'e}cnica recoge 116 tests superados, benchmark global sin fallos y
+la validaci{\'o}n t{\'e}cnica recoge 117 tests superados y 1 omitido por una dependencia opcional,
+benchmark global sin fallos y
 dashboard Streamlit sin excepciones en modo headless. El valor central del trabajo se sostiene, por tanto, sobre un flujo
 operativo implementado, trazable y documentado, sin afirmar detecci{\'o}n autom{\'a}tica de fraude.
 
