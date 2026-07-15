@@ -45,7 +45,7 @@
 ProcureWatch Analytics es una plataforma anal{\'i}tica multiagente orientada a identificar patrones de riesgo en contrataci{\'o}n p{\'u}blica espa{\~n}ola mediante an{\'a}lisis integrado de datos abiertos, un esquema OCDS adaptado, indicadores de red flags, an{\'a}lisis de redes, procesamiento documental y generaci{\'o}n de fichas explicativas. El prototipo se aplica al dominio CPV~71 (Servicios de arquitectura, ingenier{\'i}a e inspecci{\'o}n) y combina datos BOE, PLACE y OpenTender cuando las fuentes disponibles lo permiten. La evaluaci{\'o}n se basa en m{\'e}tricas de calidad de datos, trazabilidad, consistencia de reglas, pruebas automatizadas y validaci{\'o}n exploratoria del flujo multiagente. El sistema no declara fraude ni sustituye la revisi{\'o}n experta: prioriza contratos y adjudicatarios para revisi{\'o}n humana, mostrando las se{\~n}ales activadas, las m{\'e}tricas de red y las evidencias documentales disponibles.
 
 \medskip
-{\bf Palabras clave:} contrataci{\'o}n p{\'u}blica, red flags, machine learning, an{\'a}lisis de redes, NLP, datos abiertos, CPV 71, OCDS, scoring de riesgo, plataforma multiagente.
+{\bf Palabras clave:} contrataci{\'o}n p{\'u}blica, red flags, scoring explicable, an{\'a}lisis de redes, NLP, datos abiertos, CPV 71, OCDS, priorizaci{\'o}n de riesgo, plataforma multiagente.
 
 %=========================================================
 \chapter{Abstract}
@@ -54,7 +54,7 @@ ProcureWatch Analytics es una plataforma anal{\'i}tica multiagente orientada a i
 ProcureWatch Analytics is a multi-agent analytical platform designed to identify risk patterns in Spanish public procurement through open data integration, an adapted OCDS analytical schema, red flag indicators, network analysis, document processing and explainable case reports. The prototype focuses on CPV division 71 (Architecture, Engineering and Inspection Services) and combines BOE, PLACE and OpenTender data whenever the available sources allow it. The evaluation relies on data-quality metrics, traceability, rule consistency, automated tests and exploratory validation of the integrated multi-agent workflow. The system does not declare fraud or replace expert assessment: it prioritises contracts and suppliers for human review, exposing the activated signals, network metrics and available documentary evidence.
 
 \medskip
-{\bf Keywords:} public procurement, red flags, machine learning, network analysis, NLP, open data, CPV 71, OCDS, risk scoring, multi-agent platform.
+{\bf Keywords:} public procurement, red flags, explainable scoring, network analysis, NLP, open data, CPV 71, OCDS, risk prioritisation, multi-agent platform.
 
 %=========================================================
 \mainmatter
@@ -69,7 +69,7 @@ El reciente \textit{dataset} longitudinal del BOE 2014--2024 \cite{MunozPla2026}
 
 \section{Planteamiento del trabajo}
 
-Este TFM propone dise{\~n}ar, desarrollar y evaluar \textbf{ProcureWatch Analytics}, una plataforma multiagente que integra: (a)~un \textit{pipeline} de adquisici{\'o}n e integraci{\'o}n de datos Open Data en un est{\'a}ndar OCDS com{\'u}n; (b)~un motor anal{\'i}tico de detecci{\'o}n de red flags y patrones de riesgo basado en indicadores de la literatura y modelos de machine learning; (c)~un m{\'o}dulo documental basado en NLP/RAG, web scraping y evidencias disponibles de anuncios y documentos p{\'u}blicos; (d)~fichas explicativas de caso orientadas a revisi{\'o}n humana, dejando el OCR masivo de pliegos como posible extensi{\'o}n del sistema; y (e)~un \textit{front-end} anal{\'i}tico con red de relaciones interactiva, panel de riesgo, evoluci{\'o}n temporal y ficha explicativa de caso.
+Este TFM propone dise{\~n}ar, desarrollar y evaluar \textbf{ProcureWatch Analytics}, una plataforma multiagente que integra: (a)~un \textit{pipeline} de adquisici{\'o}n y normalizaci{\'o}n de datos abiertos en un esquema OCDS adaptado; (b)~un motor de priorizaci{\'o}n basado en reglas deterministas y explicables RF-01 a RF-06; (c)~un grafo derivado de relaciones entre compradores, contratos, adjudicatarios, CPV y fuentes; (d)~un componente documental con fragmentaci{\'o}n, recuperaci{\'o}n, citas y fallback determinista; y (e)~un dashboard Streamlit con ranking, detalle de caso, relaciones, evidencias y trazabilidad. El enriquecimiento societario, los modelos de anomal{\'i}as y el OCR masivo se mantienen como extensiones y no como resultados cerrados.
 
 El prototipo se valida sobre el dominio CPV~71 (Servicios de arquitectura, ingenier{\'i}a e inspecci{\'o}n), seleccionado por razones metodol{\'o}gicas detalladas en la Secci{\'o}n~\ref{sec:dominio_cpv71}.
 
@@ -412,7 +412,7 @@ Los objetivos espec{\'i}ficos recogen el alcance inicial del TFM y sirven como m
 
 \section{Objetivo General}
 
-Dise{\~n}ar, desarrollar y evaluar \textbf{ProcureWatch Analytics}, una plataforma anal{\'i}tica multiagente que, a partir de datos abiertos de contrataci{\'o}n p{\'u}blica espa{\~n}ola (BOE 2014--2026 y PLACE) y europea, detecte, cuantifique y visualice patrones de riesgo e indicadores de red flags en licitaciones, adjudicaciones y empresas adjudicatarias del dominio CPV~71, mediante an{\'a}lisis de datos masivos, an{\'a}lisis de redes societarias, NLP documental y modelos de scoring de anomal{\'i}as, generando fichas de riesgo explicables que apoyen la priorizaci{\'o}n de casos para revisi{\'o}n por organismos de control.
+Dise{\~n}ar, desarrollar y evaluar \textbf{ProcureWatch Analytics}, una plataforma anal{\'i}tica multiagente que normalice datos abiertos de contrataci{\'o}n p{\'u}blica de BOE 2014--2024, PLACE y OpenTender para el dominio CPV~71; calcule indicadores de red flags mediante reglas deterministas RF-01 a RF-06; construya relaciones entre compradores, contratos, adjudicatarios, CPV y fuentes; recupere evidencia documental disponible; y genere fichas explicables y un dashboard que apoyen la priorizaci{\'o}n de casos para revisi{\'o}n humana, sin declarar fraude de forma autom{\'a}tica.
 
 \section{Objetivos Espec{\'i}ficos}
 
@@ -422,14 +422,14 @@ Estudiar exhaustivamente el ciclo de contrataci{\'o}n p{\'u}blica espa{\~n}ola y
 \textbf{M{\'e}trica:} Documento de an{\'a}lisis exploratorio con completitud, coherencia temporal y distribuci{\'o}n de variables; matriz de relevancia: campos OCDS $\rightarrow$ indicadores de red flags; m{\'i}nimo 3 fuentes complementarias identificadas.
 
 \subsection*{OE2 --- Dise{\~n}o del modelo de datos anal{\'i}tico}
-Definir e implementar un esquema de datos integrado y armonizado con el est{\'a}ndar OCDS que unifique informaci{\'o}n de contratos, licitaciones, adjudicatarios, {\'o}rganos contratantes y relaciones societarias para el dominio CPV~71.
+Definir e implementar un esquema de datos integrado y armonizado con OCDS para contratos, licitaciones, adjudicatarios, {\'o}rganos contratantes, fuentes y relaciones de contrataci{\'o}n del dominio CPV~71.
 
-\textbf{M{\'e}trica:} Modelo E/R documentado en PostgreSQL con m{\'i}nimo 6 entidades; grafo empresa-organismo-contrato en Neo4j; completitud OCDS cr{\'i}ticos $\geq$\,85\,\%.
+\textbf{M{\'e}trica:} Esquema OCDS adaptado y can{\'o}nico versionado; tablas anal{\'i}ticas de contratos y adjudicatarios; artefactos reproducibles de nodos y aristas. Parquet es la persistencia principal evaluada; PostgreSQL y Neo4j se soportan como persistencias opcionales.
 
 \subsection*{OE3 --- Construcci{\'o}n del \textit{pipeline} de datos}
 Implementar un \textit{pipeline} reproducible de descarga, limpieza, normalizaci{\'o}n, enriquecimiento y carga de datos OCDS, con validaci{\'o}n autom{\'a}tica de calidad y trazabilidad de fuentes.
 
-\textbf{M{\'e}trica:} Pipeline ejecutable en Python\,+\,Pandas\,+\,DuckDB; completitud OCDS $>$\,90\,\%; coherencia temporal $>$\,98\,\%; tiempo de ejecuci{\'o}n $<$\,2\,h.
+\textbf{M{\'e}trica:} Pipeline ejecutable en Python y pandas, con salidas Parquet, controles de calidad, hashes, cobertura y reportes de ejecuci{\'o}n. DuckDB y Polars quedan como opciones de ampliaci{\'o}n, no como motores utilizados en la evaluaci{\'o}n final.
 
 \subsection*{OE4 --- Desarrollo del motor de red flags}
 Dise{\~n}ar e implementar un motor explicable de red flags basado en literatura \cite{OCP2024RedFlags,Fazekas2020DIGIWHIST}, con reglas deterministas para priorizar contratos y variables relacionales que contextualicen la recurrencia y la concentraci{\'o}n.
@@ -448,14 +448,14 @@ Implementar un componente documental trazable para cargar contenido HTML o textu
 
 
 \subsection*{OE7 --- Desarrollo del \textit{front-end} anal{\'i}tico}
-Construir una interfaz web interactiva, basada en Streamlit y visualizaciones complementarias, con grafo de relaciones, panel de indicadores de riesgo, \textit{timeline} de evoluci{\'o}n temporal y ficha explicativa de caso respaldada por evidencias. Sigma.js queda como opci{\'o}n de extensi{\'o}n para grafos web de mayor escala.
+Construir una interfaz web local basada en Streamlit con resumen, ranking de contratos priorizados, detalle de caso, grafo de relaciones, evidencias y trazabilidad. Sigma.js queda como opci{\'o}n de extensi{\'o}n para grafos web de mayor escala.
 
-\textbf{M{\'e}trica:} SUS $>$\,68; tiempo medio para documentar un caso de riesgo $<$\,5\,min; ficha explicativa con claridad $\geq$\,3.5/5 (Likert).
+\textbf{M{\'e}trica:} Validaci{\'o}n headless en estado \texttt{ready}, 10 comprobaciones superadas y 0 excepciones. SUS, tiempo por tarea y claridad Likert quedan pendientes de un estudio formal con usuarios.
 
 \subsection*{OE8 --- Evaluaci{\'o}n integral del sistema}
-Validar el prototipo con m{\'e}tricas cuantitativas de calidad del \textit{pipeline}, consistencia del motor de red flags, modularidad del grafo, trazabilidad documental y usabilidad, analizando cualitativamente diez fichas del dominio CPV~71: cinco casos de score m{\'a}ximo, tres de riesgo medio y dos controles.
+Validar el prototipo mediante tests automatizados, benchmark reproducible, calidad de datos, consistencia y sensibilidad de red flags, modularidad Louvain, trazabilidad documental y diez fichas cualitativas del dominio CPV~71: cinco casos de score m{\'a}ximo, tres de riesgo medio y dos controles.
 
-\textbf{M{\'e}trica:} Informe de evaluaci{\'o}n completo; fichas de 10 casos analizados; documento de limitaciones y \textit{roadmap} de mejora.
+\textbf{M{\'e}trica:} Suite m{\'i}nima y completa documentadas; benchmark con y sin validaci{\'o}n del dashboard; diez fichas trazables; informe de limitaciones y \textit{roadmap}. La precisi{\'o}n frente a fraude, la revisi{\'o}n experta, RAGAS sobre corpus amplio y la usabilidad formal quedan fuera de la validaci{\'o}n cerrada.
 
 %=========================================================
 \chapter{Marco Normativo}
@@ -723,8 +723,8 @@ La selección tecnológica prioriza cuatro criterios: ejecución local, reproduc
 \midrule
 \endhead
 Lenguaje principal & Python & Ecosistema maduro para ciencia de datos, NLP, aprendizaje autom{\'a}tico, grafos y automatizaci{\'o}n de pipelines. \\
-Procesamiento tabular & pandas, DuckDB y Polars \cite{DuckDBOfficial,PolarsOfficial} & pandas garantiza compatibilidad con el ecosistema; DuckDB permite SQL anal{\'i}tico sobre Parquet sin servidor; Polars acelera transformaciones sobre datasets de mayor volumen. \\
-Persistencia relacional & PostgreSQL \cite{PostgreSQLOfficial} & Base relacional robusta para contratos, adjudicatarios, organismos, indicadores, scores y trazabilidad de ejecuciones. \\
+Procesamiento tabular & pandas y Parquet & Tecnolog{\'i}as utilizadas por los pipelines y artefactos evaluados. Polars es una dependencia opcional y DuckDB queda como posible extensi{\'o}n para consulta anal{\'i}tica sobre Parquet \cite{DuckDBOfficial,PolarsOfficial}. \\
+Persistencia relacional & PostgreSQL opcional \cite{PostgreSQLOfficial} & Agent1 implementa la escritura de tablas anal{\'i}ticas cuando SQLAlchemy y el servicio est{\'a}n disponibles; la ejecuci{\'o}n m{\'i}nima conserva Parquet como salida principal. \\
 Grafo anal{\'i}tico & Neo4j Community y NetworkX \cite{Neo4jOfficial,NetworkXPython} & Neo4j facilita consulta y exploraci{\'o}n del grafo; NetworkX permite reproducir m{\'e}tricas y experimentos en scripts Python. \\
 Motor de red flags & Python, reglas OCDS y soporte de comparativa con scikit-learn \cite{IsolationForestSklearn,OCP2024RedFlags} & La versi{\'o}n evaluada prioriza reglas expl{\'i}citas y trazables; Isolation Forest se conserva como comparativa o extensi{\'o}n no supervisada. \\
 Web scraping y parsing documental & BeautifulSoup y fallback HTML \cite{Richardson2024BeautifulSoup} & La versi{\'o}n evaluada carga contenido HTML o textual y conserva una ruta determinista; no incluye scraping masivo ni descarga autom{\'a}tica de pliegos. \\
@@ -736,7 +736,7 @@ Orquestaci{\'o}n multiagente & CLI, batch y dise{\~n}o compatible con LangGraph/
 API de servicio & FastAPI como extensi{\'o}n prevista \cite{FastAPIOfficial} & No es requisito de ejecuci{\'o}n de la versi{\'o}n evaluada; se reserva para exponer consultas y fichas en una versi{\'o}n de servicio. \\
 Evaluaci{\'o}n RAG & RAGAS como marco de referencia \cite{RAGASOfficial} & La evaluaci{\'o}n disponible es local/proxy; RAGAS queda para evaluaciones documentales con corpus mayor y artefactos suficientes. \\
 Dashboard & Streamlit, Plotly y soporte de extensiones con Sigma.js/PyVis \cite{StreamlitOfficial,PlotlyOfficial,SigmaJSOfficial,PyVisOfficial} & Streamlit cubre la demo local; Sigma.js/PyVis no son obligatorios para la versi{\'o}n evaluada. \\
-Reproducibilidad & Docker Compose, Git y scripts parametrizados \cite{DockerComposeOfficial} & Facilitan ejecuci{\'o}n local, versionado, trazabilidad de resultados y defensa t{\'e}cnica del prototipo. \\
+Reproducibilidad & Docker Compose, Git y scripts parametrizados \cite{DockerComposeOfficial} & Compose define PostgreSQL, Neo4j y Qdrant; Ollama se ejecuta, si se utiliza, como servicio local o externo independiente. \\
 \bottomrule
 \end{longtable}
 }
@@ -877,7 +877,7 @@ La arquitectura multiagente se plantea como un flujo de responsabilidades expl{\
 \textbf{Agente} & \textbf{Responsabilidad} & \textbf{Salida} \\
 \midrule
 \endhead
-\textbf{Agente 1: Pipeline de Datos y Normalizaci{\'o}n OCDS} & Descarga, limpia, valida y normaliza fuentes BOE/OCDS, PLACE y OpenTender; detecta inconsistencias de importes, fechas, duplicados y NIF; prepara tablas anal{\'i}ticas y artefactos de carga. & Dataset normalizado, perfil de calidad, hashes de fuentes, tablas PostgreSQL y ficheros Parquet/DuckDB. \\
+\textbf{Agente 1: Pipeline de Datos y Normalizaci{\'o}n OCDS} & Descarga, limpia, valida y normaliza fuentes BOE/OCDS, PLACE y OpenTender; detecta inconsistencias de importes, fechas, duplicados y NIF; prepara tablas anal{\'i}ticas y artefactos de carga. & Dataset normalizado, perfil de calidad, hashes de fuentes, ficheros Parquet y tablas PostgreSQL opcionales. \\
 \textbf{Agente 2: Red Flags y Scoring} & Calcula RF-01 a RF-06 por contrato mediante reglas deterministas; incorpora recurrencia, concentraci{\'o}n, desviaciones y variables relacionales para priorizar la revisi{\'o}n humana. & Red flags activadas, score 0--100 por contrato, nivel de riesgo, justificaci{\'o}n por indicador y reporte de ejecuci{\'o}n. \\
 \textbf{Agente 3: An{\'a}lisis de Redes y Comunidades} & Construye el grafo empresa-organismo-contrato con NetworkX; calcula m{\'e}tricas, comunidades Louvain y features relacionales. Leiden y el enriquecimiento societario quedan como extensiones. & Nodos, aristas, m{\'e}tricas de red, comunidades Louvain, resumen y features para otros agentes. \\
 \textbf{Agente 4: Recuperaci{\'o}n Documental} & Carga contenido HTML o textual, fragmenta el corpus, recupera contexto y genera fichas citadas mediante fallback determinista. Qdrant, Ollama y BGE-M3 son opcionales; spaCy queda como ampliaci{\'o}n. & Manifest de corpus, chunks, fragmentos recuperados, citas, contexto y ficha explicativa de caso. \\
@@ -1429,13 +1429,13 @@ con la versi{\'o}n de cierre del prototipo. La Tabla~\ref{tab:evaluacion_objetiv
 \midrule
 \endhead
 OE1 & An{\'a}lisis de fuentes BOE, PLACE y OpenTender; foco CPV~71; perfilado de calidad. & Cumplido como an{\'a}lisis de disponibilidad y calidad, con limitaciones documentadas. \\
-OE2 & Esquema OCDS adaptado para contrato y adjudicatario, implementado en c{\'o}digo. & Cumplido; los campos m{\'i}nimos est{\'a}n formalizados. \\
+OE2 & Esquema OCDS adaptado, can{\'o}nico, tablas anal{\'i}ticas de contrato/adjudicatario y grafo derivado. & Cumplimiento parcial: Parquet est{\'a} evaluado; PostgreSQL y Neo4j son persistencias opcionales y no existe enriquecimiento societario cerrado. \\
 OE3 & Pipeline reproducible con parsers, can{\'o}nico, reportes y persistencia opcional. & Cumplido parcialmente en calidad: el pipeline existe, pero algunas m{\'e}tricas no alcanzan umbral. \\
 OE4 & RF-01 a RF-06 y scoring 0--100 por contrato. & Cumplido en la versi{\'o}n evaluada; el cat{\'a}logo completo de 15 RF y el scoring agregado por adjudicatario quedan como extensiones. \\
 OE5 & Grafo con nodos, aristas, m{\'e}tricas, comunidades y features. & Cumplido como grafo derivado; Neo4j es opcional. \\
 OE6 & Agent4 con corpus, chunks, retrieval, contexto de caso y citas. & Cumplido como componente documental del prototipo; evaluaci{\'o}n masiva RAG queda limitada. \\
-OE7 & Dashboard Streamlit integrado con vistas de resumen, caso, relaciones y evidencias. & Cumplido para demo local. \\
-OE8 & Validaci{\'o}n con tests, benchmark y diez fichas cualitativas. & Cumplimiento parcial: valida priorizaci{\'o}n y explicaci{\'o}n, sin etiquetas de fraude, revisi{\'o}n experta ni estudio formal de usabilidad. \\
+OE7 & Dashboard Streamlit integrado con resumen, ranking, caso, relaciones, evidencias y trazabilidad; validaci{\'o}n headless con 10 comprobaciones y 0 excepciones. & Cumplimiento funcional para demo local; sin SUS, Likert ni medici{\'o}n temporal con usuarios. \\
+OE8 & Validaci{\'o}n con suites m{\'i}nima/completa, benchmark en dos modos, modularidad y diez fichas cualitativas. & Cumplimiento parcial: valida funcionamiento, priorizaci{\'o}n y explicaci{\'o}n, sin etiquetas de fraude, revisi{\'o}n experta, RAGAS amplio ni estudio formal de usabilidad. \\
 \bottomrule
 \end{longtable}
 }
@@ -1979,10 +1979,15 @@ metodol{\'o}gica ha sido no inventar resultados y distinguir entre salidas gener
 validaciones t{\'e}cnicas realizadas y cifras hist{\'o}ricas procedentes de documentos anteriores.
 
 Para reforzar esa delimitaci{\'o}n, la versi{\'o}n final incorpora un benchmark reproducible del
-prototipo. El informe \texttt{benchmark\_report.md} eval{\'u}a 34 m{\'e}tricas distribuidas entre Agent1,
-Agent2, Agent3, Agent4 e integraci{\'o}n. El resultado global fue \texttt{warning}: 31 m{\'e}tricas en
-\texttt{pass}, 1 en \texttt{warning}, 0 en \texttt{fail} y 2 como \texttt{not\_applicable}. La
-advertencia no corresponde a un fallo de ejecuci{\'o}n, sino a la ausencia de intersecciones exactas
+prototipo. El informe est{\'a}ndar del directorio \texttt{benchmark}, ejecutado sin validar el
+dashboard, eval{\'u}a 34 m{\'e}tricas distribuidas entre Agent1, Agent2,
+Agent3, Agent4 e integraci{\'o}n. El resultado global fue \texttt{warning}: 31 m{\'e}tricas en
+\texttt{pass}, 1 en \texttt{warning}, 0 en \texttt{fail} y 2 como \texttt{not\_applicable}. El
+reporte complementario se conserva en \texttt{benchmark\_dashboard}. Con
+\texttt{--include-dashboard} mantiene 34 m{\'e}tricas y obtiene 32 en \texttt{pass}, 1 en
+\texttt{warning}, ninguna en \texttt{fail} y 1 no aplicable. La m{\'e}trica
+\texttt{integrated.dashboard} cambia de \texttt{not\_applicable} a \texttt{pass}; no se a{\~n}ade una
+m{\'e}trica nueva. La advertencia de ambos modos corresponde a la ausencia de intersecciones exactas
 entre fuentes. La Tabla~\ref{tab:alcance_benchmark_tfm} resume qu{\'e} partes quedan implementadas,
 qu{\'e} partes quedan evaluadas y qu{\'e} elementos se mantienen como extensi{\'o}n futura.
 
@@ -2418,10 +2423,13 @@ realizada indica:
   \item \texttt{PYTHONPATH=scr python -m procurewatch.cli doctor}: resultado OK, con PostgreSQL, Neo4j, Qdrant y
   Ollama como servicios opcionales;
   \item \texttt{PYTHONPATH=scr python -m pytest tests}: 122 pruebas superadas y 1 omitida en el
-  entorno Windows sin el extra \texttt{db};
+  entorno m{\'i}nimo sin SQLAlchemy; la prueba omitida corresponde a persistencia PostgreSQL opcional;
+  \item la misma suite con SQLAlchemy disponible: 123 pruebas superadas y 0 omitidas;
   \item \texttt{PYTHONPATH=scr python -m ruff check api scr tests frontend}: sin errores;
-  \item \texttt{PYTHONPATH=scr python -m procurewatch.cli run-benchmark}: 34 m{\'e}tricas evaluadas, con
-  31 en \texttt{pass}, 1 en \texttt{warning}, 0 en \texttt{fail} y 2 como \texttt{not\_applicable};
+  \item \texttt{PYTHONPATH=scr python -m procurewatch.cli run-benchmark}: 34 m{\'e}tricas, con 31 en
+  \texttt{pass}, 1 en \texttt{warning}, 0 en \texttt{fail} y 2 como \texttt{not\_applicable};
+  \item el mismo benchmark con \texttt{--include-dashboard}: 34 m{\'e}tricas, con 32 en
+  \texttt{pass}, 1 en \texttt{warning}, 0 en \texttt{fail} y 1 como \texttt{not\_applicable};
   \item demo integrada y dashboard Streamlit validados en modo headless con 0 excepciones.
 \end{itemize}
 
@@ -2754,8 +2762,9 @@ externa por expertos ni una auditor{\'i}a sobre casos reales confirmados.
 \section{Limitaciones operativas}
 \label{sec:limitaciones_operativas}
 
-El proyecto est{\'a} preparado para trabajar con PostgreSQL, Neo4j, Qdrant y Ollama mediante
-Docker Compose, pero la demo final no exige que todos estos servicios est{\'e}n activos. Esta decisi{\'o}n
+El fichero \texttt{docker-compose.yml} define servicios para PostgreSQL, Neo4j y Qdrant. Ollama no
+forma parte de Compose: puede ejecutarse como servicio local o externo opcional. La demo final no
+exige que estos servicios est{\'e}n activos. Esta decisi{\'o}n
 reduce el riesgo de dependencia operativa en la defensa y permite ejecutar tests con fallback local.
 La contrapartida es que algunas capacidades se demuestran como soporte opcional o PoC, no como
 despliegue productivo permanente.
@@ -2832,8 +2841,10 @@ soporte documental y t{\'e}cnico. La arquitectura, las limitaciones, las m{\'e}t
 de lote quedaron alineados con los artefactos generados, de forma que cada afirmaci{\'o}n relevante
 puede rastrearse a una salida del sistema o a una decisi{\'o}n de dise{\~n}o documentada.
 
-El benchmark final refuerza esta conclusi{\'o}n con una lectura agregada: 34 m{\'e}tricas evaluadas, 31
-en \texttt{pass}, 1 en \texttt{warning}, 0 en \texttt{fail} y 2 como \texttt{not\_applicable}. El
+El benchmark final refuerza esta conclusi{\'o}n con una lectura agregada. Sin solicitar el dashboard,
+34 m{\'e}tricas producen 31 \texttt{pass}, 1 \texttt{warning}, 0 \texttt{fail} y 2
+\texttt{not\_applicable}; con \texttt{--include-dashboard}, las mismas 34 m{\'e}tricas producen 32
+\texttt{pass}, 1 \texttt{warning}, 0 \texttt{fail} y 1 \texttt{not\_applicable}. El
 {\'u}nico \texttt{warning} corresponde al matching interfuente, no a un fallo de ejecuci{\'o}n. Esta
 separaci{\'o}n permite afirmar que el prototipo es t{\'e}cnicamente funcional y medible, al mismo tiempo
 que mantiene visible la principal limitaci{\'o}n metodol{\'o}gica para una versi{\'o}n institucional.
@@ -2888,8 +2899,8 @@ se{\~n}ales de riesgo, 11 nodos, 13 relaciones, 2 comunidades, modularidad $Q=0{
 evidencias documentales y 2 citas; y
 la evaluaci{\'o}n cualitativa publica diez fichas con composici{\'o}n 5/3/2 y evidencia completa para
 21 activaciones de reglas;
-la validaci{\'o}n t{\'e}cnica recoge 122 tests superados y 1 omitido por una dependencia opcional,
-benchmark global sin fallos y
+la validaci{\'o}n t{\'e}cnica recoge 122 tests superados y 1 omitido en el entorno m{\'i}nimo, y 123
+tests superados sin omisiones con SQLAlchemy disponible; el benchmark global no presenta fallos y el
 dashboard Streamlit sin excepciones en modo headless. El valor central del trabajo se sostiene, por tanto, sobre un flujo
 operativo implementado, trazable y documentado, sin afirmar detecci{\'o}n autom{\'a}tica de fraude.
 
